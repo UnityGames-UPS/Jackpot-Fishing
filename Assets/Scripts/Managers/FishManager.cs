@@ -1,0 +1,81 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+internal class FishManager : MonoBehaviour
+{
+  public static FishManager Instance;
+
+  [SerializeField] internal GenericObjectPool<NormalFish> normalFishPool;
+  [SerializeField] internal GenericObjectPool<SpecialFish> specialFishPool;
+  [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
+  [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
+
+  [Header("MockData")]
+  [SerializeField] private FishData mockFishData;
+
+  private void Awake() => Instance = this;
+
+  void Update()
+  {
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+      SpawnFish();
+    }
+  }
+
+  internal void SpawnFish()
+  {
+    Fish fish = GetFishFromType(mockFishData.FishType);
+    if (fish == null) return;
+
+    fish.Initialize(mockFishData);
+  }
+
+  internal void DespawnFish(Fish fish)
+  {
+    fish.ResetFish();
+    switch (fish)
+    {
+      case NormalFish nf: normalFishPool.ReturnToPool(nf); break;
+      case SpecialFish sf: specialFishPool.ReturnToPool(sf); break;
+      case ImmortalFish im: immortalFishPool.ReturnToPool(im); break;
+      case JackpotFish jf: jackpotFishPool.ReturnToPool(jf); break;
+    }
+  }
+
+  private Fish GetFishFromType(FishType type)
+  {
+    return type switch
+    {
+      FishType.Normal => normalFishPool.GetFromPool(),
+      FishType.Special => specialFishPool.GetFromPool(),
+      FishType.Immortal => immortalFishPool.GetFromPool(),
+      FishType.Jackpot => jackpotFishPool.GetFromPool(),
+      _ => null
+    };
+  }
+}
+
+[Serializable]
+internal class FishData
+{
+  //backend sends
+  public string type;
+  public string variants;
+  public int minInterval;
+  public string direction;
+
+  //unity references
+  public Transform[] fishPath;
+  public FishType FishType;
+}
+
+public enum FishType
+{
+  Normal,
+  Special,
+  Immortal,
+  Jackpot
+}
