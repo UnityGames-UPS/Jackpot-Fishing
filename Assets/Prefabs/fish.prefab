@@ -88,3 +88,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4172b2f226a53454cb69b8741de9e4f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipSpriteForLeftMovement: 1

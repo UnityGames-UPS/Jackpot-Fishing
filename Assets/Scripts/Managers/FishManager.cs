@@ -13,7 +13,7 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
 
   [Header("MockData")]
-  [SerializeField] private FishData mockFishData;
+  [SerializeField] private List<FishData> mockFishData;
 
   private void Awake() => Instance = this;
 
@@ -27,10 +27,11 @@ internal class FishManager : MonoBehaviour
 
   internal void SpawnFish()
   {
-    Fish fish = GetFishFromType(mockFishData.FishType);
+    int randomIndex = UnityEngine.Random.Range(0, mockFishData.Count);
+    Fish fish = GetFishFromType(mockFishData[randomIndex].FishType);
     if (fish == null) return;
 
-    fish.Initialize(mockFishData);
+    fish.Initialize(mockFishData[randomIndex]);
   }
 
   internal void DespawnFish(Fish fish)
@@ -62,13 +63,13 @@ internal class FishManager : MonoBehaviour
 internal class FishData
 {
   //backend sends
-  public string type;
-  public string variants;
+  // public string type;
+  // public string variants;
   public int minInterval;
-  public string direction;
+  // public string direction;
+  public string pathId;
 
   //unity references
-  public Transform[] fishPath;
   public FishType FishType;
 }
 

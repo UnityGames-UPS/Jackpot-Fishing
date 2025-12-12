@@ -6,18 +6,36 @@ internal class Fish : MonoBehaviour
   internal int FishId;
   protected Tween movementTween;
 
+  [Header("Sprite Settings")]
+  [SerializeField] private bool flipSpriteForLeftMovement = true;
+
   internal virtual void Initialize(FishData data)
   {
-    transform.position = data.fishPath[0].position;
+    Transform[] fishPath = PathManager.Instance.GetRandomPath();
 
-    // Convert Transform[] to Vector3[] for DOPath
-    Vector3[] path = new Vector3[data.fishPath.Length];
-    for (int i = 0; i < data.fishPath.Length; i++)
+    if (fishPath == null || fishPath.Length == 0)
     {
-      path[i] = data.fishPath[i].position;
+      Debug.LogError($"Invalid path");
+      FishManager.Instance.DespawnFish(this);
+      return;
     }
 
-    MoveAlongPath(path, data.minInterval / 1000f); // convert ms to seconds
+    transform.position = fishPath[0].position;
+
+    // Flip sprite since your fish faces left and paths go left-to-right
+    if (flipSpriteForLeftMovement)
+    {
+      transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+    }
+
+    // Convert Transform[] to Vector3[] for DOPath
+    Vector3[] path = new Vector3[fishPath.Length];
+    for (int i = 0; i < fishPath.Length; i++)
+    {
+      path[i] = fishPath[i].position;
+    }
+
+    MoveAlongPath(path, data.minInterval / 1000f);
   }
 
   internal virtual void MoveAlongPath(Vector3[] path, float duration)
@@ -29,9 +47,10 @@ internal class Fish : MonoBehaviour
             PathType.CatmullRom,
             PathMode.Sidescroller2D,
             10,
-            Color.clear
+            Color.black
         )
         .SetEase(Ease.Linear)
+        .SetLookAt(0.01f) // Makes fish rotate smoothly to follow path curves
         .OnComplete(() => FishManager.Instance.DespawnFish(this));
   }
 
@@ -49,5 +68,7 @@ internal class Fish : MonoBehaviour
   {
     movementTween?.Kill();
     transform.position = Vector3.zero;
+    transform.rotation = Quaternion.identity;
+    transform.localScale = Vector3.one;
   }
 }
