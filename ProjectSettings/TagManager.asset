@@ -4,9 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - fish
+  - Wall
+  - Fish
+  - Bullet
   - bullet
-  - wall
   layers:
   - Default
   - TransparentFX
@@ -14,9 +15,9 @@ TagManager:
   - 
   - Water
   - UI
-  - bullet
-  - active
-  - inactive
+  - Bullet
+  - 
+  - 
   - 
   - 
   - 

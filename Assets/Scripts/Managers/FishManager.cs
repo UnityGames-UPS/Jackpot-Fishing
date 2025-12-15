@@ -7,6 +7,10 @@ internal class FishManager : MonoBehaviour
 {
   public static FishManager Instance;
 
+  [Header("Fish Visual Definitions")]
+  [SerializeField] private List<FishVisualData> fishVisuals;
+
+  [Header("Fish pools")]
   [SerializeField] internal GenericObjectPool<NormalFish> normalFishPool;
   [SerializeField] internal GenericObjectPool<SpecialFish> specialFishPool;
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
@@ -57,12 +61,18 @@ internal class FishManager : MonoBehaviour
       _ => null
     };
   }
+
+  internal FishVisualData GetVisualData(string fishId)
+  {
+    return fishVisuals.Find(v => v.fishId == fishId);
+  }
 }
 
 [Serializable]
 internal class FishData
 {
   //backend sends
+  public string fishId; 
   // public string type;
   // public string variants;
   public int minInterval;
@@ -71,6 +81,15 @@ internal class FishData
 
   //unity references
   public FishType FishType;
+}
+
+[Serializable]
+internal class FishVisualData
+{
+  public string fishId;                 // e.g. "angelfish"
+  public Sprite[] animationFrames;
+  public float animationSpeed = 5f;
+  public bool loop = true;
 }
 
 public enum FishType

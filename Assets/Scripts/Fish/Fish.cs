@@ -1,18 +1,42 @@
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 internal class Fish : MonoBehaviour
 {
   internal int FishId;
   protected Tween movementTween;
+  protected ImageAnimation imageAnimation;
 
-  [Header("Sprite Settings")]
-  [SerializeField] private bool flipSpriteForLeftMovement = true;
 
   internal virtual void Initialize(FishData data)
   {
-    Transform[] fishPath = PathManager.Instance.GetRandomPath();
+    imageAnimation = GetComponent<ImageAnimation>();
 
+    if (!string.IsNullOrEmpty(data.fishId))
+    {
+      var visualData = FishManager.Instance.GetVisualData(data.fishId);
+
+      if (visualData != null && imageAnimation != null)
+      {
+        imageAnimation.SetAnimationData(
+          visualData.animationFrames,
+          visualData.animationSpeed,
+          visualData.loop
+        );
+        imageAnimation.StartAnimation();
+      }
+      else
+      {
+        Debug.LogError($"Visual data not found for :{data.fishId}");
+      }
+    }
+    else
+    {
+      Debug.LogError("fishId not found!");
+    }
+
+    Transform[] fishPath = PathManager.Instance.GetRandomPath();
     if (fishPath == null || fishPath.Length == 0)
     {
       Debug.LogError($"Invalid path");
@@ -20,21 +44,23 @@ internal class Fish : MonoBehaviour
       return;
     }
 
-    transform.position = fishPath[0].position;
-
-    // Flip sprite since your fish faces left and paths go left-to-right
-    if (flipSpriteForLeftMovement)
-    {
-      transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-    }
-
-    // Convert Transform[] to Vector3[] for DOPath
     Vector3[] path = new Vector3[fishPath.Length];
     for (int i = 0; i < fishPath.Length; i++)
     {
       path[i] = fishPath[i].position;
     }
 
+    bool moveRightToLeft = UnityEngine.Random.value > 0.5f;
+    if (moveRightToLeft)
+    {
+      Array.Reverse(path);
+    }
+    else
+    {
+    }
+      transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+    
+    transform.position = path[0];
     MoveAlongPath(path, data.minInterval / 1000f);
   }
 
@@ -42,16 +68,16 @@ internal class Fish : MonoBehaviour
   {
     movementTween?.Kill();
     movementTween = transform.DOPath(
-            path,
-            duration,
-            PathType.CatmullRom,
-            PathMode.Sidescroller2D,
-            10,
-            Color.black
-        )
-        .SetEase(Ease.Linear)
-        .SetLookAt(0.01f) // Makes fish rotate smoothly to follow path curves
-        .OnComplete(() => FishManager.Instance.DespawnFish(this));
+          path,
+          duration,
+          PathType.CatmullRom,
+          PathMode.Sidescroller2D,
+          10,
+          Color.black
+      )
+      .SetEase(Ease.Linear)
+      .SetLookAt(0.01f) // Makes fish rotate smoothly to follow path curves
+      .OnComplete(() => FishManager.Instance.DespawnFish(this));
   }
 
   internal virtual void TakeDamage(float damage)
