@@ -6,7 +6,13 @@ public class BulletController : MonoBehaviour
   [SerializeField] private float speed = 20f;
   [SerializeField] private float lifeTime = 4f;
 
-  private Vector2 lastVelocity;
+  [SerializeField] private float wallPushDistance = 0.05f;
+  [Header("Debug")]
+  [SerializeField] private bool drawDebugRay = false;
+
+  private Vector2 velocity;
+
+
   private Rigidbody2D rb;
   private float lifeTimer;
   private bool active;
@@ -18,6 +24,7 @@ public class BulletController : MonoBehaviour
     rb = GetComponent<Rigidbody2D>();
     rb.gravityScale = 0;
     rb.freezeRotation = true;
+    rb.bodyType = RigidbodyType2D.Kinematic;
   }
 
   internal void InitBullet(BulletPool ownerPool)
@@ -27,59 +34,87 @@ public class BulletController : MonoBehaviour
 
   internal void Fire(Vector2 direction)
   {
-    direction.Normalize();
+    velocity = direction.normalized * speed;
+    rb.position = transform.position;
 
-    rb.velocity = direction * speed;
     UpdateVisual(direction);
 
     lifeTimer = lifeTime;
     active = true;
   }
 
+
   void FixedUpdate()
   {
     if (!active) return;
 
-    lastVelocity = rb.velocity;
+    float delta = Time.fixedDeltaTime;
+    Vector2 currentPos = rb.position;
+    Vector2 nextPos = currentPos + velocity * delta;
 
-    lifeTimer -= Time.fixedDeltaTime;
+    // Raycast for wall hit
+    RaycastHit2D hit = Physics2D.Raycast(
+        currentPos,
+        velocity.normalized,
+        velocity.magnitude * delta,
+        LayerMask.GetMask("Wall")
+    );
+
+    DebugRay(currentPos, delta);
+
+    if (hit)
+    {
+      ReflectFromHit(hit);
+      nextPos = hit.point + hit.normal * wallPushDistance;
+    }
+
+    rb.MovePosition(nextPos);
+
+    lifeTimer -= delta;
     if (lifeTimer <= 0f)
       ReturnToPool();
   }
 
-  void OnCollisionEnter2D(Collision2D collision)
+
+  void OnTriggerEnter2D(Collider2D other)
   {
     if (!active) return;
 
-    if (collision.collider.CompareTag("Wall"))
+    if (other.CompareTag("Fish"))
     {
-      Reflect(collision.contacts[0].normal);
-    }
-    else if (collision.collider.CompareTag("Fish"))
-    {
-      // damage fish here
+      HitMarkerPool.Instance.GetFromPool().Play(transform.position);
+
+      if (other.TryGetComponent<NormalFish>(out var fish))
+        fish.DamageAnimation();
+
       ReturnToPool();
     }
   }
 
-  void Reflect(Vector2 normal)
+  void ReflectFromHit(RaycastHit2D hit)
   {
-    float speedMagnitude = lastVelocity.magnitude;
+    Vector2 dir = velocity.normalized;
 
-    if (speedMagnitude < 0.01f)
-      return; // safety
+    Vector2 reflectedDir;
 
-    Vector2 reflectedDir = Vector2.Reflect(lastVelocity.normalized, normal);
+    // Corner-safe reflection
+    if (Mathf.Abs(hit.normal.x) > 0.5f && Mathf.Abs(hit.normal.y) > 0.5f)
+    {
+      reflectedDir = new Vector2(-dir.x, -dir.y);
+    }
+    else
+    {
+      reflectedDir = Vector2.Reflect(dir, hit.normal);
+    }
 
-    rb.velocity = reflectedDir * speedMagnitude;
-    UpdateVisual(reflectedDir);
+    velocity = reflectedDir.normalized * speed;
+    UpdateVisual(velocity.normalized);
   }
 
 
   void UpdateVisual(Vector2 direction)
   {
-    // sprite faces UP (-Y if your sprite is inverted)
-    transform.up = -direction;
+    transform.up = direction;
   }
 
   void ReturnToPool()
@@ -87,5 +122,20 @@ public class BulletController : MonoBehaviour
     active = false;
     rb.velocity = Vector2.zero;
     pool.ReturnToPool(this);
+  }
+
+  void DebugRay(Vector2 currentPos, float delta)
+  {
+#if UNITY_EDITOR
+    if (drawDebugRay)
+    {
+      Debug.DrawRay(
+          currentPos,
+          velocity.normalized * velocity.magnitude * delta,
+          Color.red,
+          5f
+      );
+    }
+#endif
   }
 }

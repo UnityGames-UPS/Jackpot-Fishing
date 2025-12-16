@@ -6,6 +6,10 @@ public abstract class BaseGun : MonoBehaviour
   [SerializeField] protected Transform gunPivot;
   [SerializeField] protected Transform muzzle;
   [SerializeField] protected GunManager GunManager;
+  
+  [Header("Firing")]
+  [SerializeField] protected float fireRate = 6f;
+  internal float FireInterval => 1f / fireRate;
 
   internal virtual void UpdateAim(Vector3 worldPos)
   {

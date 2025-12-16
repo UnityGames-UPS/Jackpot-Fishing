@@ -1,6 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
-
 public class SimpleGun : BaseGun
 {
   [SerializeField] private BulletPool bulletPool;
@@ -11,18 +11,28 @@ public class SimpleGun : BaseGun
   [SerializeField] private float returnDuration = 0.12f;
   [SerializeField] private Ease recoilEase = Ease.OutQuad;
 
+  [Header("Muzzle Flash")]
+  [SerializeField] private float muzzleFadeIn = 0.03f;
+  [SerializeField] private float muzzleFadeOut = 0.08f;
+
+  private Image muzzleImage;
   private Tween recoilTween;
+  private Tween muzzleTween;
   private Vector3 initialLocalPos;
 
   void Awake()
   {
     initialLocalPos = transform.localPosition;
+    muzzleImage = muzzle.GetComponent<Image>();
+
+    if (muzzleImage != null)
+      muzzleImage.color = new Color(1, 1, 1, 0); // start hidden
   }
 
   internal override void Fire()
   {
+    PlayMuzzleFlash();
     PlayRecoil();
-
     BulletController bullet = bulletPool.GetFromPool();
     bullet.InitBullet(bulletPool);
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
@@ -46,4 +56,14 @@ public class SimpleGun : BaseGun
         });
   }
 
+  void PlayMuzzleFlash()
+  {
+    if (muzzleImage == null) return;
+
+    muzzleTween?.Kill();
+
+    muzzleTween = DOTween.Sequence()
+        .Append(muzzleImage.DOFade(0.7f, muzzleFadeIn))
+        .Append(muzzleImage.DOFade(0f, muzzleFadeOut));
+  }
 }

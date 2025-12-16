@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 public class InputManagerView : MonoBehaviour,
     IPointerDownHandler,
     IDragHandler,
-    IPointerUpHandler,
-    IPointerMoveHandler
+    IPointerUpHandler
+    // IPointerMoveHandler
 {
   [SerializeField] private GunManager gunManager;
 
@@ -25,8 +25,8 @@ public class InputManagerView : MonoBehaviour,
     gunManager.SetFiring(false);
   }
 
-  public void OnPointerMove(PointerEventData eventData)
-  {
-    gunManager.UpdateAim(eventData.position);
-  }
+  // public void OnPointerMove(PointerEventData eventData)
+  // {
+  //   gunManager.UpdateAim(eventData.position);
+  // }
 }

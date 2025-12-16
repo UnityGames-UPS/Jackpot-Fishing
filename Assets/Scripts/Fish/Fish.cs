@@ -1,17 +1,21 @@
 using UnityEngine;
 using DG.Tweening;
 using System;
+using UnityEngine.UI;
 
 internal class Fish : MonoBehaviour
 {
   internal int FishId;
   protected Tween movementTween;
   protected ImageAnimation imageAnimation;
-
+  protected Image fishImage;
+  protected Tween damageTween;
+  internal virtual void DamageAnimation() { }
 
   internal virtual void Initialize(FishData data)
   {
     imageAnimation = GetComponent<ImageAnimation>();
+    fishImage = GetComponent<Image>();
 
     if (!string.IsNullOrEmpty(data.fishId))
     {
@@ -55,11 +59,9 @@ internal class Fish : MonoBehaviour
     {
       Array.Reverse(path);
     }
-    else
-    {
-    }
-      transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-    
+
+    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
     transform.position = path[0];
     MoveAlongPath(path, data.minInterval / 1000f);
   }
@@ -80,11 +82,6 @@ internal class Fish : MonoBehaviour
       .OnComplete(() => FishManager.Instance.DespawnFish(this));
   }
 
-  internal virtual void TakeDamage(float damage)
-  {
-    // To be overridden in child classes
-  }
-
   internal virtual void Die()
   {
     FishManager.Instance.DespawnFish(this);
@@ -93,8 +90,12 @@ internal class Fish : MonoBehaviour
   internal virtual void ResetFish()
   {
     movementTween?.Kill();
-    transform.position = Vector3.zero;
-    transform.rotation = Quaternion.identity;
+    damageTween?.Kill();
+
+    if (fishImage != null)
+      fishImage.color = Color.white;
+
+    transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
     transform.localScale = Vector3.one;
   }
 }
