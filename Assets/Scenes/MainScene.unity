@@ -40148,6 +40148,83 @@ MonoBehaviour:
     spriteSize: {x: 658, y: 367}
     colliderSize: {x: 455, y: 78}
     colliderOffset: {x: -49, y: 20}
+  - fishId: jelly_fish
+    animationFrames:
+    - {fileID: 21300000, guid: dab8efc6e580349d6b354126536b58e9, type: 3}
+    - {fileID: 21300000, guid: abc677976cd6747bbbaedc3ad873d224, type: 3}
+    - {fileID: 21300000, guid: 3db2d955976dd47d8981469c48254a67, type: 3}
+    - {fileID: 21300000, guid: 1a69d919eb446424e9d96deb5f4b40fa, type: 3}
+    - {fileID: 21300000, guid: f26675c08cc94411eaf5bc21a70b9521, type: 3}
+    - {fileID: 21300000, guid: 4b83f0c2d04f449f2829cda2a68b34dd, type: 3}
+    - {fileID: 21300000, guid: 877ab91ca301e4221b2774bc97a7cde3, type: 3}
+    - {fileID: 21300000, guid: fea6cd395e0004c7fa87368db0e4da80, type: 3}
+    - {fileID: 21300000, guid: 57192e094ae8d42bdbb9d04ad650ace2, type: 3}
+    - {fileID: 21300000, guid: 1677693425e994d4783e0d1e886cebb0, type: 3}
+    - {fileID: 21300000, guid: 901812ccd6c8b40218b54e45958096f7, type: 3}
+    - {fileID: 21300000, guid: c83747d43bff34ddca6cd2de552466a7, type: 3}
+    - {fileID: 21300000, guid: 6cb4856564428467a8414ac36a1c2826, type: 3}
+    - {fileID: 21300000, guid: 437a00325f64945e8887bd629f20b964, type: 3}
+    - {fileID: 21300000, guid: 923b4607f3d804eab96a007527eff5c7, type: 3}
+    - {fileID: 21300000, guid: 95b0d8296aaaf47f8a93e6f687b0e145, type: 3}
+    - {fileID: 21300000, guid: 7169058cfbaa84721a4630df82aab456, type: 3}
+    - {fileID: 21300000, guid: f9dfe33834e2942ad94cfee49d58f27e, type: 3}
+    - {fileID: 21300000, guid: 7b1ed8ac8955741469c30f1156e8c1e1, type: 3}
+    - {fileID: 21300000, guid: 4b94b630d101448aabbfacefe867373b, type: 3}
+    - {fileID: 21300000, guid: 20bfd5c4478c6491489837f3828be236, type: 3}
+    - {fileID: 21300000, guid: 364284e70e7cd4e10bfba27eb02a95b5, type: 3}
+    - {fileID: 21300000, guid: cdefdacd370554af9b94b0a03559ac6f, type: 3}
+    - {fileID: 21300000, guid: 9974c9ab89ac643caa716c0b24734cce, type: 3}
+    - {fileID: 21300000, guid: ff45b918d2ac04901a9f9799a942fc7b, type: 3}
+    - {fileID: 21300000, guid: fc034cf6fff794624918f5ec3c61f837, type: 3}
+    - {fileID: 21300000, guid: e0f951af0f5ce41adbab2800a4a9e496, type: 3}
+    - {fileID: 21300000, guid: d66d28064f3864bc2bc2086ea77b5a2f, type: 3}
+    - {fileID: 21300000, guid: 0cd9a1e48c1424c2eab4ec3f51c36319, type: 3}
+    - {fileID: 21300000, guid: 9fcc17a7f1f47413cb8a931c4f01bb35, type: 3}
+    - {fileID: 21300000, guid: 8e961500be1dc498bb6f1dd67a144228, type: 3}
+    - {fileID: 21300000, guid: 5fe2332c24bdd41258b3b330438518c0, type: 3}
+    - {fileID: 21300000, guid: 25d752e682a424fe6a5c64280f18179d, type: 3}
+    - {fileID: 21300000, guid: 50fcd5a40fefd41e0ae3174fedcbb056, type: 3}
+    - {fileID: 21300000, guid: 600b360994017448aa43e4f5afe3a8c3, type: 3}
+    - {fileID: 21300000, guid: 362e19e4d38de44c5aecf28169e91a36, type: 3}
+    - {fileID: 21300000, guid: 3d4fc2f5c190b49858f84df3e8e1a351, type: 3}
+    - {fileID: 21300000, guid: d9a65431f7c2847cbb937a40a182dc0e, type: 3}
+    - {fileID: 21300000, guid: 8a2bcfbd253db43ceb1774180ea84da9, type: 3}
+    animationSpeed: 28
+    loop: 1
+    spriteSize: {x: 274, y: 212}
+    colliderSize: {x: 145, y: 78}
+    colliderOffset: {x: -30, y: 0}
+  - fishId: octopus
+    animationFrames:
+    - {fileID: 21300000, guid: 1cecaf4465b8b4d618e1a89aed86a87b, type: 3}
+    - {fileID: 21300000, guid: 06de0b347c83b4a34843f948ea88436f, type: 3}
+    - {fileID: 21300000, guid: c636b3433ccef4a3f9eb406b71e87a18, type: 3}
+    - {fileID: 21300000, guid: 508d41c3bd4964989a3ba673af4c594a, type: 3}
+    - {fileID: 21300000, guid: 295235155e66e4a568083cd4c3862922, type: 3}
+    - {fileID: 21300000, guid: ac51630713cb240d4a7c3b92c2ea2f3f, type: 3}
+    - {fileID: 21300000, guid: b1e0d1acb25394651b84cd02b1257aaa, type: 3}
+    - {fileID: 21300000, guid: d1cccdb43b54147d5a71bb900b08c314, type: 3}
+    - {fileID: 21300000, guid: 40c07ab75e4264064b8d7a64af513339, type: 3}
+    - {fileID: 21300000, guid: 7d682cfe040d44a87bad3e0580d86e69, type: 3}
+    - {fileID: 21300000, guid: a4a2404f01eeb415680520c3efeef722, type: 3}
+    - {fileID: 21300000, guid: 8ec427e8854fe4bffb96c37d7e6aba14, type: 3}
+    - {fileID: 21300000, guid: 8564db6ed26984a7993bfe761b61710e, type: 3}
+    - {fileID: 21300000, guid: 7bf253e6b84424468bc5358ff809a500, type: 3}
+    - {fileID: 21300000, guid: 185cc4e7e450e40ed866a5b118c53a4f, type: 3}
+    - {fileID: 21300000, guid: 33d027126a546424ba16ac8fee468c94, type: 3}
+    - {fileID: 21300000, guid: a0b290fbaad4c4c49a56c29ada568ab1, type: 3}
+    - {fileID: 21300000, guid: c137113cb0221453fb25a27312e7d9ab, type: 3}
+    - {fileID: 21300000, guid: af1c135cc9f924183a13506e1a3d52db, type: 3}
+    - {fileID: 21300000, guid: 382ddd5534c0a4bacadbabf83ba389e5, type: 3}
+    - {fileID: 21300000, guid: 5faf25fea8b3e40888c27107209c2828, type: 3}
+    - {fileID: 21300000, guid: 26d6d5c2352db40f69de2f0de146d4a0, type: 3}
+    - {fileID: 21300000, guid: 8bee1800de5eb4cc1b06d17fd9a282d3, type: 3}
+    - {fileID: 21300000, guid: c97c2c18a2dfd4c16a011fbba8dd3b94, type: 3}
+    animationSpeed: 12
+    loop: 1
+    spriteSize: {x: 825, y: 600}
+    colliderSize: {x: 581, y: 259}
+    colliderOffset: {x: -18, y: 0}
   normalFishPool: {fileID: 231023209}
   specialFishPool: {fileID: 0}
   immortalFishPool: {fileID: 0}
@@ -40162,6 +40239,14 @@ MonoBehaviour:
     pathId: straight_left_0
     FishType: 0
   - fishId: hammer_head
+    minInterval: 20000
+    pathId: straight_left_0
+    FishType: 0
+  - fishId: jelly_fish
+    minInterval: 20000
+    pathId: straight_left_0
+    FishType: 0
+  - fishId: octopus
     minInterval: 20000
     pathId: straight_left_0
     FishType: 0
@@ -127971,9 +128056,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 1571308677}
+  - {fileID: 1213157223}
   - {fileID: 153988846}
   - {fileID: 819296387}
   - {fileID: 1157570054}
-  - {fileID: 1213157223}
   - {fileID: 690078718}
   - {fileID: 425042030}
