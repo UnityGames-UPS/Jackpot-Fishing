@@ -16,6 +16,7 @@ internal class Fish : MonoBehaviour
   {
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
+    BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 
     if (!string.IsNullOrEmpty(data.fishId))
     {
@@ -29,6 +30,18 @@ internal class Fish : MonoBehaviour
           visualData.loop
         );
         imageAnimation.StartAnimation();
+
+        RectTransform rectTransform = transform as RectTransform;
+        if (rectTransform != null)
+        {
+          rectTransform.sizeDelta = visualData.spriteSize;
+        }
+
+        if (boxCollider != null)
+        {
+          boxCollider.size = visualData.colliderSize;
+          boxCollider.offset = visualData.colliderOffset;
+        }
       }
       else
       {

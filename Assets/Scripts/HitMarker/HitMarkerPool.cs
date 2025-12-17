@@ -7,6 +7,7 @@ public class HitMarkerPool : GenericObjectPool<HitMarker>
   public static HitMarkerPool Instance;
   internal override void Awake()
   {
+    base.Awake();
     Instance = this;
   }
 }

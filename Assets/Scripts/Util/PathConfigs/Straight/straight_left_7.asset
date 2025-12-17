@@ -17,8 +17,8 @@ MonoBehaviour:
   pattern: 0
   steps: 3
   startX: 0
-  startY: 10
-  endX: 35
-  endY: 9
+  startY: 19
+  endX: 46
+  endY: 18
   frequency: 4.76
   amplitude: 1.9

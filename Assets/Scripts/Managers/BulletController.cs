@@ -9,14 +9,10 @@ public class BulletController : MonoBehaviour
   [SerializeField] private float wallPushDistance = 0.05f;
   [Header("Debug")]
   [SerializeField] private bool drawDebugRay = false;
-
   private Vector2 velocity;
-
-
   private Rigidbody2D rb;
   private float lifeTimer;
   private bool active;
-
   private BulletPool pool;
 
   void Awake()

@@ -72,7 +72,7 @@ internal class FishManager : MonoBehaviour
 internal class FishData
 {
   //backend sends
-  public string fishId; 
+  public string fishId;
   // public string type;
   // public string variants;
   public int minInterval;
@@ -90,6 +90,9 @@ internal class FishVisualData
   public Sprite[] animationFrames;
   public float animationSpeed = 5f;
   public bool loop = true;
+  public Vector2 spriteSize;
+  public Vector2 colliderSize;
+  public Vector2 colliderOffset;
 }
 
 public enum FishType

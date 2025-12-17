@@ -12,22 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebd1570f9bf0a4ec892ef1c3273c7c9d, type: 3}
   m_Name: curve_left_8
   m_EditorClassIdentifier: 
+  isEnabled: 1
   pathId: curve_left_8
   pattern: 1
   steps: 10
   startX: 0
-  startY: 10
-  endX: 35
-  endY: 10
+  startY: 18
+  endX: 46
+  endY: 18
   frequency: 3.23
   amplitude: 0.5
-  spiralTurns: 1.5
-  spiralStartRadius: 1
-  spiralEndRadius: 3
-  loopRadius: 2
-  bezierControl1X: 3
-  bezierControl1Y: 0
-  bezierControl2X: 7
-  bezierControl2Y: 6
-  randomSeed: 42
-  randomness: 1
