@@ -40150,7 +40150,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fishVisuals:
-  - fishId: angelfish
+  - fishId: small_dragon_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 05fc624cf2046445192a34a3fe7a6a85, type: 3}
+    - {fileID: 21300000, guid: fbf2f9847ce524aa7af32d48fad47760, type: 3}
+    - {fileID: 21300000, guid: b8e4b932b969e4d43a8c38107b84afe9, type: 3}
+    - {fileID: 21300000, guid: 68117059837a54620aee7ab7a89765f6, type: 3}
+    - {fileID: 21300000, guid: 46db0bff9f83d44d7ab71e759ecf3c23, type: 3}
+    - {fileID: 21300000, guid: 2ce97fecddeab4b30a914c953e53de66, type: 3}
+    - {fileID: 21300000, guid: 5538b90a113e543d888a237540bc4aef, type: 3}
+    - {fileID: 21300000, guid: 1f5e23df7897f40afa1f4d03fb8418fe, type: 3}
+    - {fileID: 21300000, guid: e8f4619ccfce646cbae9e5d588e4c9d2, type: 3}
+    - {fileID: 21300000, guid: b929c2298d39d4902b6d9fb6548182ae, type: 3}
+    - {fileID: 21300000, guid: 9cfcd39caf33c42daa11e2859beaf17b, type: 3}
+    - {fileID: 21300000, guid: 6ce33b3827706466bb42c97d091dd9e8, type: 3}
+    - {fileID: 21300000, guid: 58c8121b9be0144db9dfac115791414e, type: 3}
+    - {fileID: 21300000, guid: 6b6ffaf96fdb54f0d9c9eb40deaa9e02, type: 3}
+    - {fileID: 21300000, guid: 1a836bf6ac72a42e985fd74c24b27848, type: 3}
+    - {fileID: 21300000, guid: 5a4df67a1345e4bb79271bb8deba7f71, type: 3}
+    - {fileID: 21300000, guid: f73e208872b604b85aec01eb00af597b, type: 3}
+    - {fileID: 21300000, guid: 6b61ba2d3cdd9495aa29af741dc7f898, type: 3}
+    animationSpeed: 10
+    loop: 1
+    spriteSize: {x: 200, y: 200}
+    colliderSize: {x: 63, y: 22}
+    colliderOffset: {x: -30, y: -5}
+  - fishId: orange_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 948df5dbb7ee74d30b2d6dc0053db733, type: 3}
+    - {fileID: 21300000, guid: d2a8b0c847d2846baae0c76939dc45f5, type: 3}
+    - {fileID: 21300000, guid: c1546a17b06f64dc19bd301e00184492, type: 3}
+    - {fileID: 21300000, guid: d9196a9bb0aa14ee6bae2747a5fb441d, type: 3}
+    - {fileID: 21300000, guid: 75aff8eef039c4bddbc4bd3d28b4400e, type: 3}
+    - {fileID: 21300000, guid: bd387dc519fd043829e043adfb4d3186, type: 3}
+    - {fileID: 21300000, guid: 58135b4c3bce049d5bfab3b4d4120c51, type: 3}
+    - {fileID: 21300000, guid: 67208534ced01470eace2b47a7213d3b, type: 3}
+    - {fileID: 21300000, guid: 638e0c925029543b1aaaa0ebf4154469, type: 3}
+    - {fileID: 21300000, guid: a99f7006bee034904903bd0664883d21, type: 3}
+    - {fileID: 21300000, guid: 86a27f342cb6d422985ae20f12f3aec0, type: 3}
+    - {fileID: 21300000, guid: 9c05267a306334976afcb0060458ba5a, type: 3}
+    - {fileID: 21300000, guid: 7226ceae69c2d48ba989e1b811de66df, type: 3}
+    - {fileID: 21300000, guid: cee73efeecd9944328082e4694e93cdd, type: 3}
+    - {fileID: 21300000, guid: 4fbe4382e4e1b425fa9f63042d7b071a, type: 3}
+    - {fileID: 21300000, guid: cf160cd45326c4090bf6b51ce0644aff, type: 3}
+    - {fileID: 21300000, guid: 71c6fa72f65a94638a0094e66e7f9dd9, type: 3}
+    - {fileID: 21300000, guid: 50ccc3ca658de41e79c070c37c57533e, type: 3}
+    - {fileID: 21300000, guid: cb02f8a42e43a40eca33968e7ae7fcb9, type: 3}
+    - {fileID: 21300000, guid: 352217cf1a9604909805c8ec5fcf1f9f, type: 3}
+    - {fileID: 21300000, guid: 86b3de152e1ef4a43943a19b04d7c21e, type: 3}
+    - {fileID: 21300000, guid: 9082236f646334787b1db7242fe23393, type: 3}
+    - {fileID: 21300000, guid: 2ad6e236e1d284bee8fcda42ba31e220, type: 3}
+    - {fileID: 21300000, guid: 5828b6ebfef5a4fb39dece432a5db6e0, type: 3}
+    animationSpeed: 13
+    loop: 1
+    spriteSize: {x: 120, y: 120}
+    colliderSize: {x: 80, y: 18}
+    colliderOffset: {x: -15, y: 0}
+  - fishId: angel_fish
     animationFrames:
     - {fileID: 21300000, guid: 8200726f672eb499d9592ce1f8215db2, type: 3}
     - {fileID: 21300000, guid: 2d786c9042e714cbaafa087abc844f00, type: 3}
@@ -40177,9 +40233,438 @@ MonoBehaviour:
     animationSpeed: 11
     loop: 1
     spriteSize: {x: 187, y: 140}
-    colliderSize: {x: 123, y: 75}
+    colliderSize: {x: 70, y: 20}
+    colliderOffset: {x: 0, y: -2}
+  - fishId: pinecone_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 1715bd5b0fc5e4454bbc8fd8e15e1c82, type: 3}
+    - {fileID: 21300000, guid: 39ef531fd16b247c292daa88159e100c, type: 3}
+    - {fileID: 21300000, guid: 00d4a06ddd3424034957cf440f2e1ab2, type: 3}
+    - {fileID: 21300000, guid: f9711553859d44ddcbe79885b5ed4cbb, type: 3}
+    - {fileID: 21300000, guid: f788997907e4f4b849c7a8e646ba9482, type: 3}
+    - {fileID: 21300000, guid: 91c592d6f38a748ce85c6631677b8905, type: 3}
+    - {fileID: 21300000, guid: d75b9dd03024d42d29dd09c295f64d79, type: 3}
+    - {fileID: 21300000, guid: 9384528be097e45d0af696140b7e4a9e, type: 3}
+    - {fileID: 21300000, guid: e2b13a37f5098475e9170b9d97096911, type: 3}
+    - {fileID: 21300000, guid: 0e3669325066c4b2d95181eb80df4da5, type: 3}
+    - {fileID: 21300000, guid: 0d972b5ebae4f4d0eb8a200a8426ddc6, type: 3}
+    - {fileID: 21300000, guid: d82ce463d4b31410683baa7f256a5b96, type: 3}
+    - {fileID: 21300000, guid: 11447194a16c341cd87926488afb882e, type: 3}
+    - {fileID: 21300000, guid: 8d7e9f63c5ddd4fd6bba971950d0039c, type: 3}
+    - {fileID: 21300000, guid: 73e3ec41793fc41b5bd70dceb1cc1545, type: 3}
+    - {fileID: 21300000, guid: d00b9af08e69d4c68a0d276619ea44e5, type: 3}
+    - {fileID: 21300000, guid: 046488ce384f14690a8363376c364565, type: 3}
+    - {fileID: 21300000, guid: d38895558fd6f49af928cfa9ff325557, type: 3}
+    animationSpeed: 10
+    loop: 1
+    spriteSize: {x: 174, y: 152}
+    colliderSize: {x: 50, y: 50}
     colliderOffset: {x: 0, y: 0}
-  - fishId: armored
+  - fishId: puffer_fish
+    animationFrames:
+    - {fileID: 21300000, guid: afe3bb9ceaeb049d08dcde38308ffe8a, type: 3}
+    - {fileID: 21300000, guid: 70cbb928ce7d84877863b0805b969659, type: 3}
+    - {fileID: 21300000, guid: c01142c81b00c40939b6a076fc17571f, type: 3}
+    - {fileID: 21300000, guid: 88b126985d8b8454c8077bd7365f089f, type: 3}
+    - {fileID: 21300000, guid: 0a0dd02edf6bd4db39e69f2e66af0f69, type: 3}
+    - {fileID: 21300000, guid: 83b60fbbbcc174d77b6cb68824bb298d, type: 3}
+    - {fileID: 21300000, guid: 2e8d53bc6aa434eb4a8c2b016fcb3f09, type: 3}
+    - {fileID: 21300000, guid: ba9c800be1a084177b3ba3247ef5bade, type: 3}
+    - {fileID: 21300000, guid: 33fa9f3402d214ac0bca041ff165411a, type: 3}
+    - {fileID: 21300000, guid: 6a4f79caa0914443d9370852982799c9, type: 3}
+    - {fileID: 21300000, guid: f48a05fe186b64c1d98c0cacd0b2f6d1, type: 3}
+    - {fileID: 21300000, guid: 1af0510cb95c74037b6f1cf7b8fd8ffa, type: 3}
+    - {fileID: 21300000, guid: c0977e090612f4ffa94bf7f593508300, type: 3}
+    - {fileID: 21300000, guid: 0256ae32d0b3b436c97bb9f8d88186e4, type: 3}
+    - {fileID: 21300000, guid: 913a754e35d9f43cd8de0f86cedbc707, type: 3}
+    - {fileID: 21300000, guid: 9c203bff779ee4f619d2a6b477ea5dcc, type: 3}
+    - {fileID: 21300000, guid: 6e7c210ed345540ae9c1a979a5b07158, type: 3}
+    - {fileID: 21300000, guid: f697fb85a0b744fcd90255820ba54f57, type: 3}
+    animationSpeed: 10
+    loop: 1
+    spriteSize: {x: 229.5, y: 174.6}
+    colliderSize: {x: 50, y: 50}
+    colliderOffset: {x: 0, y: -5}
+  - fishId: turtle_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 5c30871973ee146acb771eb8f56ae88b, type: 3}
+    - {fileID: 21300000, guid: f4a9cda3e49bf49879f08aa92b23d4a2, type: 3}
+    - {fileID: 21300000, guid: cca492efc51f3430da7153c992d0527a, type: 3}
+    - {fileID: 21300000, guid: ec6473dd11dc94c7cb28f384a068fab6, type: 3}
+    - {fileID: 21300000, guid: 810734649f89a4eb1852f57ec347224c, type: 3}
+    - {fileID: 21300000, guid: dc8bfeb1974fe44ae958492de050420f, type: 3}
+    - {fileID: 21300000, guid: f70518946878447dfbc14472e9dac7c8, type: 3}
+    - {fileID: 21300000, guid: 8334565e04df043a7acc5ce331f35ca5, type: 3}
+    - {fileID: 21300000, guid: 35d1f3317c9a04a19a39b62650ddafe2, type: 3}
+    - {fileID: 21300000, guid: 6bcc70b5604ec4e21980c7b6fb2e02ac, type: 3}
+    - {fileID: 21300000, guid: 0a3a655fff6db4bb584d35b0e2aca316, type: 3}
+    - {fileID: 21300000, guid: e5c2c689f71dc4e20be9614cdd444ff0, type: 3}
+    - {fileID: 21300000, guid: 860756a857b78462eb6eff73ca04672e, type: 3}
+    - {fileID: 21300000, guid: 023ddfaf2e43c43a498cc77db90f2014, type: 3}
+    - {fileID: 21300000, guid: 8d9f990bfa17746039b03a3caa95b4cb, type: 3}
+    - {fileID: 21300000, guid: c58bb722184fd430988504ecd0f893e0, type: 3}
+    - {fileID: 21300000, guid: cb3bda5a86a364ddd86e273bffba4d02, type: 3}
+    - {fileID: 21300000, guid: 366d3e0a080ee4ecdaa1024b400fb358, type: 3}
+    - {fileID: 21300000, guid: 622d2e66e9183498ab4c0de0f8759254, type: 3}
+    - {fileID: 21300000, guid: 927d99942ed674fd987f2fd64752d82d, type: 3}
+    - {fileID: 21300000, guid: bc139ff88877e48a0a1bfd54f84965c0, type: 3}
+    - {fileID: 21300000, guid: e9ab450093d4045ba881ad283bae85a7, type: 3}
+    animationSpeed: 11
+    loop: 1
+    spriteSize: {x: 200, y: 200}
+    colliderSize: {x: 138, y: 40}
+    colliderOffset: {x: 0, y: 0}
+  - fishId: jelly_fish
+    animationFrames:
+    - {fileID: 21300000, guid: dab8efc6e580349d6b354126536b58e9, type: 3}
+    - {fileID: 21300000, guid: abc677976cd6747bbbaedc3ad873d224, type: 3}
+    - {fileID: 21300000, guid: 3db2d955976dd47d8981469c48254a67, type: 3}
+    - {fileID: 21300000, guid: 1a69d919eb446424e9d96deb5f4b40fa, type: 3}
+    - {fileID: 21300000, guid: f26675c08cc94411eaf5bc21a70b9521, type: 3}
+    - {fileID: 21300000, guid: 4b83f0c2d04f449f2829cda2a68b34dd, type: 3}
+    - {fileID: 21300000, guid: 877ab91ca301e4221b2774bc97a7cde3, type: 3}
+    - {fileID: 21300000, guid: fea6cd395e0004c7fa87368db0e4da80, type: 3}
+    - {fileID: 21300000, guid: 57192e094ae8d42bdbb9d04ad650ace2, type: 3}
+    - {fileID: 21300000, guid: 1677693425e994d4783e0d1e886cebb0, type: 3}
+    - {fileID: 21300000, guid: 901812ccd6c8b40218b54e45958096f7, type: 3}
+    - {fileID: 21300000, guid: c83747d43bff34ddca6cd2de552466a7, type: 3}
+    - {fileID: 21300000, guid: 6cb4856564428467a8414ac36a1c2826, type: 3}
+    - {fileID: 21300000, guid: 437a00325f64945e8887bd629f20b964, type: 3}
+    - {fileID: 21300000, guid: 923b4607f3d804eab96a007527eff5c7, type: 3}
+    - {fileID: 21300000, guid: 95b0d8296aaaf47f8a93e6f687b0e145, type: 3}
+    - {fileID: 21300000, guid: 7169058cfbaa84721a4630df82aab456, type: 3}
+    - {fileID: 21300000, guid: f9dfe33834e2942ad94cfee49d58f27e, type: 3}
+    - {fileID: 21300000, guid: 7b1ed8ac8955741469c30f1156e8c1e1, type: 3}
+    - {fileID: 21300000, guid: 4b94b630d101448aabbfacefe867373b, type: 3}
+    - {fileID: 21300000, guid: 20bfd5c4478c6491489837f3828be236, type: 3}
+    - {fileID: 21300000, guid: 364284e70e7cd4e10bfba27eb02a95b5, type: 3}
+    - {fileID: 21300000, guid: cdefdacd370554af9b94b0a03559ac6f, type: 3}
+    - {fileID: 21300000, guid: 9974c9ab89ac643caa716c0b24734cce, type: 3}
+    - {fileID: 21300000, guid: ff45b918d2ac04901a9f9799a942fc7b, type: 3}
+    - {fileID: 21300000, guid: fc034cf6fff794624918f5ec3c61f837, type: 3}
+    - {fileID: 21300000, guid: e0f951af0f5ce41adbab2800a4a9e496, type: 3}
+    - {fileID: 21300000, guid: d66d28064f3864bc2bc2086ea77b5a2f, type: 3}
+    - {fileID: 21300000, guid: 0cd9a1e48c1424c2eab4ec3f51c36319, type: 3}
+    - {fileID: 21300000, guid: 9fcc17a7f1f47413cb8a931c4f01bb35, type: 3}
+    - {fileID: 21300000, guid: 8e961500be1dc498bb6f1dd67a144228, type: 3}
+    - {fileID: 21300000, guid: 5fe2332c24bdd41258b3b330438518c0, type: 3}
+    - {fileID: 21300000, guid: 25d752e682a424fe6a5c64280f18179d, type: 3}
+    - {fileID: 21300000, guid: 50fcd5a40fefd41e0ae3174fedcbb056, type: 3}
+    - {fileID: 21300000, guid: 600b360994017448aa43e4f5afe3a8c3, type: 3}
+    - {fileID: 21300000, guid: 362e19e4d38de44c5aecf28169e91a36, type: 3}
+    - {fileID: 21300000, guid: 3d4fc2f5c190b49858f84df3e8e1a351, type: 3}
+    - {fileID: 21300000, guid: d9a65431f7c2847cbb937a40a182dc0e, type: 3}
+    - {fileID: 21300000, guid: 8a2bcfbd253db43ceb1774180ea84da9, type: 3}
+    animationSpeed: 28
+    loop: 1
+    spriteSize: {x: 274, y: 212}
+    colliderSize: {x: 125, y: 48}
+    colliderOffset: {x: -30, y: 0}
+  - fishId: lobster_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 4347d98c05a7543f1a804cbb025baa5d, type: 3}
+    - {fileID: 21300000, guid: 1e4ac5897f97e420ab098097e1608134, type: 3}
+    - {fileID: 21300000, guid: 71d7a251979d54ebf9208bb912fd0f33, type: 3}
+    - {fileID: 21300000, guid: a00250e4a0b9047f08606967b84fac1a, type: 3}
+    - {fileID: 21300000, guid: fd6024b4985ff4c73a6e227c7420e7fd, type: 3}
+    - {fileID: 21300000, guid: 5017fa10c0f264aeeaab912fa5ce708c, type: 3}
+    - {fileID: 21300000, guid: bcc7c06e577384ea1b7aeb4e8a9f5f78, type: 3}
+    - {fileID: 21300000, guid: 5cf7b1e5d4ceb4749ab9834580b123d3, type: 3}
+    - {fileID: 21300000, guid: 98405c69af4004ffeb5b174fca06a483, type: 3}
+    - {fileID: 21300000, guid: 51bffbf9d3a95420783b33faec35299c, type: 3}
+    - {fileID: 21300000, guid: dee178c6e3a23438a800c6c7d9c3dd0d, type: 3}
+    - {fileID: 21300000, guid: 3dcff5d5aa9f445c5a577230b7675284, type: 3}
+    - {fileID: 21300000, guid: cc02d1e575b3c4487ae531dddd99a757, type: 3}
+    - {fileID: 21300000, guid: 9e9872f6e527b4456986f7e8c711f2e4, type: 3}
+    - {fileID: 21300000, guid: b3e74519b105e4c879cac66ce99f3d7e, type: 3}
+    - {fileID: 21300000, guid: 8e0bdfd5b0eae41e1a2912d8d0f305c2, type: 3}
+    - {fileID: 21300000, guid: 2e22f83ed9c7c4943abe1a8966d5b713, type: 3}
+    - {fileID: 21300000, guid: 65f503a4bda6d4b7b8776198550f36c5, type: 3}
+    - {fileID: 21300000, guid: 6c328028584f047438af1c7ff5ccd07e, type: 3}
+    - {fileID: 21300000, guid: cc1f16e6e6dcb4b00b90ce21562bc65f, type: 3}
+    - {fileID: 21300000, guid: ff6d679e69c60446ebfc9d9c99a8c910, type: 3}
+    - {fileID: 21300000, guid: aa603aa302b334c07a6d41d378eecd0c, type: 3}
+    - {fileID: 21300000, guid: ad968e73765334d43b2f588ba233f20d, type: 3}
+    - {fileID: 21300000, guid: a1ad029d8508e4a8bb2000ba65b3e345, type: 3}
+    - {fileID: 21300000, guid: a71282f48f4754ff8b3cddcb6a04d5b8, type: 3}
+    - {fileID: 21300000, guid: d2dc9441c19f04cd895cc8a8df25233e, type: 3}
+    - {fileID: 21300000, guid: 73c3a4a92dc3e47928165dd593a51fae, type: 3}
+    - {fileID: 21300000, guid: 9d858e478bc57423e9db7c02fff80de2, type: 3}
+    - {fileID: 21300000, guid: e9658e77457574e0da1597726deab647, type: 3}
+    - {fileID: 21300000, guid: 9e0c041deec9c443eb2784b26016a099, type: 3}
+    - {fileID: 21300000, guid: 7f4cc780fb29b4147aa33e01d75199b5, type: 3}
+    - {fileID: 21300000, guid: c4208044f130e42539bbb51d5d2a9930, type: 3}
+    - {fileID: 21300000, guid: f524e1c7de32f43778eef1c984c99a73, type: 3}
+    - {fileID: 21300000, guid: 8170a5ecd6bfc4338bb0378fe0761262, type: 3}
+    - {fileID: 21300000, guid: 12032dad0fa9c46f5b53360d5c5de489, type: 3}
+    - {fileID: 21300000, guid: 1f33b6e1f7fc14f358304ef4cad21827, type: 3}
+    - {fileID: 21300000, guid: d2509e05c3c5341c9969079c101dd344, type: 3}
+    - {fileID: 21300000, guid: 813ac5cc2fb304d87aa54e7fa60adffb, type: 3}
+    - {fileID: 21300000, guid: 67e70822df7e94807af3010beb0d59d2, type: 3}
+    - {fileID: 21300000, guid: 6bbe3c8b3011b4f48a6d5f4ffaa9447d, type: 3}
+    - {fileID: 21300000, guid: 483f98e409064487e88627f9a7a2cf30, type: 3}
+    - {fileID: 21300000, guid: b830acc2b3f8347a1a71ef6c057d78b6, type: 3}
+    - {fileID: 21300000, guid: a5c9d1d91da2b42d1a755bfb404772e3, type: 3}
+    - {fileID: 21300000, guid: 10ffe453a85094168a413233a5e36f94, type: 3}
+    - {fileID: 21300000, guid: b16949fdd45ab4825a5063980bf78655, type: 3}
+    - {fileID: 21300000, guid: edb77a56d066c487e8c7a7ce07ddc83c, type: 3}
+    animationSpeed: 36
+    loop: 1
+    spriteSize: {x: 275.2, y: 174.4}
+    colliderSize: {x: 90, y: 30}
+    colliderOffset: {x: 21, y: 5}
+  - fishId: lion_fish
+    animationFrames:
+    - {fileID: 21300000, guid: d30f43211dbc14577ba8a8d9e20e5a36, type: 3}
+    - {fileID: 21300000, guid: 7c6e026257e014befa73dd7874eb4d63, type: 3}
+    - {fileID: 21300000, guid: fc51e5879a755423e90c85334186497f, type: 3}
+    - {fileID: 21300000, guid: 705d2f48d47e94c8596e6f3f920c62d1, type: 3}
+    - {fileID: 21300000, guid: 2b289255b81d4466288949e5556ac124, type: 3}
+    - {fileID: 21300000, guid: fc28b7be9643047e4ae53cb0fc5db546, type: 3}
+    - {fileID: 21300000, guid: 332c0fc07c9a346c6a7efeb6cc18be5f, type: 3}
+    - {fileID: 21300000, guid: 0004a9c4d221546efa1f7cb2856a2b53, type: 3}
+    - {fileID: 21300000, guid: 9d7aebc8a4c114bef874ea15ed37e064, type: 3}
+    - {fileID: 21300000, guid: 0c20b26584cb94eb68197ad3cca089b1, type: 3}
+    - {fileID: 21300000, guid: f28f37d6aee694a48be870bbb5d25465, type: 3}
+    - {fileID: 21300000, guid: cb52efc4a5aa9491eb7e1079134ae703, type: 3}
+    - {fileID: 21300000, guid: 2fcb33d125ab441d7a6d0f29069a4bf8, type: 3}
+    - {fileID: 21300000, guid: f2894a11927764f15a59a00a52d2dcec, type: 3}
+    - {fileID: 21300000, guid: 5e02cdbfe6e754e27b17517b63f2cfbe, type: 3}
+    - {fileID: 21300000, guid: d630bdf6b18f745ec8c94c6bbe1212a5, type: 3}
+    - {fileID: 21300000, guid: 8c22bae50e73b4474844df8d01d5fae4, type: 3}
+    - {fileID: 21300000, guid: 729b85450bc6148399fb935e0aef8b0e, type: 3}
+    animationSpeed: 9
+    loop: 1
+    spriteSize: {x: 200, y: 200}
+    colliderSize: {x: 80, y: 25}
+    colliderOffset: {x: 0, y: 7}
+  - fishId: babyocto_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 155c6f721c02a436da99677a94f86c12, type: 3}
+    - {fileID: 21300000, guid: e835fcaacee3d44048f6d8ac21600897, type: 3}
+    - {fileID: 21300000, guid: ee409fc9c92b44dc7b22def4a5f35149, type: 3}
+    - {fileID: 21300000, guid: 3a87ec767551d4c749fd75c04aa5b3b2, type: 3}
+    - {fileID: 21300000, guid: ec4d00ddc181b418aaf050012fc442ae, type: 3}
+    - {fileID: 21300000, guid: e140b5b2137c04b189e4220046a9fe69, type: 3}
+    - {fileID: 21300000, guid: 6be8a2872cee9479e9f30665646d2780, type: 3}
+    - {fileID: 21300000, guid: dabb937b4c273468292e8bc3abf7ecd9, type: 3}
+    - {fileID: 21300000, guid: 1b79c0a8ea737487e90268bd112611eb, type: 3}
+    - {fileID: 21300000, guid: c9e7a5bafece2438387a7ad63dae0556, type: 3}
+    - {fileID: 21300000, guid: 8ef0bc179859847b0b32f6be2ea716cc, type: 3}
+    - {fileID: 21300000, guid: c75a0ddc200ec4461942aec74fa95afe, type: 3}
+    - {fileID: 21300000, guid: 8910f23cc88bb4ae894036ea915fea18, type: 3}
+    - {fileID: 21300000, guid: 75509e9c974884dbeb36803d9bb8dee3, type: 3}
+    - {fileID: 21300000, guid: af817b299d353462b9126cd74d3b8bf1, type: 3}
+    - {fileID: 21300000, guid: c2e0bcd55c08443cab449e7d4c3961d2, type: 3}
+    - {fileID: 21300000, guid: 7b728cbc187cd48b99c86df86ca3b6dc, type: 3}
+    - {fileID: 21300000, guid: b3d73fd9c052b481793cc319962d4941, type: 3}
+    animationSpeed: 9
+    loop: 1
+    spriteSize: {x: 200, y: 200}
+    colliderSize: {x: 93, y: 44}
+    colliderOffset: {x: -22, y: 0}
+  - fishId: saw_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 1ad2b700b21d54dd1b0bf432eeca072c, type: 3}
+    - {fileID: 21300000, guid: 64207c6caf1574396b9a902ab8854725, type: 3}
+    - {fileID: 21300000, guid: fe95086bd515846ee9596d3543a81c85, type: 3}
+    - {fileID: 21300000, guid: ab4b966a2679d4c5cacaabfb8e2aa5e7, type: 3}
+    - {fileID: 21300000, guid: 172fd6ccbfe86483782f0e4a9cbc29dd, type: 3}
+    - {fileID: 21300000, guid: 6ffd70e711b274d0e94f3b80ab308df2, type: 3}
+    - {fileID: 21300000, guid: 0074bf0a4800f43f392a82339e9ae356, type: 3}
+    - {fileID: 21300000, guid: 761236871d65144c3a6d01102a3d8deb, type: 3}
+    - {fileID: 21300000, guid: 77d7be5794d52436c9765a76a6b3c7b0, type: 3}
+    - {fileID: 21300000, guid: d7056fc9acf824046a08cbb3fb6087c9, type: 3}
+    - {fileID: 21300000, guid: 05d4cd6f07c2e425d814e6dc3e6218f6, type: 3}
+    - {fileID: 21300000, guid: b91c05c2a528a4545888498513e6fd25, type: 3}
+    - {fileID: 21300000, guid: 99407eb9c14854987af4ef9f206077aa, type: 3}
+    - {fileID: 21300000, guid: 508e24342e9a4475c99f6e18407ef5e3, type: 3}
+    - {fileID: 21300000, guid: ff2ca332bb6794acf9b9840e575a54f9, type: 3}
+    - {fileID: 21300000, guid: 8d236d7d572644f19a4d0f7a290154be, type: 3}
+    - {fileID: 21300000, guid: 5657ef16ee48d403296e89c37e7849f6, type: 3}
+    - {fileID: 21300000, guid: b9fb4c4279a7d418dad7b4b9bc8d3c7d, type: 3}
+    - {fileID: 21300000, guid: e09a26e1e4362493cbfed0dde7b4f480, type: 3}
+    - {fileID: 21300000, guid: 0aa8d179de3ef4c5589a3d80a2c2393e, type: 3}
+    - {fileID: 21300000, guid: a24e0a513784b4b45a941c43067824d3, type: 3}
+    - {fileID: 21300000, guid: 0356a8d1968f047f58a9c8a266347390, type: 3}
+    - {fileID: 21300000, guid: 7365030df76b845318e3c384da087695, type: 3}
+    - {fileID: 21300000, guid: e41c0a52f71e44c7ea873d2d142a6c84, type: 3}
+    - {fileID: 21300000, guid: 11597d49e6845422e8830e2fbd2f815b, type: 3}
+    - {fileID: 21300000, guid: 361c0c7f56e9b4238bbd5a37120a007a, type: 3}
+    - {fileID: 21300000, guid: d8d2032fd2e4d43e5a4051afe9cc5de3, type: 3}
+    - {fileID: 21300000, guid: 7a60d15fa7798437593ceacb92f6cbe9, type: 3}
+    - {fileID: 21300000, guid: 805f84ffd21884299a0cf01abdc4ea9d, type: 3}
+    - {fileID: 21300000, guid: e579047c88fbc407fb29ade68b066c0c, type: 3}
+    animationSpeed: 18
+    loop: 1
+    spriteSize: {x: 447, y: 200}
+    colliderSize: {x: 218, y: 32}
+    colliderOffset: {x: -30, y: 20}
+  - fishId: bluewing_fish
+    animationFrames:
+    - {fileID: 21300000, guid: a69c4abee435a40feaf5cea79fc9d8c4, type: 3}
+    - {fileID: 21300000, guid: d1024af942adb41c9ae6a8122e05bd8d, type: 3}
+    - {fileID: 21300000, guid: ff0014baa4ecc4de19145ef888fd3772, type: 3}
+    - {fileID: 21300000, guid: e4bb4eab7f65b487da520bdb8a87e5f4, type: 3}
+    - {fileID: 21300000, guid: 48d24fcc7cea34962924472b3f95ab19, type: 3}
+    - {fileID: 21300000, guid: 6630fc8b195084abdbb07429d5dcae0c, type: 3}
+    - {fileID: 21300000, guid: 205ace6eaf56841f5ba363abc7f6843c, type: 3}
+    - {fileID: 21300000, guid: 702e5bde3e80e49d388f26a79d35c048, type: 3}
+    - {fileID: 21300000, guid: 470cd47d1e86e4383b11b52e2539a3c4, type: 3}
+    - {fileID: 21300000, guid: 5a66277b38d084726980d3f7caee7c27, type: 3}
+    - {fileID: 21300000, guid: 3633c3f39259f45bfaad67b079515bc0, type: 3}
+    - {fileID: 21300000, guid: aeea8bcbb1d1b482397d60ee67d77a6f, type: 3}
+    - {fileID: 21300000, guid: 9d9e8439942034540883283263336aba, type: 3}
+    - {fileID: 21300000, guid: fcb4cdfc330fd4e309f8bcad33ddd687, type: 3}
+    - {fileID: 21300000, guid: 3a724138f7467400ca8402ac79bbad70, type: 3}
+    - {fileID: 21300000, guid: d948ef393a8a34c4a9e1ca58bbf3b292, type: 3}
+    - {fileID: 21300000, guid: 6232ee1d63b8340ed9f18e79c42adcfc, type: 3}
+    - {fileID: 21300000, guid: 15219692d801c411ca5bd5c44a5a32ad, type: 3}
+    - {fileID: 21300000, guid: 97270a2dc1ab04a859021bb6198832d2, type: 3}
+    - {fileID: 21300000, guid: 2b8d2d004d58d4190833de8ce0888153, type: 3}
+    - {fileID: 21300000, guid: 6864c7f49ffc44afc872a337975fa50e, type: 3}
+    - {fileID: 21300000, guid: 1307a6270c82f4d3ea80d90eda276e9b, type: 3}
+    - {fileID: 21300000, guid: f992a4ab996a347fe8302eb8d47e3e9c, type: 3}
+    - {fileID: 21300000, guid: 4b58ad0fbfe514406b963ffa7492da54, type: 3}
+    - {fileID: 21300000, guid: 8092cd293e14b49e4b9fe311a8e06eff, type: 3}
+    - {fileID: 21300000, guid: 34d09eea1b3384ea08d52e198a998301, type: 3}
+    - {fileID: 21300000, guid: 053b158bd00014893b934e96a912494b, type: 3}
+    - {fileID: 21300000, guid: c7850646cbdca4f739b7d22bd9803d73, type: 3}
+    - {fileID: 21300000, guid: 52da1eea50d5f41c9a1735b85274e3a5, type: 3}
+    - {fileID: 21300000, guid: 3b40d980f3cc54a82bcea72f2c011f14, type: 3}
+    animationSpeed: 22
+    loop: 1
+    spriteSize: {x: 350, y: 350}
+    colliderSize: {x: 157, y: 81}
+    colliderOffset: {x: -53, y: 0}
+  - fishId: hammer_head
+    animationFrames:
+    - {fileID: 21300000, guid: e637d144ee23a4fca8890901690156bb, type: 3}
+    - {fileID: 21300000, guid: 4784bf374dd3b4bce92af32e54a7015e, type: 3}
+    - {fileID: 21300000, guid: 06f5ef65bc1da4c778fb4036926ca00d, type: 3}
+    - {fileID: 21300000, guid: 45865cf1bbb9f417abce32f0f21b9d07, type: 3}
+    - {fileID: 21300000, guid: acceee29eda80437db81f5c0bcc107a7, type: 3}
+    - {fileID: 21300000, guid: 3b4284a8b490d44599633832219d9ee4, type: 3}
+    - {fileID: 21300000, guid: 3440f51291a444c538462d542929c8e0, type: 3}
+    - {fileID: 21300000, guid: be901256e86e44bf98108929dfe9a1df, type: 3}
+    - {fileID: 21300000, guid: e773c1c4652744e759d3de3479024ed6, type: 3}
+    - {fileID: 21300000, guid: f5873affc4aec405cba2ec4517a80325, type: 3}
+    - {fileID: 21300000, guid: 0db706105affa4df0a8524ccb0de44a6, type: 3}
+    - {fileID: 21300000, guid: bebab6388818845c9a055c976e04f1a4, type: 3}
+    - {fileID: 21300000, guid: 1e2934bcef70f478db80fd16757d8d75, type: 3}
+    - {fileID: 21300000, guid: a4cd565c964d14fb2874f997a0464c72, type: 3}
+    - {fileID: 21300000, guid: f188f42fa101e439abe606b00e362eb8, type: 3}
+    - {fileID: 21300000, guid: db76a49ae0ab54c88b17f784db073f65, type: 3}
+    - {fileID: 21300000, guid: d11bc427d0b2c499db42f1175d052b85, type: 3}
+    - {fileID: 21300000, guid: 48e94b1fe51184b43adf42b8ddb2463c, type: 3}
+    - {fileID: 21300000, guid: 94ccf0ece849c4bee9ca4e649c526b5f, type: 3}
+    - {fileID: 21300000, guid: 25afbf63c23534a51857f57e0df18830, type: 3}
+    - {fileID: 21300000, guid: 9f519c32ec6954eaab2b0069354f2a21, type: 3}
+    - {fileID: 21300000, guid: da73cae17e2da47a5b14bf3fd1cfd371, type: 3}
+    - {fileID: 21300000, guid: 9d809e64104ed462fb4ef7db7f25a55e, type: 3}
+    - {fileID: 21300000, guid: 5b9d3b0b9478d4e23abb76123218e5ca, type: 3}
+    - {fileID: 21300000, guid: 3854802ea9289435b9faa7769a968edf, type: 3}
+    - {fileID: 21300000, guid: bf7360085c5df4fbe98e3f22bebf7a54, type: 3}
+    - {fileID: 21300000, guid: 6c1fd4768b01c4389b9f50592e9fac40, type: 3}
+    - {fileID: 21300000, guid: 307d1524ea3644c16a3d21da55115301, type: 3}
+    - {fileID: 21300000, guid: 717438bdc2bad4eea89c44772cef74b2, type: 3}
+    - {fileID: 21300000, guid: d0f5ba58633d947a9b15271779d03571, type: 3}
+    animationSpeed: 28
+    loop: 1
+    spriteSize: {x: 500, y: 367}
+    colliderSize: {x: 349, y: 44}
+    colliderOffset: {x: -34, y: 20}
+  - fishId: golden_clownfish
+    animationFrames:
+    - {fileID: 21300000, guid: 28feb5422ca3e4e969b63a79c7760c92, type: 3}
+    - {fileID: 21300000, guid: e46a6c24daff64e8889a1610e0587d1e, type: 3}
+    - {fileID: 21300000, guid: e369b78bdfc5c40e6820cb47b3fca283, type: 3}
+    - {fileID: 21300000, guid: 5d68015e9d6b74f4ebf5efde7a320563, type: 3}
+    - {fileID: 21300000, guid: 3878b6a44226847739dad316bcb74709, type: 3}
+    - {fileID: 21300000, guid: f463931fe20d14e9b8cf584f468b30a3, type: 3}
+    - {fileID: 21300000, guid: eb5df50614ec64349879c07fc41010cf, type: 3}
+    - {fileID: 21300000, guid: bdd27f1595b604cabaad4a1a30af11e4, type: 3}
+    - {fileID: 21300000, guid: 7629d3a92b0044d1d938bd734803ebad, type: 3}
+    - {fileID: 21300000, guid: 096d2710edb9f46d1b88bd8328eb3dd9, type: 3}
+    - {fileID: 21300000, guid: 8e014177a34154e2dbf6ae472e26ad5f, type: 3}
+    - {fileID: 21300000, guid: cf7abc2ba599f4efd9d0fde096845d51, type: 3}
+    - {fileID: 21300000, guid: fc070e7cc5d4d49d58a04b36052f9e43, type: 3}
+    - {fileID: 21300000, guid: ac4dc406fc9fb4becbdae5cfc56f59cd, type: 3}
+    - {fileID: 21300000, guid: 868330720e21d479ea0d2cc1ede458c6, type: 3}
+    - {fileID: 21300000, guid: 09303b107cb7e40a3af0d0bbeb2107bd, type: 3}
+    - {fileID: 21300000, guid: 987c42a01c519481f91524c43b3f09ef, type: 3}
+    - {fileID: 21300000, guid: c5479fb526ef8453bbc01f2b84c35ad1, type: 3}
+    - {fileID: 21300000, guid: e1f70de588f3b4482afa668e9e5076ba, type: 3}
+    - {fileID: 21300000, guid: 3aa4564897f26423cb5dda74c0f09248, type: 3}
+    - {fileID: 21300000, guid: 777c191b741844cea8e1e9077a689ad8, type: 3}
+    - {fileID: 21300000, guid: 03e96d72f030b4ad6821ab4c91408c79, type: 3}
+    - {fileID: 21300000, guid: abf423be9f6ed4183b32548dee4aa6be, type: 3}
+    animationSpeed: 14
+    loop: 1
+    spriteSize: {x: 320, y: 180}
+    colliderSize: {x: 170, y: 36}
+    colliderOffset: {x: -24, y: 0}
+  - fishId: golden_angelfish
+    animationFrames:
+    - {fileID: 21300000, guid: aa61ac84bec3f4e199ff2acc43b5163d, type: 3}
+    - {fileID: 21300000, guid: db0fb54032a81405293f367bff2d032c, type: 3}
+    - {fileID: 21300000, guid: 68225c293fe9f4ed3b9ac991a7cfae00, type: 3}
+    - {fileID: 21300000, guid: 5ad03cfa8662b487c9eb6872ff7e52ed, type: 3}
+    - {fileID: 21300000, guid: 2a0a1dccf97f848bfa0cc8f14ac7d8fd, type: 3}
+    - {fileID: 21300000, guid: aa8e610e8ff2344d6b322f17a0b48041, type: 3}
+    - {fileID: 21300000, guid: c9c6642f3d3c549a38a67b959669c445, type: 3}
+    - {fileID: 21300000, guid: 92758c50cf3064c4699a28bb447f5bb3, type: 3}
+    - {fileID: 21300000, guid: f9b7e8863022c49caa8c5f302ec57aab, type: 3}
+    - {fileID: 21300000, guid: 0a588828ec2404a83b8b223ead03e9bd, type: 3}
+    - {fileID: 21300000, guid: 3435af3d2de6f4608bdcaf0398680700, type: 3}
+    - {fileID: 21300000, guid: bfbd9585dbc6f4471b1ce5edffe9c725, type: 3}
+    - {fileID: 21300000, guid: cf4cd6c7bf4544918903eabbd0b3ae97, type: 3}
+    - {fileID: 21300000, guid: 90af09a23d85a465a98e7c9c284e7375, type: 3}
+    - {fileID: 21300000, guid: 51aba96f293e447e8b497182247c9ef5, type: 3}
+    - {fileID: 21300000, guid: 8daceb44563aa4276b6992dcd2cd2727, type: 3}
+    animationSpeed: 7
+    loop: 1
+    spriteSize: {x: 320, y: 180}
+    colliderSize: {x: 170, y: 36}
+    colliderOffset: {x: -24, y: 0}
+  - fishId: golden_wing
+    animationFrames:
+    - {fileID: 21300000, guid: 1841c4c9b4c044a9b8cf62f3bc223388, type: 3}
+    - {fileID: 21300000, guid: a0592f6e6e2a84cde83dab53a6ab6c2e, type: 3}
+    - {fileID: 21300000, guid: efe8ab87c434e4dcea524bdc65937d64, type: 3}
+    - {fileID: 21300000, guid: a2760ae864a214f22892863e850da0cb, type: 3}
+    - {fileID: 21300000, guid: 3ed21299ef2c1432ebbb123c158572b6, type: 3}
+    - {fileID: 21300000, guid: f63349085f4ff4590a6c684b9c622eeb, type: 3}
+    - {fileID: 21300000, guid: 7fd183cb71c884753a0fd7159708b8e2, type: 3}
+    - {fileID: 21300000, guid: 84cdecd1028cf41a49519c12ec3158da, type: 3}
+    - {fileID: 21300000, guid: fc2dfad8ca4ed4810bb0c8c74b000c6b, type: 3}
+    - {fileID: 21300000, guid: ddae1c52fb4d9461192712234cede6f5, type: 3}
+    - {fileID: 21300000, guid: c003d554e05eb459c88aba9a6679d228, type: 3}
+    - {fileID: 21300000, guid: caf8213cb45594c7bb03a5c8475bcf0f, type: 3}
+    - {fileID: 21300000, guid: f34d6d2bff9eb43ca93a4958071367c4, type: 3}
+    - {fileID: 21300000, guid: 8775cd0d44308488aadcf585c0494e4a, type: 3}
+    - {fileID: 21300000, guid: 51bae1dca9c23464e97be7b02a3377fb, type: 3}
+    - {fileID: 21300000, guid: 09215be724a214afe8a630cf8e933896, type: 3}
+    - {fileID: 21300000, guid: bce4505ff9bcc43cc946f1a1aec5599e, type: 3}
+    - {fileID: 21300000, guid: 26d0e6c53da464273ae147a018d93c35, type: 3}
+    - {fileID: 21300000, guid: 390cff8c101d84bf3a08b908f57e7c53, type: 3}
+    - {fileID: 21300000, guid: fbefbdb79a5814b7ea3f453d856222c9, type: 3}
+    - {fileID: 21300000, guid: c06b1038c08e74ce2a0a2966da1c66cc, type: 3}
+    - {fileID: 21300000, guid: db2bb402819184ac792e576770368586, type: 3}
+    - {fileID: 21300000, guid: 48a07df4879ec4d3f8af0a3651a7d43a, type: 3}
+    - {fileID: 21300000, guid: 3102d6b8aff834acb865b2cc53eeb1d6, type: 3}
+    - {fileID: 21300000, guid: dd80c396226c44ff3af65f2b521a1801, type: 3}
+    - {fileID: 21300000, guid: cc32868ba760149d19cca9bd88090233, type: 3}
+    - {fileID: 21300000, guid: 1c798810e06a146e08ca4c99e816ab46, type: 3}
+    - {fileID: 21300000, guid: efa1649d202304425a34ee3c289d5d0c, type: 3}
+    - {fileID: 21300000, guid: c6fb96a16e5fc443c964948e8dcee74a, type: 3}
+    - {fileID: 21300000, guid: 7322a7d23432b43518978e15a9b7d2d3, type: 3}
+    animationSpeed: 22
+    loop: 1
+    spriteSize: {x: 450, y: 450}
+    colliderSize: {x: 150, y: 77}
+    colliderOffset: {x: -67, y: 0}
+  - fishId: armored_fish
     animationFrames:
     - {fileID: 21300000, guid: 49fa59cc4b21542fa8e1f351fbcf72f0, type: 3}
     - {fileID: 21300000, guid: a2440455b9f5c4710bade7e623beb361, type: 3}
@@ -40210,8 +40695,54 @@ MonoBehaviour:
     animationSpeed: 18
     loop: 1
     spriteSize: {x: 350, y: 350}
-    colliderSize: {x: 315, y: 70}
-    colliderOffset: {x: 0, y: 0}
+    colliderSize: {x: 175, y: 98}
+    colliderOffset: {x: -62, y: 0}
+  - fishId: angler_fish
+    animationFrames:
+    - {fileID: 21300000, guid: 464c4adbc8bbb4428aeeb7a6aeb3e960, type: 3}
+    - {fileID: 21300000, guid: dc92ed2972aac43d59e50a371bb7eb24, type: 3}
+    - {fileID: 21300000, guid: 5a52e546402b049359fc058bfe85901c, type: 3}
+    - {fileID: 21300000, guid: 9bed42ad16fe54a7389265ff265b9cce, type: 3}
+    - {fileID: 21300000, guid: 8eac1e1c8ac6f4a95bba315f6452bbd1, type: 3}
+    - {fileID: 21300000, guid: 64d9cb79394ed49968c458517af9c391, type: 3}
+    - {fileID: 21300000, guid: 4c8253d7673b742a1a610d8c9d964b2d, type: 3}
+    - {fileID: 21300000, guid: 0c1a62f6365be4680bf3787d9ec0c84f, type: 3}
+    - {fileID: 21300000, guid: a5de5422722884ee08d0126e91e71b77, type: 3}
+    - {fileID: 21300000, guid: 9a668d9e5890c4c9095c7aa0de463a0a, type: 3}
+    - {fileID: 21300000, guid: e3ca2f19b28f6422e97c4fb18ce19322, type: 3}
+    - {fileID: 21300000, guid: cd7f34cebc9e44b54ab86efade270ca4, type: 3}
+    - {fileID: 21300000, guid: 74e8c010a4dae4272a09f6dc05b02d35, type: 3}
+    - {fileID: 21300000, guid: 90be395092f374114af1081675da7e40, type: 3}
+    - {fileID: 21300000, guid: 47059c251923e440c9de1740978f58b4, type: 3}
+    - {fileID: 21300000, guid: 01b2a842dff3643abb1396f9d92b035e, type: 3}
+    - {fileID: 21300000, guid: ca001a55d4e1a48ee94a27944097ea5f, type: 3}
+    - {fileID: 21300000, guid: be65b941271de48f0953a9cd37c77cf7, type: 3}
+    - {fileID: 21300000, guid: 3d57d0d88b14d45ea950baecde93e2f3, type: 3}
+    - {fileID: 21300000, guid: 2e670492dd4474207867f83e4d962aef, type: 3}
+    - {fileID: 21300000, guid: 4c71f84dcb26d4a8d92403fafa49c478, type: 3}
+    - {fileID: 21300000, guid: 6eabf2169358e4ba99a02fb26cee0eea, type: 3}
+    - {fileID: 21300000, guid: a888b2cc4705a410eab60b23e44cea81, type: 3}
+    - {fileID: 21300000, guid: 7743a3487e3554687b01d0ff96ccf543, type: 3}
+    - {fileID: 21300000, guid: d92da5a6d2cd34734934a5cb6becfadd, type: 3}
+    - {fileID: 21300000, guid: 6bd0593e5e6174d1586d69146b67810e, type: 3}
+    - {fileID: 21300000, guid: f4abab0664d6247a0becde595a0718d2, type: 3}
+    - {fileID: 21300000, guid: 2ee5f481a90584dc3800cc42b0dad9ae, type: 3}
+    - {fileID: 21300000, guid: 3198f2e373d6246c0937f7d52e40a320, type: 3}
+    - {fileID: 21300000, guid: d0f1079c39a5041a5aa1f82e559ab5bb, type: 3}
+    - {fileID: 21300000, guid: 8f8388b5b190842dea097cfef65604b5, type: 3}
+    - {fileID: 21300000, guid: 75d17a09445084efd818a2af30c096cb, type: 3}
+    - {fileID: 21300000, guid: 334c8f7f134c94335ae2f0baf6d0a505, type: 3}
+    - {fileID: 21300000, guid: 695d7baf1467541a4975f76fae148478, type: 3}
+    - {fileID: 21300000, guid: b2acf1bae19e44283b3fc243e0273da8, type: 3}
+    - {fileID: 21300000, guid: 63685651da4a141e8b6b7fcc4a5b0323, type: 3}
+    - {fileID: 21300000, guid: db41564b889b145969a3ce2a0b473e09, type: 3}
+    - {fileID: 21300000, guid: 5415d5ae0f1144d8e970e2b07f69ce4f, type: 3}
+    - {fileID: 21300000, guid: 8b7936ddbbcca423294ab8d2c4b50fbe, type: 3}
+    animationSpeed: 30
+    loop: 1
+    spriteSize: {x: 350, y: 350}
+    colliderSize: {x: 50, y: 50}
+    colliderOffset: {x: 0, y: -5}
   - fishId: diamond_turtle
     animationFrames:
     - {fileID: 21300000, guid: bbeaef7bbf8b7440c811d7561689bfcb, type: 3}
@@ -40261,89 +40792,6 @@ MonoBehaviour:
     spriteSize: {x: 300, y: 300}
     colliderSize: {x: 90, y: 66}
     colliderOffset: {x: 0, y: 0}
-  - fishId: hammer_head
-    animationFrames:
-    - {fileID: 21300000, guid: e637d144ee23a4fca8890901690156bb, type: 3}
-    - {fileID: 21300000, guid: 4784bf374dd3b4bce92af32e54a7015e, type: 3}
-    - {fileID: 21300000, guid: 06f5ef65bc1da4c778fb4036926ca00d, type: 3}
-    - {fileID: 21300000, guid: 45865cf1bbb9f417abce32f0f21b9d07, type: 3}
-    - {fileID: 21300000, guid: acceee29eda80437db81f5c0bcc107a7, type: 3}
-    - {fileID: 21300000, guid: 3b4284a8b490d44599633832219d9ee4, type: 3}
-    - {fileID: 21300000, guid: 3440f51291a444c538462d542929c8e0, type: 3}
-    - {fileID: 21300000, guid: be901256e86e44bf98108929dfe9a1df, type: 3}
-    - {fileID: 21300000, guid: e773c1c4652744e759d3de3479024ed6, type: 3}
-    - {fileID: 21300000, guid: f5873affc4aec405cba2ec4517a80325, type: 3}
-    - {fileID: 21300000, guid: 0db706105affa4df0a8524ccb0de44a6, type: 3}
-    - {fileID: 21300000, guid: bebab6388818845c9a055c976e04f1a4, type: 3}
-    - {fileID: 21300000, guid: 1e2934bcef70f478db80fd16757d8d75, type: 3}
-    - {fileID: 21300000, guid: a4cd565c964d14fb2874f997a0464c72, type: 3}
-    - {fileID: 21300000, guid: f188f42fa101e439abe606b00e362eb8, type: 3}
-    - {fileID: 21300000, guid: db76a49ae0ab54c88b17f784db073f65, type: 3}
-    - {fileID: 21300000, guid: d11bc427d0b2c499db42f1175d052b85, type: 3}
-    - {fileID: 21300000, guid: 48e94b1fe51184b43adf42b8ddb2463c, type: 3}
-    - {fileID: 21300000, guid: 94ccf0ece849c4bee9ca4e649c526b5f, type: 3}
-    - {fileID: 21300000, guid: 25afbf63c23534a51857f57e0df18830, type: 3}
-    - {fileID: 21300000, guid: 9f519c32ec6954eaab2b0069354f2a21, type: 3}
-    - {fileID: 21300000, guid: da73cae17e2da47a5b14bf3fd1cfd371, type: 3}
-    - {fileID: 21300000, guid: 9d809e64104ed462fb4ef7db7f25a55e, type: 3}
-    - {fileID: 21300000, guid: 5b9d3b0b9478d4e23abb76123218e5ca, type: 3}
-    - {fileID: 21300000, guid: 3854802ea9289435b9faa7769a968edf, type: 3}
-    - {fileID: 21300000, guid: bf7360085c5df4fbe98e3f22bebf7a54, type: 3}
-    - {fileID: 21300000, guid: 6c1fd4768b01c4389b9f50592e9fac40, type: 3}
-    - {fileID: 21300000, guid: 307d1524ea3644c16a3d21da55115301, type: 3}
-    - {fileID: 21300000, guid: 717438bdc2bad4eea89c44772cef74b2, type: 3}
-    - {fileID: 21300000, guid: d0f5ba58633d947a9b15271779d03571, type: 3}
-    animationSpeed: 28
-    loop: 1
-    spriteSize: {x: 658, y: 367}
-    colliderSize: {x: 455, y: 78}
-    colliderOffset: {x: -49, y: 20}
-  - fishId: jelly_fish
-    animationFrames:
-    - {fileID: 21300000, guid: dab8efc6e580349d6b354126536b58e9, type: 3}
-    - {fileID: 21300000, guid: abc677976cd6747bbbaedc3ad873d224, type: 3}
-    - {fileID: 21300000, guid: 3db2d955976dd47d8981469c48254a67, type: 3}
-    - {fileID: 21300000, guid: 1a69d919eb446424e9d96deb5f4b40fa, type: 3}
-    - {fileID: 21300000, guid: f26675c08cc94411eaf5bc21a70b9521, type: 3}
-    - {fileID: 21300000, guid: 4b83f0c2d04f449f2829cda2a68b34dd, type: 3}
-    - {fileID: 21300000, guid: 877ab91ca301e4221b2774bc97a7cde3, type: 3}
-    - {fileID: 21300000, guid: fea6cd395e0004c7fa87368db0e4da80, type: 3}
-    - {fileID: 21300000, guid: 57192e094ae8d42bdbb9d04ad650ace2, type: 3}
-    - {fileID: 21300000, guid: 1677693425e994d4783e0d1e886cebb0, type: 3}
-    - {fileID: 21300000, guid: 901812ccd6c8b40218b54e45958096f7, type: 3}
-    - {fileID: 21300000, guid: c83747d43bff34ddca6cd2de552466a7, type: 3}
-    - {fileID: 21300000, guid: 6cb4856564428467a8414ac36a1c2826, type: 3}
-    - {fileID: 21300000, guid: 437a00325f64945e8887bd629f20b964, type: 3}
-    - {fileID: 21300000, guid: 923b4607f3d804eab96a007527eff5c7, type: 3}
-    - {fileID: 21300000, guid: 95b0d8296aaaf47f8a93e6f687b0e145, type: 3}
-    - {fileID: 21300000, guid: 7169058cfbaa84721a4630df82aab456, type: 3}
-    - {fileID: 21300000, guid: f9dfe33834e2942ad94cfee49d58f27e, type: 3}
-    - {fileID: 21300000, guid: 7b1ed8ac8955741469c30f1156e8c1e1, type: 3}
-    - {fileID: 21300000, guid: 4b94b630d101448aabbfacefe867373b, type: 3}
-    - {fileID: 21300000, guid: 20bfd5c4478c6491489837f3828be236, type: 3}
-    - {fileID: 21300000, guid: 364284e70e7cd4e10bfba27eb02a95b5, type: 3}
-    - {fileID: 21300000, guid: cdefdacd370554af9b94b0a03559ac6f, type: 3}
-    - {fileID: 21300000, guid: 9974c9ab89ac643caa716c0b24734cce, type: 3}
-    - {fileID: 21300000, guid: ff45b918d2ac04901a9f9799a942fc7b, type: 3}
-    - {fileID: 21300000, guid: fc034cf6fff794624918f5ec3c61f837, type: 3}
-    - {fileID: 21300000, guid: e0f951af0f5ce41adbab2800a4a9e496, type: 3}
-    - {fileID: 21300000, guid: d66d28064f3864bc2bc2086ea77b5a2f, type: 3}
-    - {fileID: 21300000, guid: 0cd9a1e48c1424c2eab4ec3f51c36319, type: 3}
-    - {fileID: 21300000, guid: 9fcc17a7f1f47413cb8a931c4f01bb35, type: 3}
-    - {fileID: 21300000, guid: 8e961500be1dc498bb6f1dd67a144228, type: 3}
-    - {fileID: 21300000, guid: 5fe2332c24bdd41258b3b330438518c0, type: 3}
-    - {fileID: 21300000, guid: 25d752e682a424fe6a5c64280f18179d, type: 3}
-    - {fileID: 21300000, guid: 50fcd5a40fefd41e0ae3174fedcbb056, type: 3}
-    - {fileID: 21300000, guid: 600b360994017448aa43e4f5afe3a8c3, type: 3}
-    - {fileID: 21300000, guid: 362e19e4d38de44c5aecf28169e91a36, type: 3}
-    - {fileID: 21300000, guid: 3d4fc2f5c190b49858f84df3e8e1a351, type: 3}
-    - {fileID: 21300000, guid: d9a65431f7c2847cbb937a40a182dc0e, type: 3}
-    - {fileID: 21300000, guid: 8a2bcfbd253db43ceb1774180ea84da9, type: 3}
-    animationSpeed: 28
-    loop: 1
-    spriteSize: {x: 274, y: 212}
-    colliderSize: {x: 145, y: 78}
-    colliderOffset: {x: -30, y: 0}
   - fishId: octopus
     animationFrames:
     - {fileID: 21300000, guid: 1cecaf4465b8b4d618e1a89aed86a87b, type: 3}
@@ -40508,43 +40956,6 @@ MonoBehaviour:
     spriteSize: {x: 360, y: 420}
     colliderSize: {x: 163, y: 56}
     colliderOffset: {x: -58, y: 0}
-  - fishId: saw_fish
-    animationFrames:
-    - {fileID: 21300000, guid: 1ad2b700b21d54dd1b0bf432eeca072c, type: 3}
-    - {fileID: 21300000, guid: 64207c6caf1574396b9a902ab8854725, type: 3}
-    - {fileID: 21300000, guid: fe95086bd515846ee9596d3543a81c85, type: 3}
-    - {fileID: 21300000, guid: ab4b966a2679d4c5cacaabfb8e2aa5e7, type: 3}
-    - {fileID: 21300000, guid: 172fd6ccbfe86483782f0e4a9cbc29dd, type: 3}
-    - {fileID: 21300000, guid: 6ffd70e711b274d0e94f3b80ab308df2, type: 3}
-    - {fileID: 21300000, guid: 0074bf0a4800f43f392a82339e9ae356, type: 3}
-    - {fileID: 21300000, guid: 761236871d65144c3a6d01102a3d8deb, type: 3}
-    - {fileID: 21300000, guid: 77d7be5794d52436c9765a76a6b3c7b0, type: 3}
-    - {fileID: 21300000, guid: d7056fc9acf824046a08cbb3fb6087c9, type: 3}
-    - {fileID: 21300000, guid: 05d4cd6f07c2e425d814e6dc3e6218f6, type: 3}
-    - {fileID: 21300000, guid: b91c05c2a528a4545888498513e6fd25, type: 3}
-    - {fileID: 21300000, guid: 99407eb9c14854987af4ef9f206077aa, type: 3}
-    - {fileID: 21300000, guid: 508e24342e9a4475c99f6e18407ef5e3, type: 3}
-    - {fileID: 21300000, guid: ff2ca332bb6794acf9b9840e575a54f9, type: 3}
-    - {fileID: 21300000, guid: 8d236d7d572644f19a4d0f7a290154be, type: 3}
-    - {fileID: 21300000, guid: 5657ef16ee48d403296e89c37e7849f6, type: 3}
-    - {fileID: 21300000, guid: b9fb4c4279a7d418dad7b4b9bc8d3c7d, type: 3}
-    - {fileID: 21300000, guid: e09a26e1e4362493cbfed0dde7b4f480, type: 3}
-    - {fileID: 21300000, guid: 0aa8d179de3ef4c5589a3d80a2c2393e, type: 3}
-    - {fileID: 21300000, guid: a24e0a513784b4b45a941c43067824d3, type: 3}
-    - {fileID: 21300000, guid: 0356a8d1968f047f58a9c8a266347390, type: 3}
-    - {fileID: 21300000, guid: 7365030df76b845318e3c384da087695, type: 3}
-    - {fileID: 21300000, guid: e41c0a52f71e44c7ea873d2d142a6c84, type: 3}
-    - {fileID: 21300000, guid: 11597d49e6845422e8830e2fbd2f815b, type: 3}
-    - {fileID: 21300000, guid: 361c0c7f56e9b4238bbd5a37120a007a, type: 3}
-    - {fileID: 21300000, guid: d8d2032fd2e4d43e5a4051afe9cc5de3, type: 3}
-    - {fileID: 21300000, guid: 7a60d15fa7798437593ceacb92f6cbe9, type: 3}
-    - {fileID: 21300000, guid: 805f84ffd21884299a0cf01abdc4ea9d, type: 3}
-    - {fileID: 21300000, guid: e579047c88fbc407fb29ade68b066c0c, type: 3}
-    animationSpeed: 18
-    loop: 1
-    spriteSize: {x: 518, y: 260}
-    colliderSize: {x: 340, y: 36}
-    colliderOffset: {x: 0, y: 23}
   - fishId: blue_electric
     animationFrames:
     - {fileID: 21300000, guid: 61409766d30ca40eeaaa261d51b7a2ad, type: 3}
@@ -40613,109 +41024,6 @@ MonoBehaviour:
     spriteSize: {x: 145, y: 121}
     colliderSize: {x: 50, y: 30}
     colliderOffset: {x: 0, y: 0}
-  - fishId: lobster
-    animationFrames:
-    - {fileID: 21300000, guid: 4347d98c05a7543f1a804cbb025baa5d, type: 3}
-    - {fileID: 21300000, guid: 1e4ac5897f97e420ab098097e1608134, type: 3}
-    - {fileID: 21300000, guid: 71d7a251979d54ebf9208bb912fd0f33, type: 3}
-    - {fileID: 21300000, guid: a00250e4a0b9047f08606967b84fac1a, type: 3}
-    - {fileID: 21300000, guid: fd6024b4985ff4c73a6e227c7420e7fd, type: 3}
-    - {fileID: 21300000, guid: 5017fa10c0f264aeeaab912fa5ce708c, type: 3}
-    - {fileID: 21300000, guid: bcc7c06e577384ea1b7aeb4e8a9f5f78, type: 3}
-    - {fileID: 21300000, guid: 5cf7b1e5d4ceb4749ab9834580b123d3, type: 3}
-    - {fileID: 21300000, guid: 98405c69af4004ffeb5b174fca06a483, type: 3}
-    - {fileID: 21300000, guid: 51bffbf9d3a95420783b33faec35299c, type: 3}
-    - {fileID: 21300000, guid: dee178c6e3a23438a800c6c7d9c3dd0d, type: 3}
-    - {fileID: 21300000, guid: 3dcff5d5aa9f445c5a577230b7675284, type: 3}
-    - {fileID: 21300000, guid: cc02d1e575b3c4487ae531dddd99a757, type: 3}
-    - {fileID: 21300000, guid: 9e9872f6e527b4456986f7e8c711f2e4, type: 3}
-    - {fileID: 21300000, guid: b3e74519b105e4c879cac66ce99f3d7e, type: 3}
-    - {fileID: 21300000, guid: 8e0bdfd5b0eae41e1a2912d8d0f305c2, type: 3}
-    - {fileID: 21300000, guid: 2e22f83ed9c7c4943abe1a8966d5b713, type: 3}
-    - {fileID: 21300000, guid: 65f503a4bda6d4b7b8776198550f36c5, type: 3}
-    - {fileID: 21300000, guid: 6c328028584f047438af1c7ff5ccd07e, type: 3}
-    - {fileID: 21300000, guid: cc1f16e6e6dcb4b00b90ce21562bc65f, type: 3}
-    - {fileID: 21300000, guid: ff6d679e69c60446ebfc9d9c99a8c910, type: 3}
-    - {fileID: 21300000, guid: aa603aa302b334c07a6d41d378eecd0c, type: 3}
-    - {fileID: 21300000, guid: ad968e73765334d43b2f588ba233f20d, type: 3}
-    - {fileID: 21300000, guid: a1ad029d8508e4a8bb2000ba65b3e345, type: 3}
-    - {fileID: 21300000, guid: a71282f48f4754ff8b3cddcb6a04d5b8, type: 3}
-    - {fileID: 21300000, guid: d2dc9441c19f04cd895cc8a8df25233e, type: 3}
-    - {fileID: 21300000, guid: 73c3a4a92dc3e47928165dd593a51fae, type: 3}
-    - {fileID: 21300000, guid: 9d858e478bc57423e9db7c02fff80de2, type: 3}
-    - {fileID: 21300000, guid: e9658e77457574e0da1597726deab647, type: 3}
-    - {fileID: 21300000, guid: 9e0c041deec9c443eb2784b26016a099, type: 3}
-    - {fileID: 21300000, guid: 7f4cc780fb29b4147aa33e01d75199b5, type: 3}
-    - {fileID: 21300000, guid: c4208044f130e42539bbb51d5d2a9930, type: 3}
-    - {fileID: 21300000, guid: f524e1c7de32f43778eef1c984c99a73, type: 3}
-    - {fileID: 21300000, guid: 8170a5ecd6bfc4338bb0378fe0761262, type: 3}
-    - {fileID: 21300000, guid: 12032dad0fa9c46f5b53360d5c5de489, type: 3}
-    - {fileID: 21300000, guid: 1f33b6e1f7fc14f358304ef4cad21827, type: 3}
-    - {fileID: 21300000, guid: d2509e05c3c5341c9969079c101dd344, type: 3}
-    - {fileID: 21300000, guid: 813ac5cc2fb304d87aa54e7fa60adffb, type: 3}
-    - {fileID: 21300000, guid: 67e70822df7e94807af3010beb0d59d2, type: 3}
-    - {fileID: 21300000, guid: 6bbe3c8b3011b4f48a6d5f4ffaa9447d, type: 3}
-    - {fileID: 21300000, guid: 483f98e409064487e88627f9a7a2cf30, type: 3}
-    - {fileID: 21300000, guid: b830acc2b3f8347a1a71ef6c057d78b6, type: 3}
-    - {fileID: 21300000, guid: a5c9d1d91da2b42d1a755bfb404772e3, type: 3}
-    - {fileID: 21300000, guid: 10ffe453a85094168a413233a5e36f94, type: 3}
-    - {fileID: 21300000, guid: b16949fdd45ab4825a5063980bf78655, type: 3}
-    - {fileID: 21300000, guid: edb77a56d066c487e8c7a7ce07ddc83c, type: 3}
-    animationSpeed: 36
-    loop: 1
-    spriteSize: {x: 275.2, y: 174.4}
-    colliderSize: {x: 90, y: 30}
-    colliderOffset: {x: 21, y: 5}
-  - fishId: pinecone
-    animationFrames:
-    - {fileID: 21300000, guid: 1715bd5b0fc5e4454bbc8fd8e15e1c82, type: 3}
-    - {fileID: 21300000, guid: 39ef531fd16b247c292daa88159e100c, type: 3}
-    - {fileID: 21300000, guid: 00d4a06ddd3424034957cf440f2e1ab2, type: 3}
-    - {fileID: 21300000, guid: f9711553859d44ddcbe79885b5ed4cbb, type: 3}
-    - {fileID: 21300000, guid: f788997907e4f4b849c7a8e646ba9482, type: 3}
-    - {fileID: 21300000, guid: 91c592d6f38a748ce85c6631677b8905, type: 3}
-    - {fileID: 21300000, guid: d75b9dd03024d42d29dd09c295f64d79, type: 3}
-    - {fileID: 21300000, guid: 9384528be097e45d0af696140b7e4a9e, type: 3}
-    - {fileID: 21300000, guid: e2b13a37f5098475e9170b9d97096911, type: 3}
-    - {fileID: 21300000, guid: 0e3669325066c4b2d95181eb80df4da5, type: 3}
-    - {fileID: 21300000, guid: 0d972b5ebae4f4d0eb8a200a8426ddc6, type: 3}
-    - {fileID: 21300000, guid: d82ce463d4b31410683baa7f256a5b96, type: 3}
-    - {fileID: 21300000, guid: 11447194a16c341cd87926488afb882e, type: 3}
-    - {fileID: 21300000, guid: 8d7e9f63c5ddd4fd6bba971950d0039c, type: 3}
-    - {fileID: 21300000, guid: 73e3ec41793fc41b5bd70dceb1cc1545, type: 3}
-    - {fileID: 21300000, guid: d00b9af08e69d4c68a0d276619ea44e5, type: 3}
-    - {fileID: 21300000, guid: 046488ce384f14690a8363376c364565, type: 3}
-    - {fileID: 21300000, guid: d38895558fd6f49af928cfa9ff325557, type: 3}
-    animationSpeed: 10
-    loop: 1
-    spriteSize: {x: 174, y: 152}
-    colliderSize: {x: 50, y: 50}
-    colliderOffset: {x: 0, y: 0}
-  - fishId: puffer_fish
-    animationFrames:
-    - {fileID: 21300000, guid: afe3bb9ceaeb049d08dcde38308ffe8a, type: 3}
-    - {fileID: 21300000, guid: 70cbb928ce7d84877863b0805b969659, type: 3}
-    - {fileID: 21300000, guid: c01142c81b00c40939b6a076fc17571f, type: 3}
-    - {fileID: 21300000, guid: 88b126985d8b8454c8077bd7365f089f, type: 3}
-    - {fileID: 21300000, guid: 0a0dd02edf6bd4db39e69f2e66af0f69, type: 3}
-    - {fileID: 21300000, guid: 83b60fbbbcc174d77b6cb68824bb298d, type: 3}
-    - {fileID: 21300000, guid: 2e8d53bc6aa434eb4a8c2b016fcb3f09, type: 3}
-    - {fileID: 21300000, guid: ba9c800be1a084177b3ba3247ef5bade, type: 3}
-    - {fileID: 21300000, guid: 33fa9f3402d214ac0bca041ff165411a, type: 3}
-    - {fileID: 21300000, guid: 6a4f79caa0914443d9370852982799c9, type: 3}
-    - {fileID: 21300000, guid: f48a05fe186b64c1d98c0cacd0b2f6d1, type: 3}
-    - {fileID: 21300000, guid: 1af0510cb95c74037b6f1cf7b8fd8ffa, type: 3}
-    - {fileID: 21300000, guid: c0977e090612f4ffa94bf7f593508300, type: 3}
-    - {fileID: 21300000, guid: 0256ae32d0b3b436c97bb9f8d88186e4, type: 3}
-    - {fileID: 21300000, guid: 913a754e35d9f43cd8de0f86cedbc707, type: 3}
-    - {fileID: 21300000, guid: 9c203bff779ee4f619d2a6b477ea5dcc, type: 3}
-    - {fileID: 21300000, guid: 6e7c210ed345540ae9c1a979a5b07158, type: 3}
-    - {fileID: 21300000, guid: f697fb85a0b744fcd90255820ba54f57, type: 3}
-    animationSpeed: 10
-    loop: 1
-    spriteSize: {x: 229.5, y: 174.6}
-    colliderSize: {x: 50, y: 50}
-    colliderOffset: {x: 0, y: -5}
   - fishId: immoTurtle
     animationFrames:
     - {fileID: 21300000, guid: 239c7409105ef43088da10a06a059dfc, type: 3}
@@ -40799,30 +41107,10 @@ MonoBehaviour:
   immortalFishPool: {fileID: 1784850969}
   jackpotFishPool: {fileID: 2097831409}
   mockFishData:
-  - fishId: immoTurtle
+  - fishId: angler_fish
     minInterval: 20000
-    pathId: some
-    FishType: 4
-  - fishId: angelfish
-    minInterval: 20000
-    pathId: some
-    FishType: 4
-  - fishId: armored
-    minInterval: 20000
-    pathId: some
-    FishType: 4
-  - fishId: diamond_turtle
-    minInterval: 20000
-    pathId: some
-    FishType: 4
-  - fishId: hammer_head
-    minInterval: 20000
-    pathId: some
-    FishType: 4
-  - fishId: jelly_fish
-    minInterval: 20000
-    pathId: some
-    FishType: 0
+    pathId: 
+    FishType: 2
 --- !u!4 &690078718
 Transform:
   m_ObjectHideFlags: 0
