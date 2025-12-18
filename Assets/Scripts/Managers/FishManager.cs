@@ -12,7 +12,9 @@ internal class FishManager : MonoBehaviour
 
   [Header("Fish pools")]
   [SerializeField] internal GenericObjectPool<NormalFish> normalFishPool;
+  [SerializeField] internal GenericObjectPool<GoldenFish> goldenFishPool;
   [SerializeField] internal GenericObjectPool<SpecialFish> specialFishPool;
+  [SerializeField] internal GenericObjectPool<EffectFish> effectFishPool;
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
 
@@ -44,7 +46,9 @@ internal class FishManager : MonoBehaviour
     switch (fish)
     {
       case NormalFish nf: normalFishPool.ReturnToPool(nf); break;
+      case GoldenFish gf: goldenFishPool.ReturnToPool(gf); break;
       case SpecialFish sf: specialFishPool.ReturnToPool(sf); break;
+      case EffectFish ef: effectFishPool.ReturnToPool(ef); break;
       case ImmortalFish im: immortalFishPool.ReturnToPool(im); break;
       case JackpotFish jf: jackpotFishPool.ReturnToPool(jf); break;
     }
@@ -56,6 +60,8 @@ internal class FishManager : MonoBehaviour
     {
       FishType.Normal => normalFishPool.GetFromPool(),
       FishType.Special => specialFishPool.GetFromPool(),
+      FishType.Golden => goldenFishPool.GetFromPool(),
+      FishType.Effect => effectFishPool.GetFromPool(),
       FishType.Immortal => immortalFishPool.GetFromPool(),
       FishType.Jackpot => jackpotFishPool.GetFromPool(),
       _ => null
@@ -98,7 +104,9 @@ internal class FishVisualData
 public enum FishType
 {
   Normal,
+  Golden,
   Special,
+  Effect,
   Immortal,
   Jackpot
 }

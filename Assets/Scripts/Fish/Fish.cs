@@ -10,6 +10,10 @@ internal class Fish : MonoBehaviour
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
   protected Tween damageTween;
+
+  [Header("Offset Settings")]
+  [SerializeField] protected float offScreenOffset = 5f; // Distance to start off-screen
+
   internal virtual void DamageAnimation() { }
 
   internal virtual void Initialize(FishData data)
@@ -73,10 +77,46 @@ internal class Fish : MonoBehaviour
       Array.Reverse(path);
     }
 
+    // Add offset starting point for specific fish (like dragon)
+    if (ShouldUseOffset(data.fishId))
+    {
+      path = AddOffset(path);
+    }
+
     transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 
     transform.position = path[0];
     MoveAlongPath(path, data.minInterval / 1000f);
+  }
+
+  protected virtual bool ShouldUseOffset(string fishId)
+  {
+    // Add fish IDs that need offset starting points
+    return fishId == "dragon";
+  }
+
+  protected Vector3[] AddOffset(Vector3[] originalPath)
+  {
+    if (originalPath.Length < 2) return originalPath;
+
+    // Calculate direction from first to second point for start offset
+    Vector3 startDirection = (originalPath[1] - originalPath[0]).normalized;
+    Vector3 startOffsetPoint = originalPath[0] - startDirection * offScreenOffset;
+
+    // Calculate direction from second-to-last to last point for end offset
+    Vector3 endDirection = (originalPath[originalPath.Length - 1] - originalPath[originalPath.Length - 2]).normalized;
+    Vector3 endOffsetPoint = originalPath[originalPath.Length - 1] + endDirection * offScreenOffset;
+
+    // Create new path with offset points at start and end
+    Vector3[] newPath = new Vector3[originalPath.Length + 2];
+    newPath[0] = startOffsetPoint;
+    for (int i = 0; i < originalPath.Length; i++)
+    {
+      newPath[i + 1] = originalPath[i];
+    }
+    newPath[newPath.Length - 1] = endOffsetPoint;
+
+    return newPath;
   }
 
   internal virtual void MoveAlongPath(Vector3[] path, float duration)
