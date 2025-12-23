@@ -3,11 +3,17 @@ using System.Collections;
 
 public class GunManager : MonoBehaviour
 {
-  [SerializeField] private BaseGun currentGun;
+  internal static GunManager Instance;
+  [SerializeField] internal BaseGun currentGun;
   [SerializeField] private RectTransform bgRect;
   [SerializeField] private Camera worldCamera;
 
-  private Coroutine firingRoutine;
+  private Coroutine bulletFiringRoutine;
+
+  void Awake()
+  {
+    Instance = this;
+  }
 
   internal void UpdateAim(Vector3 screenPos)
   {
@@ -21,29 +27,32 @@ public class GunManager : MonoBehaviour
     currentGun.UpdateAim(worldPos);
   }
 
-  internal void SetFiring(bool firing)
+  internal void SetBulletFiring(bool bulletFiring)
   {
-    if (firing)
+    if (bulletFiring)
     {
-      if (firingRoutine == null)
-        firingRoutine = StartCoroutine(FireLoop());
+      if (bulletFiringRoutine == null)
+        bulletFiringRoutine = StartCoroutine(BulletFireLoop());
     }
     else
     {
-      if (firingRoutine != null)
+      if (bulletFiringRoutine != null)
       {
-        StopCoroutine(firingRoutine);
-        firingRoutine = null;
+        StopCoroutine(bulletFiringRoutine);
+        bulletFiringRoutine = null;
       }
     }
   }
 
-  private IEnumerator FireLoop()
+  private IEnumerator BulletFireLoop()
   {
     while (true)
     {
-      currentGun.Fire();
-      yield return new WaitForSeconds(currentGun.FireInterval);
+      if(currentGun is SimpleGun)
+      {
+        currentGun.Fire();
+        yield return new WaitForSeconds(currentGun.FireInterval);
+      }
     }
   }
 }

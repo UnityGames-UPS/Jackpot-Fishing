@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectTransform))]
 internal class Fish : MonoBehaviour
 {
   internal int FishId;
@@ -10,6 +11,9 @@ internal class Fish : MonoBehaviour
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
   protected Tween damageTween;
+  internal Transform HitPoint => transform;
+
+  internal RectTransform Rect => GetComponent<RectTransform>();
 
   [Header("Offset Settings")]
   [SerializeField] protected float offScreenOffset = 5f; // Distance to start off-screen
@@ -150,5 +154,13 @@ internal class Fish : MonoBehaviour
 
     transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
     transform.localScale = Vector3.one;
+  }
+
+  internal void PlayLaserImpact()
+  {
+  }
+
+  internal void StopLaserImpact()
+  {
   }
 }

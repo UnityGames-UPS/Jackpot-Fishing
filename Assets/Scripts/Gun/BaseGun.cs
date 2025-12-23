@@ -2,14 +2,13 @@ using UnityEngine;
 
 public abstract class BaseGun : MonoBehaviour
 {
-  [Header("Common References")]
-  [SerializeField] protected Transform gunPivot;
-  [SerializeField] protected Transform muzzle;
-  [SerializeField] protected GunManager GunManager;
-  
-  [Header("Firing")]
-  [SerializeField] protected float fireRate = 6f;
-  internal float FireInterval => 1f / fireRate;
+  protected Transform muzzle;
+  internal virtual float FireInterval { get; }
+
+  internal virtual void Awake()
+  {
+    muzzle = transform.GetChild(0);
+  }
 
   internal virtual void UpdateAim(Vector3 worldPos)
   {
@@ -18,11 +17,11 @@ public abstract class BaseGun : MonoBehaviour
 
   protected void RotateGun(Vector3 worldPos)
   {
-    Vector3 dir = worldPos - gunPivot.position;
+    Vector3 dir = worldPos - transform.position;
     if (dir.sqrMagnitude < 0.001f) return;
     float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
     angle = Mathf.Clamp(angle, -90f, 90f);
-    gunPivot.rotation = Quaternion.Euler(0, 0, angle);
+    transform.rotation = Quaternion.Euler(0, 0, angle);
   }
 
   internal abstract void Fire();

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 [RequireComponent(typeof(Image))]
+[RequireComponent(typeof(RectTransform))]
 public class ImageAnimation : MonoBehaviour
 {
   public enum ImageState
@@ -11,8 +13,8 @@ public class ImageAnimation : MonoBehaviour
     PLAYING,
     PAUSED
   }
-
-  [HideInInspector] public ImageState currentAnimationState;
+  internal RectTransform rect;
+  public ImageState currentAnimationState;
   public static ImageAnimation Instance;
   public List<Sprite> textureArray;
   public Image rendererDelegate;
@@ -25,6 +27,8 @@ public class ImageAnimation : MonoBehaviour
   public float delayBetweenLoop;
   public bool PlayOnAwake = false;
 
+  public Action OnAnimationComplete;
+
   void OnValidate()
   {
     if (rendererDelegate == null)
@@ -35,10 +39,15 @@ public class ImageAnimation : MonoBehaviour
 
   private void Awake()
   {
+    rect = GetComponent<RectTransform>();
     if (Instance == null)
     {
       Instance = this;
     }
+  }
+
+  private void OnEnable()
+  {
     if (PlayOnAwake)
     {
       StartAnimation();
@@ -61,6 +70,11 @@ public class ImageAnimation : MonoBehaviour
       {
         Invoke("AnimationProcess", delayBetweenAnimation + delayBetweenLoop);
       }
+      else
+      {
+        currentAnimationState = ImageState.NONE;
+        OnAnimationComplete?.Invoke();
+      }
     }
     else
     {
@@ -70,9 +84,9 @@ public class ImageAnimation : MonoBehaviour
 
   public void StartAnimation()
   {
-    indexOfTexture = 0;
-    if (currentAnimationState == ImageState.NONE)
+    if (currentAnimationState != ImageState.PLAYING)
     {
+      indexOfTexture = 0;
       RevertToInitialState();
       delayBetweenAnimation = idealFrameRate * (float)textureArray.Count / AnimationSpeed;
       currentAnimationState = ImageState.PLAYING;
@@ -124,6 +138,7 @@ public class ImageAnimation : MonoBehaviour
 
   private void SetTextureOfIndex()
   {
+    if (textureArray.Count == 0) return;
     if (useSharedMaterial)
     {
       rendererDelegate.sprite = textureArray[indexOfTexture];

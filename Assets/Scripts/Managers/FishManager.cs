@@ -20,6 +20,8 @@ internal class FishManager : MonoBehaviour
 
   [Header("MockData")]
   [SerializeField] private List<FishData> mockFishData;
+  [SerializeField] private List<FishData> mockFishData2;
+  [SerializeField] private List<FishData> mockFishData3;
 
   private void Awake() => Instance = this;
 

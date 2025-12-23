@@ -3,8 +3,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 public class SimpleGun : BaseGun
 {
-  [SerializeField] private BulletPool bulletPool;
-
   [Header("Recoil")]
   [SerializeField] private float recoilDistance = 0.15f;
   [SerializeField] private float recoilDuration = 0.08f;
@@ -15,13 +13,18 @@ public class SimpleGun : BaseGun
   [SerializeField] private float muzzleFadeIn = 0.03f;
   [SerializeField] private float muzzleFadeOut = 0.08f;
 
+  [Header("Firing")]
+  [SerializeField] protected float fireRate = 6f;
+
+  internal override float FireInterval => 1f / fireRate;
   private Image muzzleImage;
   private Tween recoilTween;
   private Tween muzzleTween;
   private Vector3 initialLocalPos;
 
-  void Awake()
+  internal override void Awake()
   {
+    base.Awake();
     initialLocalPos = transform.localPosition;
     muzzleImage = muzzle.GetComponent<Image>();
 
@@ -33,8 +36,7 @@ public class SimpleGun : BaseGun
   {
     PlayMuzzleFlash();
     PlayRecoil();
-    BulletController bullet = bulletPool.GetFromPool();
-    bullet.InitBullet(bulletPool);
+    BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
     bullet.Fire(muzzle.up);
   }

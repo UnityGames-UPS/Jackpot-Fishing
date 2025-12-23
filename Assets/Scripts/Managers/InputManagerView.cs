@@ -5,15 +5,32 @@ public class InputManagerView : MonoBehaviour,
     IPointerDownHandler,
     IDragHandler,
     IPointerUpHandler
-    // IPointerMoveHandler
 {
   [SerializeField] private GunManager gunManager;
 
   public void OnPointerDown(PointerEventData eventData)
   {
     gunManager.UpdateAim(eventData.position);
-    gunManager.SetFiring(true);
+
+    Fish hitFish = RaycastFish(eventData.position);
+
+    if (gunManager.currentGun is LazerGun lazerGun)
+    {
+      if (hitFish != null) lazerGun.StartLaser(hitFish);
+      else lazerGun.StopLaser();
+      return;
+    }
+
+    if (gunManager.currentGun is TorpedoGun torpedoGun)
+    {
+      if (hitFish != null)
+        torpedoGun.FireTorpedo(hitFish);
+      return;
+    }
+
+    gunManager.SetBulletFiring(true);
   }
+
 
   public void OnDrag(PointerEventData eventData)
   {
@@ -22,11 +39,18 @@ public class InputManagerView : MonoBehaviour,
 
   public void OnPointerUp(PointerEventData eventData)
   {
-    gunManager.SetFiring(false);
+    if (gunManager.currentGun is not LazerGun)
+      gunManager.SetBulletFiring(false);
   }
 
-  // public void OnPointerMove(PointerEventData eventData)
-  // {
-  //   gunManager.UpdateAim(eventData.position);
-  // }
+  private Fish RaycastFish(Vector2 screenPos)
+  {
+    Ray ray = Camera.main.ScreenPointToRay(screenPos);
+    RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
+
+    if (hit.collider == null)
+      return null;
+
+    return hit.collider.GetComponent<Fish>();
+  }
 }
