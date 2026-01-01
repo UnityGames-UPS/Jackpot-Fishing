@@ -5,8 +5,10 @@ public class GunManager : MonoBehaviour
 {
   internal static GunManager Instance;
   [SerializeField] internal BaseGun currentGun;
+  [SerializeField] internal BaseGun[] Guns;
   [SerializeField] private RectTransform bgRect;
   [SerializeField] private Camera worldCamera;
+  [SerializeField] private ImageAnimation GunSwitchAnimation;
 
   private Coroutine bulletFiringRoutine;
 
@@ -48,11 +50,49 @@ public class GunManager : MonoBehaviour
   {
     while (true)
     {
-      if(currentGun is SimpleGun)
+      if (currentGun is SimpleGun)
       {
         currentGun.Fire();
         yield return new WaitForSeconds(currentGun.FireInterval);
       }
     }
+  }
+
+  private void SwitchGun(BaseGun newGun)
+  {
+    if (newGun == null || newGun == currentGun)
+      return;
+
+    SetBulletFiring(false);
+
+    if (currentGun != null)
+    {
+      if(currentGun is LazerGun)
+        currentGun.transform.parent.gameObject.SetActive(false);
+      else
+        currentGun.gameObject.SetActive(false);
+    }
+
+    GunSwitchAnimation.StartAnimation();
+    currentGun = newGun;
+
+    if(currentGun is LazerGun)
+      currentGun.transform.parent.gameObject.SetActive(true);
+    else
+      currentGun.gameObject.SetActive(true);
+  }
+
+  internal void SwitchGun<T>() where T : BaseGun
+  {
+    foreach (var gun in Guns)
+    {
+      if (gun is T)
+      {
+        SwitchGun(gun);
+        return;
+      }
+    }
+
+    Debug.LogError($"Gun of type {typeof(T)} not found");
   }
 }

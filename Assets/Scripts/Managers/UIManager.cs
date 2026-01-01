@@ -7,7 +7,6 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-
   [Header("LEFT PANEL")]
   [SerializeField] private Button LeftPanelopenbtn;
   [SerializeField] private RectTransform Leftpanel;
@@ -25,8 +24,10 @@ public class UIManager : MonoBehaviour
   [SerializeField] private RectTransform ExpandedTopPanel;
 
   [Header("Right PANEL")]
-  [SerializeField] private Button TargetLockBtn;
-  [SerializeField] private Button TorpidoBtn;
+  [SerializeField] private Button TargetLockBttn;
+  [SerializeField] private GameObject TargetLockFGAnim;
+  [SerializeField] private Button TorpedoBttn;
+  [SerializeField] private GameObject TorpedoFGAnim;
   [SerializeField] private Button AutoAimBtn;
   [SerializeField] private Button AutoSelectBtn;
 
@@ -55,8 +56,6 @@ public class UIManager : MonoBehaviour
   [SerializeField] private GameObject OptionHighlight;
   [SerializeField] private GameObject OptionPanel;
 
-
-
   [Header("info PANEL")]
   [SerializeField] private Button HNavPrev;
   [SerializeField] private Button HNavNext;
@@ -74,19 +73,15 @@ public class UIManager : MonoBehaviour
   [Header("Close PANEL Btn")]
   [SerializeField] private Button CloseHelp;
   [SerializeField] private Button CloseRooster;
-
-
   private int infoPageIndex = 0;
   private int paytablePageIndex = 0;
   private float slideDistance = 1080f;
   private Dictionary<Button, (GameObject highlight, GameObject panel)> helpMap;
-
-
   private bool isLeftPanelOpen = false;
   private bool isTopPanelOpen = false;
   private bool isHallSelectionOpen = false;
-
-
+  private bool isTargetLock = false;
+  private bool isTorpedoGun = false;
   void Start()
   {
     if (InfoBtn) InfoBtn.onClick.RemoveAllListeners();
@@ -94,7 +89,6 @@ public class UIManager : MonoBehaviour
 
     if (LeftPanelopenbtn) LeftPanelopenbtn.onClick.RemoveAllListeners();
     if (LeftPanelopenbtn) LeftPanelopenbtn.onClick.AddListener(OnClickOpenLeftpanel);
-
 
     if (TopBtn)
     {
@@ -142,15 +136,7 @@ public class UIManager : MonoBehaviour
       SoundOffBtn.onClick.AddListener(OnClickSoundOff);
     }
 
-
-
-
-
-
-
-
     // --- Help panel ---
-
     helpMap = new Dictionary<Button, (GameObject, GameObject)>()
         {
             { FeatureBtn, (FeatureHighlight, FeaturePanel) },
@@ -159,14 +145,12 @@ public class UIManager : MonoBehaviour
             { OptionBtn, (OptionHighlight, OptionPanel) }
         };
 
-
     foreach (var kvp in helpMap)
     {
       Button btn = kvp.Key;
       btn.onClick.RemoveAllListeners();
       btn.onClick.AddListener(() => OnHelpTabClicked(btn));
     }
-
 
     OnHelpTabClicked(FeatureBtn);
 
@@ -183,13 +167,7 @@ public class UIManager : MonoBehaviour
 
 
     // --- paytable panel ---
-
-
-
-
     // --- Initial states ---
-
-
     if (ExpandedRoomPanel)
     {
       ExpandedRoomPanel.localScale = new Vector3(1, 0, 1);
@@ -200,9 +178,56 @@ public class UIManager : MonoBehaviour
 
     if (ExpandedTopPanel)
       ExpandedTopPanel.anchoredPosition = new Vector2(ExpandedTopPanel.anchoredPosition.x, 200f);
+
+
+    if (TargetLockBttn)
+    {
+      TargetLockBttn.onClick.AddListener(() => OnClickGunSwitch(0));
+    }
+
+    if (TorpedoBttn)
+    {
+      TorpedoBttn.onClick.AddListener(() => OnClickGunSwitch(1));
+    }
   }
 
+  void OnClickGunSwitch(int index) //0: target lock 1: torpedo
+  {
+    switch (index)
+    {
+      case 0:
+        isTargetLock = !isTargetLock;
+        if (isTargetLock)
+          TargetLockFGAnim.SetActive(true);
+        else
+          TargetLockFGAnim.SetActive(false);
+        break;
+      case 1:
+        isTorpedoGun = !isTorpedoGun;
+        if (isTorpedoGun)
+          TorpedoFGAnim.SetActive(true);
+        else
+          TorpedoFGAnim.SetActive(false);
+        break;
+    }
 
+    if (!isTargetLock && !isTorpedoGun)
+    {
+      GunManager.Instance.SwitchGun<SimpleGun>();
+    }
+    else if (isTorpedoGun && !isTargetLock)
+    {
+      GunManager.Instance.SwitchGun<TorpedoGun>();
+    }
+    else if (!isTorpedoGun && isTargetLock)
+    {
+      GunManager.Instance.SwitchGun<LazerGun>();
+    }
+    else if (isTorpedoGun && isTargetLock)
+    {
+      GunManager.Instance.SwitchGun<TorpedoGun>();
+    }
+  }
 
   void OnClickCloseRoster()
   {
@@ -210,13 +235,12 @@ public class UIManager : MonoBehaviour
     InfoObject.SetActive(false);
     RoosterObject.SetActive(false);
     OnClickOpenLeftpanel();
-
   }
   #region LEftpanel
 
   void OnClickOpenLeftpanel()
   {
-    
+
     if (!isLeftPanelOpen)
     {
       Leftpanel.DOAnchorPosX(0f, 0.4f).SetEase(Ease.OutCubic);
@@ -372,9 +396,6 @@ public class UIManager : MonoBehaviour
     return newIndex;
   }
 
-
-
-
   #endregion
 
   // ---------------- INFO PANEL ----------------
@@ -433,4 +454,3 @@ public class UIManager : MonoBehaviour
     }
   }
 }
-

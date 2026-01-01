@@ -14,7 +14,7 @@ public class ImageAnimation : MonoBehaviour
     PAUSED
   }
   internal RectTransform rect;
-  public ImageState currentAnimationState;
+  internal ImageState currentAnimationState;
   public static ImageAnimation Instance;
   public List<Sprite> textureArray;
   public Image rendererDelegate;
