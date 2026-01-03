@@ -12,7 +12,7 @@ public class LazerGun : BaseGun
   [SerializeField] private RectTransform laserImpactAnimation;
   [SerializeField] private float impactScaleFactor = 0.8f;
 
-  private Fish lockedFish;
+  private BaseFish lockedFish;
   private RectTransform lockedFishRect;
   private bool laserActive;
 
@@ -45,7 +45,7 @@ public class LazerGun : BaseGun
     // Laser does not use fire loop
   }
 
-  internal void StartLaser(Fish fish)
+  internal void StartLaser(BaseFish fish)
   {
     if (fish == null)
       return;
@@ -129,7 +129,7 @@ public class LazerGun : BaseGun
   }
 
   private const float margin = 0.05f;
-  private bool IsFishVisible(Fish fish)
+  private bool IsFishVisible(BaseFish fish)
   {
     Vector3 viewportPos = worldCamera.WorldToViewportPoint(fish.transform.position);
     return viewportPos.z > 0 &&

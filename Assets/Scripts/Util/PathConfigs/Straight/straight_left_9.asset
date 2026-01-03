@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebd1570f9bf0a4ec892ef1c3273c7c9d, type: 3}
   m_Name: straight_left_9
   m_EditorClassIdentifier: 
-  isEnabled: 1
+  isEnabled: 0
   pathId: straight_left_9
   pattern: 0
   steps: 5

@@ -12,7 +12,7 @@ public class InputManagerView : MonoBehaviour,
   {
     gunManager.UpdateAim(eventData.position);
 
-    Fish hitFish = RaycastFish(eventData.position);
+    BaseFish hitFish = RaycastFish(eventData.position);
 
     if (gunManager.currentGun is LazerGun lazerGun)
     {
@@ -43,7 +43,7 @@ public class InputManagerView : MonoBehaviour,
       gunManager.SetBulletFiring(false);
   }
 
-  private Fish RaycastFish(Vector2 screenPos)
+  private BaseFish RaycastFish(Vector2 screenPos)
   {
     Ray ray = Camera.main.ScreenPointToRay(screenPos);
     RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
@@ -51,6 +51,6 @@ public class InputManagerView : MonoBehaviour,
     if (hit.collider == null)
       return null;
 
-    return hit.collider.GetComponent<Fish>();
+    return hit.collider.GetComponent<BaseFish>();
   }
 }

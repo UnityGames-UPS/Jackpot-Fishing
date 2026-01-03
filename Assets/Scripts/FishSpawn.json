@@ -1,0 +1,849 @@
+{
+  "success": true,
+  "id": "SpawnResult",
+  "payload": {
+    "spawnBatches": [
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416357909_3170709",
+            "type": "special",
+            "variant": "special_diamond_turtle",
+            "multiplier": 50,
+            "spawnTime": 1767416357909,
+            "lifespan": 50000,
+            "screenWeightCost": 5,
+            "hitPoints": 5,
+            "maxHitPoints": 5
+          },
+          {
+            "id": "fish_1767416357909_4770297",
+            "type": "normal",
+            "variant": "pinecone_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416357909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416357909,
+        "batchId": "batch_1767416357909_9128200"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416359909_2960475",
+            "type": "normal",
+            "variant": "pinecone_fish",
+            "multiplier": 2,
+            "spawnTime": 1767416359909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416359909_1321645",
+            "type": "normal",
+            "variant": "bluewing_fish",
+            "multiplier": 2,
+            "spawnTime": 1767416359909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416359909,
+        "batchId": "batch_1767416359909_6998861"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416361909_9186898",
+            "type": "normal",
+            "variant": "orange_fish",
+            "multiplier": 30,
+            "spawnTime": 1767416361909,
+            "lifespan": 30000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416361909_6066383",
+            "type": "normal",
+            "variant": "lobster_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416361909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416361909,
+        "batchId": "batch_1767416361909_8549134"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416363909_2464663",
+            "type": "golden",
+            "variant": "golden_clownfish",
+            "multiplier": 55,
+            "spawnTime": 1767416363909,
+            "lifespan": 55000,
+            "screenWeightCost": 3,
+            "hitPoints": 5,
+            "maxHitPoints": 5
+          },
+          {
+            "id": "fish_1767416363909_2610639",
+            "type": "normal",
+            "variant": "lion_fish",
+            "multiplier": 5,
+            "spawnTime": 1767416363909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416363909,
+        "batchId": "batch_1767416363909_9516722"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416365909_2176480",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416365909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416365909_6070466",
+            "type": "normal",
+            "variant": "hammer_head",
+            "multiplier": 5,
+            "spawnTime": 1767416365909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416365909,
+        "batchId": "batch_1767416365909_9336712"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416367909_5473727",
+            "type": "normal",
+            "variant": "bluewing_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416367909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          },
+          {
+            "id": "fish_1767416367909_5590261",
+            "type": "normal",
+            "variant": "saw_fish",
+            "multiplier": 5,
+            "spawnTime": 1767416367909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416367909,
+        "batchId": "batch_1767416367909_4336025"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416369909_2190685",
+            "type": "effect",
+            "variant": "effect_bubblecrab_fish",
+            "multiplier": 100,
+            "spawnTime": 1767416369909,
+            "lifespan": 100000,
+            "screenWeightCost": 8,
+            "hitPoints": 10,
+            "maxHitPoints": 10
+          },
+          {
+            "id": "fish_1767416369909_7043250",
+            "type": "normal",
+            "variant": "orange_fish",
+            "multiplier": 10,
+            "spawnTime": 1767416369909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416369909,
+        "batchId": "batch_1767416369909_2682310"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416371909_7703385",
+            "type": "golden",
+            "variant": "golden_wing",
+            "multiplier": 60,
+            "spawnTime": 1767416371909,
+            "lifespan": 60000,
+            "screenWeightCost": 3,
+            "hitPoints": 6,
+            "maxHitPoints": 6
+          },
+          {
+            "id": "fish_1767416371909_5409440",
+            "type": "normal",
+            "variant": "hammer_head",
+            "multiplier": 20,
+            "spawnTime": 1767416371909,
+            "lifespan": 20000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416371909,
+        "batchId": "batch_1767416371909_9397246"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416373909_9901214",
+            "type": "normal",
+            "variant": "jelly_fish",
+            "multiplier": 30,
+            "spawnTime": 1767416373909,
+            "lifespan": 30000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416373909_2225164",
+            "type": "normal",
+            "variant": "lion_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416373909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416373909,
+        "batchId": "batch_1767416373909_6420043"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416375909_6372634",
+            "type": "normal",
+            "variant": "jelly_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416375909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          },
+          {
+            "id": "fish_1767416375909_8537557",
+            "type": "normal",
+            "variant": "babyocto_fish",
+            "multiplier": 5,
+            "spawnTime": 1767416375909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416375909,
+        "batchId": "batch_1767416375909_9901424"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416377909_8569947",
+            "type": "normal",
+            "variant": "puffer_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416377909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416377909_9665369",
+            "type": "normal",
+            "variant": "puffer_fish",
+            "multiplier": 20,
+            "spawnTime": 1767416377909,
+            "lifespan": 20000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416377909,
+        "batchId": "batch_1767416377909_7971993"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416379909_2533008",
+            "type": "normal",
+            "variant": "hammer_head",
+            "multiplier": 4,
+            "spawnTime": 1767416379909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416379909_4349459",
+            "type": "normal",
+            "variant": "jelly_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416379909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416379909,
+        "batchId": "batch_1767416379909_2052267"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416381909_7464848",
+            "type": "normal",
+            "variant": "hammer_head",
+            "multiplier": 25,
+            "spawnTime": 1767416381909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          },
+          {
+            "id": "fish_1767416381909_3492506",
+            "type": "normal",
+            "variant": "puffer_fish",
+            "multiplier": 4,
+            "spawnTime": 1767416381909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416381909,
+        "batchId": "batch_1767416381909_6405264"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416383909_8891403",
+            "type": "normal",
+            "variant": "lobster_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416383909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416383909_9568578",
+            "type": "normal",
+            "variant": "puffer_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416383909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416383909,
+        "batchId": "batch_1767416383909_5249905"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416385909_9441440",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 35,
+            "spawnTime": 1767416385909,
+            "lifespan": 35000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416385909_5343804",
+            "type": "normal",
+            "variant": "pinecone_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416385909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416385909,
+        "batchId": "batch_1767416385909_3775128"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416387909_8427873",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416387909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416387909_7757981",
+            "type": "normal",
+            "variant": "jelly_fish",
+            "multiplier": 5,
+            "spawnTime": 1767416387909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416387909,
+        "batchId": "batch_1767416387909_8183359"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416389909_1391524",
+            "type": "normal",
+            "variant": "bluewing_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416389909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          },
+          {
+            "id": "fish_1767416389909_4735259",
+            "type": "normal",
+            "variant": "small_dragon_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416389909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416389909,
+        "batchId": "batch_1767416389909_4349060"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416391909_7122811",
+            "type": "golden",
+            "variant": "golden_clownfish",
+            "multiplier": 50,
+            "spawnTime": 1767416391909,
+            "lifespan": 50000,
+            "screenWeightCost": 3,
+            "hitPoints": 5,
+            "maxHitPoints": 5
+          },
+          {
+            "id": "fish_1767416391909_4868210",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416391909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416391909,
+        "batchId": "batch_1767416391909_5885468"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416393909_5201238",
+            "type": "normal",
+            "variant": "jelly_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416393909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416393909_6930683",
+            "type": "normal",
+            "variant": "saw_fish",
+            "multiplier": 30,
+            "spawnTime": 1767416393909,
+            "lifespan": 30000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          }
+        ],
+        "spawnTime": 1767416393909,
+        "batchId": "batch_1767416393909_9071245"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416395909_3972667",
+            "type": "normal",
+            "variant": "turtle_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416395909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416395909_6360941",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 5,
+            "spawnTime": 1767416395909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416395909,
+        "batchId": "batch_1767416395909_8901036"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416397909_2338283",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 6,
+            "spawnTime": 1767416397909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416397909_5902918",
+            "type": "normal",
+            "variant": "saw_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416397909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416397909,
+        "batchId": "batch_1767416397909_5925735"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416399909_5458797",
+            "type": "normal",
+            "variant": "lion_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416399909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416399909_4712138",
+            "type": "jackpot_fish",
+            "variant": "jackpot_rainbow_fish",
+            "multiplier": 500,
+            "spawnTime": 1767416399909,
+            "lifespan": 500000,
+            "screenWeightCost": 20,
+            "hitPoints": 50,
+            "maxHitPoints": 50
+          }
+        ],
+        "spawnTime": 1767416399909,
+        "batchId": "batch_1767416399909_2125190"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416401909_1205718",
+            "type": "normal",
+            "variant": "pinecone_fish",
+            "multiplier": 35,
+            "spawnTime": 1767416401909,
+            "lifespan": 35000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416401909_9828655",
+            "type": "normal",
+            "variant": "lion_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416401909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416401909,
+        "batchId": "batch_1767416401909_2924055"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416403909_5028766",
+            "type": "normal",
+            "variant": "babyocto_fish",
+            "multiplier": 30,
+            "spawnTime": 1767416403909,
+            "lifespan": 30000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416403909_5914668",
+            "type": "normal",
+            "variant": "hammer_head",
+            "multiplier": 2,
+            "spawnTime": 1767416403909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416403909,
+        "batchId": "batch_1767416403909_9890649"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416405909_6235254",
+            "type": "normal",
+            "variant": "bluewing_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416405909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416405909_5005241",
+            "type": "normal",
+            "variant": "pinecone_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416405909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416405909,
+        "batchId": "batch_1767416405909_2935769"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416407909_6892812",
+            "type": "normal",
+            "variant": "bluewing_fish",
+            "multiplier": 15,
+            "spawnTime": 1767416407909,
+            "lifespan": 15000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416407909_3378848",
+            "type": "golden",
+            "variant": "golden_clownfish",
+            "multiplier": 55,
+            "spawnTime": 1767416407909,
+            "lifespan": 55000,
+            "screenWeightCost": 3,
+            "hitPoints": 5,
+            "maxHitPoints": 5
+          }
+        ],
+        "spawnTime": 1767416407909,
+        "batchId": "batch_1767416407909_3299558"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416409909_3969231",
+            "type": "normal",
+            "variant": "orange_fish",
+            "multiplier": 12,
+            "spawnTime": 1767416409909,
+            "lifespan": 12000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          },
+          {
+            "id": "fish_1767416409909_9873361",
+            "type": "normal",
+            "variant": "orange_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416409909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416409909,
+        "batchId": "batch_1767416409909_9479220"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416411909_7605865",
+            "type": "effect",
+            "variant": "effect_rockcrab_fish",
+            "multiplier": 70,
+            "spawnTime": 1767416411909,
+            "lifespan": 70000,
+            "screenWeightCost": 8,
+            "hitPoints": 7,
+            "maxHitPoints": 7
+          },
+          {
+            "id": "fish_1767416411909_5318835",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 4,
+            "spawnTime": 1767416411909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416411909,
+        "batchId": "batch_1767416411909_7937391"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416413909_6233263",
+            "type": "golden",
+            "variant": "golden_clownfish",
+            "multiplier": 60,
+            "spawnTime": 1767416413909,
+            "lifespan": 60000,
+            "screenWeightCost": 3,
+            "hitPoints": 6,
+            "maxHitPoints": 6
+          },
+          {
+            "id": "fish_1767416413909_1917026",
+            "type": "normal",
+            "variant": "angel_fish",
+            "multiplier": 25,
+            "spawnTime": 1767416413909,
+            "lifespan": 25000,
+            "screenWeightCost": 1,
+            "hitPoints": 2,
+            "maxHitPoints": 2
+          }
+        ],
+        "spawnTime": 1767416413909,
+        "batchId": "batch_1767416413909_8538871"
+      },
+      {
+        "fishes": [
+          {
+            "id": "fish_1767416415909_8799395",
+            "type": "normal",
+            "variant": "puffer_fish",
+            "multiplier": 35,
+            "spawnTime": 1767416415909,
+            "lifespan": 35000,
+            "screenWeightCost": 1,
+            "hitPoints": 3,
+            "maxHitPoints": 3
+          },
+          {
+            "id": "fish_1767416415909_1820731",
+            "type": "normal",
+            "variant": "small_dragon_fish",
+            "multiplier": 3,
+            "spawnTime": 1767416415909,
+            "lifespan": 10000,
+            "screenWeightCost": 1,
+            "hitPoints": 1,
+            "maxHitPoints": 1
+          }
+        ],
+        "spawnTime": 1767416415909,
+        "batchId": "batch_1767416415909_7566867"
+      }
+    ],
+    "remainingTime": 60000
+  }
+}

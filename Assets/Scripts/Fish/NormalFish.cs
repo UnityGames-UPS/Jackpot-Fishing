@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-internal class NormalFish : Fish
+internal class NormalFish : BaseFish
 {
   [SerializeField] Color redColor;
   internal override void DamageAnimation()

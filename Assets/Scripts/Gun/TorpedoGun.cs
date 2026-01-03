@@ -11,7 +11,7 @@ public class TorpedoGun : BaseGun
     base.Awake();
   }
 
-  internal void FireTorpedo(Fish fish)
+  internal void FireTorpedo(BaseFish fish)
   {
     if (fish == null)
       return;

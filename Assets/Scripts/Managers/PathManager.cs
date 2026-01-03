@@ -194,7 +194,9 @@ internal class PathManager : MonoBehaviour
     foreach (var path in _generatedPaths.Values)
     {
       if (i == index)
+      {
         return path;
+      }
       i++;
     }
     return null;

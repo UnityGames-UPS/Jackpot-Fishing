@@ -1,6 +1,6 @@
 
 // JackpotFish class
-internal class JackpotFish : Fish
+internal class JackpotFish : BaseFish
 {
   internal override void Die()
   {

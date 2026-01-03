@@ -17,6 +17,7 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<EffectFish> effectFishPool;
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
+  [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
 
   [Header("MockData")]
   [SerializeField] private List<FishData> mockFishData;
@@ -29,20 +30,24 @@ internal class FishManager : MonoBehaviour
   {
     if (Input.GetKeyDown(KeyCode.Space))
     {
-      SpawnFish();
+      SpawnMockFish();
     }
   }
 
-  internal void SpawnFish()
+  internal void SpawnMockFish()
   {
     int randomIndex = UnityEngine.Random.Range(0, mockFishData.Count);
-    Fish fish = GetFishFromType(mockFishData[randomIndex].FishType);
-    if (fish == null) return;
+    BaseFish fish = GetFishFromType(mockFishData[randomIndex].FishType);
+    if (fish == null)
+    {
+      Debug.LogError("Fish Not Found! " + mockFishData[randomIndex].fishId);
+      return;
+    }
 
     fish.Initialize(mockFishData[randomIndex]);
   }
 
-  internal void DespawnFish(Fish fish)
+  internal void DespawnFish(BaseFish fish)
   {
     fish.ResetFish();
     switch (fish)
@@ -56,7 +61,7 @@ internal class FishManager : MonoBehaviour
     }
   }
 
-  private Fish GetFishFromType(FishType type)
+  private BaseFish GetFishFromType(FishType type)
   {
     return type switch
     {
@@ -65,7 +70,8 @@ internal class FishManager : MonoBehaviour
       FishType.Golden => goldenFishPool.GetFromPool(),
       FishType.Effect => effectFishPool.GetFromPool(),
       FishType.Immortal => immortalFishPool.GetFromPool(),
-      FishType.Jackpot => jackpotFishPool.GetFromPool(),
+      FishType.Jackpot_Fish => jackpotFishPool.GetFromPool(),
+      FishType.Jackpot_Dragon => jackpotDragonPool.GetFromPool(),
       _ => null
     };
   }
@@ -73,6 +79,41 @@ internal class FishManager : MonoBehaviour
   internal FishVisualData GetVisualData(string fishId)
   {
     return fishVisuals.Find(v => v.fishId == fishId);
+  }
+
+  internal FishData ToFishData(Fish backendFish)
+  {
+    return new FishData
+    {
+      fishId = backendFish.variant,              // 🔴 maps to visuals
+      FishType = ParseFishType(backendFish.type),
+      minInterval = backendFish.lifespan,        // ms → already used
+      pathId = null                              // random for now
+    };
+  }
+
+  private FishType ParseFishType(string type)
+  {
+    return type.ToLower() switch
+    {
+      "normal" => FishType.Normal,
+      "golden" => FishType.Golden,
+      "special" => FishType.Special,
+      "effect" => FishType.Effect,
+      "jackpot_fish" => FishType.Jackpot_Fish,
+      "jackpot_dragon" => FishType.Jackpot_Dragon,
+      _ => FishType.Normal
+    };
+  }
+
+  internal BaseFish SpawnFishFromBackend(FishData data)
+  {
+    BaseFish fish = GetFishFromType(data.FishType);
+    if (fish == null)
+      return null;
+
+    fish.Initialize(data);
+    return fish;
   }
 }
 
@@ -110,5 +151,6 @@ public enum FishType
   Special,
   Effect,
   Immortal,
-  Jackpot
+  Jackpot_Fish,
+  Jackpot_Dragon
 }

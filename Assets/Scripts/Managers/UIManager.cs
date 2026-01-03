@@ -240,7 +240,6 @@ public class UIManager : MonoBehaviour
 
   void OnClickOpenLeftpanel()
   {
-
     if (!isLeftPanelOpen)
     {
       Leftpanel.DOAnchorPosX(0f, 0.4f).SetEase(Ease.OutCubic);

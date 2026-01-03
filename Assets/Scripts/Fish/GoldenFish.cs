@@ -1,2 +1,2 @@
 
-internal class GoldenFish : Fish { }
+internal class GoldenFish : BaseFish { }

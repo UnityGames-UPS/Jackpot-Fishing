@@ -1,6 +1,6 @@
 
 // SpecialFish class
-internal class SpecialFish : Fish
+internal class SpecialFish : BaseFish
 {
   internal override void Die()
   {

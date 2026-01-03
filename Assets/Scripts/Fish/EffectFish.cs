@@ -1,2 +1,2 @@
-internal class EffectFish : Fish { }
+internal class EffectFish : BaseFish { }
 

@@ -1,4 +1,4 @@
-internal class ImmortalFish : Fish
+internal class ImmortalFish : BaseFish
 {
 }
 

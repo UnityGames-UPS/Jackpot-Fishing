@@ -8,7 +8,7 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
   [SerializeField] protected T PrefabToPool;
   [SerializeField] protected Transform ParentTransform;
   protected Queue<T> PoolQueue = new Queue<T>();
-  protected List<T> ItemsInUse = new List<T>();
+  [SerializeField] protected List<T> ItemsInUse = new List<T>();
 
   internal virtual void Awake() => InitializePool(InitialCount);
 

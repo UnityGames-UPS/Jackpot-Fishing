@@ -23,14 +23,14 @@ public class TorpedoBulletView : MonoBehaviour
   [SerializeField] private float backAnimSpeed = 10f;
 
   private ImageAnimation imageAnimation;
-  private Fish target;
+  private BaseFish target;
   private Vector3 startPos;
   private float totalDistance;
   private float currentSpeed;
   private bool switched;
   private float BlastScaleFactor;
 
-  internal void Init(Fish fish, float blastScaleFactor = 1f)
+  internal void Init(BaseFish fish, float blastScaleFactor = 1f)
   {
     target = fish;
     BlastScaleFactor = blastScaleFactor;
