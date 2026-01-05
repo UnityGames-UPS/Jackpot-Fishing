@@ -111,7 +111,7 @@ public class BulletView : MonoBehaviour
   void ReturnToPool()
   {
     active = false;
-    rb.velocity = Vector2.zero;
+    rb.linearVelocity = Vector2.zero;
     BulletPool.Instance.ReturnToPool(this);
   }
 

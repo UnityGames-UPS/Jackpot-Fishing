@@ -8,7 +8,7 @@ internal class FishManager : MonoBehaviour
   public static FishManager Instance;
 
   [Header("Fish Visual Definitions")]
-  [SerializeField] private List<FishVisualData> fishVisuals;
+  [SerializeField] private List<FishData> fishesData;
 
   [Header("Fish pools")]
   [SerializeField] internal GenericObjectPool<NormalFish> normalFishPool;
@@ -19,10 +19,10 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
 
-  [Header("MockData")]
-  [SerializeField] private List<FishData> mockFishData;
-  [SerializeField] private List<FishData> mockFishData2;
-  [SerializeField] private List<FishData> mockFishData3;
+  // [Header("MockData")]
+  // [SerializeField] private List<FishData> mockFishData;
+  // [SerializeField] private List<FishData> mockFishData2;
+  // [SerializeField] private List<FishData> mockFishData3;
 
   private void Awake() => Instance = this;
 
@@ -36,15 +36,16 @@ internal class FishManager : MonoBehaviour
 
   internal void SpawnMockFish()
   {
-    int randomIndex = UnityEngine.Random.Range(0, mockFishData.Count);
-    BaseFish fish = GetFishFromType(mockFishData[randomIndex].FishType);
+    int randomIndex = UnityEngine.Random.Range(0, fishesData.Count);
+    BaseFish fish = GetFishFromType(fishesData[randomIndex].fishType);
+
     if (fish == null)
     {
-      Debug.LogError("Fish Not Found! " + mockFishData[randomIndex].fishId);
+      Debug.LogError("Fish Not Found! " + fishesData[randomIndex].fishId);
       return;
     }
 
-    fish.Initialize(mockFishData[randomIndex]);
+    fish.Initialize(fishesData[randomIndex]);
   }
 
   internal void DespawnFish(BaseFish fish)
@@ -58,6 +59,7 @@ internal class FishManager : MonoBehaviour
       case EffectFish ef: effectFishPool.ReturnToPool(ef); break;
       case ImmortalFish im: immortalFishPool.ReturnToPool(im); break;
       case JackpotFish jf: jackpotFishPool.ReturnToPool(jf); break;
+      case JackpotDragon jd: jackpotDragonPool.ReturnToPool(jd); break;
     }
   }
 
@@ -76,20 +78,18 @@ internal class FishManager : MonoBehaviour
     };
   }
 
-  internal FishVisualData GetVisualData(string fishId)
-  {
-    return fishVisuals.Find(v => v.fishId == fishId);
-  }
-
   internal FishData ToFishData(Fish backendFish)
   {
-    return new FishData
+    FishData data = null;
+    fishesData.ForEach((t) =>
     {
-      fishId = backendFish.variant,              // 🔴 maps to visuals
-      FishType = ParseFishType(backendFish.type),
-      minInterval = backendFish.lifespan,        // ms → already used
-      pathId = null                              // random for now
-    };
+      if(t.fishId == backendFish.variant)
+      {
+        t.duration = backendFish.lifespan;
+        data = t;   
+      }
+    });
+    return data;
   }
 
   private FishType ParseFishType(string type)
@@ -97,9 +97,10 @@ internal class FishManager : MonoBehaviour
     return type.ToLower() switch
     {
       "normal" => FishType.Normal,
-      "golden" => FishType.Golden,
       "special" => FishType.Special,
+      "golden" => FishType.Golden,
       "effect" => FishType.Effect,
+      "immortal" => FishType.Immortal,
       "jackpot_fish" => FishType.Jackpot_Fish,
       "jackpot_dragon" => FishType.Jackpot_Dragon,
       _ => FishType.Normal
@@ -108,9 +109,13 @@ internal class FishManager : MonoBehaviour
 
   internal BaseFish SpawnFishFromBackend(FishData data)
   {
-    BaseFish fish = GetFishFromType(data.FishType);
+    BaseFish fish = GetFishFromType(data.fishType);
+
     if (fish == null)
+    {
+      Debug.LogError("Fish Not Found! " + data.fishId);
       return null;
+    }
 
     fish.Initialize(data);
     return fish;
@@ -118,22 +123,7 @@ internal class FishManager : MonoBehaviour
 }
 
 [Serializable]
-internal class FishData
-{
-  //backend sends
-  public string fishId;
-  // public string type;
-  // public string variants;
-  public int minInterval;
-  // public string direction;
-  public string pathId;
-
-  //unity references
-  public FishType FishType;
-}
-
-[Serializable]
-internal class FishVisualData
+public class FishData
 {
   public string fishId;                 // e.g. "angelfish"
   public Sprite[] animationFrames;
@@ -142,6 +132,9 @@ internal class FishVisualData
   public Vector2 spriteSize;
   public Vector2 colliderSize;
   public Vector2 colliderOffset;
+  public float laserImpactScaleFactor = 0.7f;
+  public int duration = 10000;
+  public FishType fishType = FishType.Normal;
 }
 
 public enum FishType

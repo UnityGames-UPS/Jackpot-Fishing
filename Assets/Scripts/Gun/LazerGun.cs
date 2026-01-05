@@ -10,6 +10,7 @@ public class LazerGun : BaseGun
 
   [Header("Impact")]
   [SerializeField] private RectTransform laserImpactAnimation;
+  [SerializeField] private RectTransform laserImpactBGAnimation;
   [SerializeField] private float impactScaleFactor = 0.8f;
 
   private BaseFish lockedFish;
@@ -24,6 +25,7 @@ public class LazerGun : BaseGun
 
     laserBeam.gameObject.SetActive(false);
     laserImpactAnimation.gameObject.SetActive(false);
+    laserImpactBGAnimation.gameObject.SetActive(false);
   }
 
   private void Update()
@@ -110,21 +112,24 @@ public class LazerGun : BaseGun
     size.y = screenDistance;
     laserBeam.sizeDelta = size;
 
+    laserImpactBGAnimation.position = lockedFish.HitPoint.position;
     laserImpactAnimation.position = lockedFish.HitPoint.position;
     laserBeam.position = worldStart + worldDir.normalized * (worldDistance * 0.5f);
   }
 
   private void ToggleLaserImpact(bool enable)
   {
-    if (laserImpactAnimation == null || lockedFishRect == null)
+    if (laserImpactAnimation == null || laserImpactBGAnimation == null || lockedFishRect == null)
       return;
 
     if (enable)
     {
       // Scale impact relative to fish size
+      laserImpactBGAnimation.sizeDelta = lockedFishRect.sizeDelta * lockedFish.data.laserImpactScaleFactor;
       laserImpactAnimation.sizeDelta = lockedFishRect.sizeDelta * impactScaleFactor;
     }
 
+    laserImpactBGAnimation.gameObject.SetActive(enable);
     laserImpactAnimation.gameObject.SetActive(enable);
   }
 

@@ -54,7 +54,7 @@ public class SocketIOManager : MonoBehaviour
     Application.runInBackground = true;
     DOTween.Init();
     DOTween.defaultTimeScaleIndependent = true;
-    blocker.SetActive(true);
+    // blocker.SetActive(true);
     isLoaded = false;
   }
 
@@ -72,18 +72,18 @@ public class SocketIOManager : MonoBehaviour
       {
         StopCoroutine(disconnectTimerCoroutine);
         disconnectTimerCoroutine = null;
-        Debug.Log("Disconnect timer cancelled. App regained focus.");
+        // Debug.Log("Disconnect timer cancelled. App regained focus.");
       }
     }
   }
 
   private IEnumerator DisconnectTimer()
   {
-    Debug.Log($"App lost focus. Disconnect timer started for {disconnectDelay} seconds.");
+    // Debug.Log($"App lost focus. Disconnect timer started for {disconnectDelay} seconds.");
     yield return new WaitForSeconds(disconnectDelay);
 
     Debug.Log("Disconnect timer finished. Disconnecting due to prolonged focus loss.");
-    MainGameSocket.Disconnect();
+    MainGameSocket?.Disconnect();
   }
 
   private void OpenSocket()
@@ -211,10 +211,10 @@ public class SocketIOManager : MonoBehaviour
   {
     foreach (var batch in payload.spawnBatches)
     {
-      yield return StartCoroutine(SpawnBatchSequential(batch));
+      StartCoroutine(SpawnBatchSequential(batch));
     }
 
-    // yield return new WaitForSeconds(payload.remainingTime / 1000f);
+    yield return new WaitForSeconds(20f);
 
     ReqFishSpawn();
   }
@@ -238,16 +238,18 @@ public class SocketIOManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
       FishData data = FishManager.Instance.ToFishData(backendFish);
+
+      if(data == null)
+      {
+        Debug.LogError("FishData Not Found");
+        continue; 
+      }
+
       BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data);
 
       if (fish != null)
         aliveFishes.Add(fish);
     }
-
-    // 🧠 Wait until ALL fishes from this batch are despawned
-    yield return new WaitUntil(() =>
-      aliveFishes.TrueForAll(f => f == null || !f.gameObject.activeSelf)
-    );
   }
 
 
