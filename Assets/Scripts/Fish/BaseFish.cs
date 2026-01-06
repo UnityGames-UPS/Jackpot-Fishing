@@ -3,32 +3,41 @@ using DG.Tweening;
 using UnityEngine.UI;
 using FluffyUnderware.Curvy;
 using FluffyUnderware.Curvy.Controllers;
+using System.Collections.Generic;
+using System.Collections;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(SplineController))]
+[RequireComponent(typeof(Image))]
+[RequireComponent(typeof(ImageAnimation))]
+[RequireComponent(typeof(BoxCollider2D))]
 internal class BaseFish : MonoBehaviour
 {
   [SerializeField] internal FishData data;
-  internal int FishId;
+  internal Transform HitPoint => transform.GetChild(0);
+  internal RectTransform Rect => GetComponent<RectTransform>();
+  internal string FishId;
   protected Tween movementTween;
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
   protected Tween damageTween;
-  internal Transform HitPoint => transform.GetChild(0);
-  internal RectTransform Rect => GetComponent<RectTransform>();
-
+  protected float baseSpeed;
+  protected float speedMultiplier = 1f;
   private SplineController splineController;
 
   internal virtual void DamageAnimation() { }
 
   internal virtual void Initialize(FishData data)
   {
-    this.data = data;
+    splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
     BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 
-    if (!string.IsNullOrEmpty(data.fishId))
+    this.data = data;
+    this.FishId = data.fishId;
+
+    if (!string.IsNullOrEmpty(data.variant))
     {
       if (this.data != null && imageAnimation != null)
       {
@@ -58,7 +67,7 @@ internal class BaseFish : MonoBehaviour
 
   private void SetupCurvyMovement()
   {
-    splineController = GetComponent<SplineController>();
+    splineController.PlayAutomatically = false;
 
     bool moveRightToLeft = Random.value > 0.5f;
 
@@ -78,18 +87,22 @@ internal class BaseFish : MonoBehaviour
     splineController.Clamping = CurvyClamping.Clamp;
 
     float visibleTimeSec = data.duration / 1000f;
-    float speed = spline.Length / visibleTimeSec;
-
-    splineController.Speed = speed;
-    splineController.Position = 0;
+    baseSpeed = spline.Length / visibleTimeSec;
+    ApplySpeed();
 
     FlipSprite(faceRight: !moveRightToLeft);
-
-    splineController.PlayAutomatically = true;
+    splineController.Position = 0;
 
     splineController.OnEndReached.RemoveListener(OnPathComplete);
     splineController.OnEndReached.AddListener(OnPathComplete);
+
+    splineController.PlayAutomatically = true;
     // Debug.Log($"Fish using spline {spline.name} | Dir: {(moveRightToLeft ? "RL" : "LR")}");
+  }
+
+  protected void ApplySpeed()
+  {
+    splineController.Speed = baseSpeed * speedMultiplier;
   }
 
   private void FlipSprite(bool faceRight)
@@ -99,7 +112,23 @@ internal class BaseFish : MonoBehaviour
     transform.localScale = scale;
   }
 
+  internal void SetSpeedMultiplier(float multiplier)
+  {
+    speedMultiplier = multiplier;
+    ApplySpeed();
+  }
+
   private void OnPathComplete(CurvySplineMoveEventArgs args)
+  {
+    DespawnFish();
+  }
+
+  internal virtual void Die()
+  {
+    DespawnFish();
+  }
+
+  protected void DespawnFish()
   {
     fishImage.DOFade(0, 0.2f).OnComplete(() =>
     {
@@ -107,13 +136,6 @@ internal class BaseFish : MonoBehaviour
     });
   }
 
-  internal virtual void Die()
-  {
-    fishImage.DOFade(0, 0.2f).OnComplete(() =>
-    {
-      FishManager.Instance.DespawnFish(this);
-    });
-  }
   internal virtual void ResetFish()
   {
     movementTween?.Kill();
@@ -124,7 +146,14 @@ internal class BaseFish : MonoBehaviour
 
     transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
     transform.localScale = Vector3.one;
+
+    if (splineController != null)
+      splineController.PlayAutomatically = false;
+
+    speedMultiplier = 1f;
+    ApplySpeed();
   }
+
   internal void PlayLaserImpact() { }
 
   internal void StopLaserImpact() { }

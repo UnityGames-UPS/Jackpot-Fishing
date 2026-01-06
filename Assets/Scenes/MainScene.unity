@@ -1807,7 +1807,9 @@ MonoBehaviour:
   uiManager: {fileID: 819296386}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 331ef2ec3e8940998bea0a23a90e05cb
+  testToken: 1eb9cd4154744419af2220439207e857
+  waitForFishSpawn: 3
+  aliveFishes: []
   disconnectDelay: 180
 --- !u!4 &84247399
 Transform:
@@ -4450,7 +4452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e3a0dd7a20d4ed8a5a90e1976be0db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 100
+  InitialCount: 20
   PrefabToPool: {fileID: -390706643056268409, guid: 4af5a5135437e41a694e891731866a84, type: 3}
   ParentTransform: {fileID: 2030419597}
   ItemsInUse: []
@@ -11604,8 +11606,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de6ed34ec82de4b6dad074f2164d38ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  socket: {fileID: 84247398}
   fishesData:
-  - fishId: small_dragon_fish
+  - variant: small_dragon_fish
+    fishId: small_dragon_fish
     animationFrames:
     - {fileID: 21300000, guid: 05fc624cf2046445192a34a3fe7a6a85, type: 3}
     - {fileID: 21300000, guid: fbf2f9847ce524aa7af32d48fad47760, type: 3}
@@ -11633,7 +11637,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: orange_fish
+  - variant: orange_fish
+    fishId: orange_fish
     animationFrames:
     - {fileID: 21300000, guid: 948df5dbb7ee74d30b2d6dc0053db733, type: 3}
     - {fileID: 21300000, guid: d2a8b0c847d2846baae0c76939dc45f5, type: 3}
@@ -11667,7 +11672,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: angel_fish
+  - variant: angel_fish
+    fishId: angel_fish
     animationFrames:
     - {fileID: 21300000, guid: 8200726f672eb499d9592ce1f8215db2, type: 3}
     - {fileID: 21300000, guid: 2d786c9042e714cbaafa087abc844f00, type: 3}
@@ -11699,7 +11705,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: pinecone_fish
+  - variant: pinecone_fish
+    fishId: pinecone_fish
     animationFrames:
     - {fileID: 21300000, guid: 1715bd5b0fc5e4454bbc8fd8e15e1c82, type: 3}
     - {fileID: 21300000, guid: 39ef531fd16b247c292daa88159e100c, type: 3}
@@ -11727,7 +11734,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: puffer_fish
+  - variant: puffer_fish
+    fishId: puffer_fish
     animationFrames:
     - {fileID: 21300000, guid: afe3bb9ceaeb049d08dcde38308ffe8a, type: 3}
     - {fileID: 21300000, guid: 70cbb928ce7d84877863b0805b969659, type: 3}
@@ -11755,7 +11763,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: turtle_fish
+  - variant: turtle_fish
+    fishId: turtle_fish
     animationFrames:
     - {fileID: 21300000, guid: 5c30871973ee146acb771eb8f56ae88b, type: 3}
     - {fileID: 21300000, guid: f4a9cda3e49bf49879f08aa92b23d4a2, type: 3}
@@ -11787,7 +11796,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: jelly_fish
+  - variant: jelly_fish
+    fishId: jelly_fish
     animationFrames:
     - {fileID: 21300000, guid: dab8efc6e580349d6b354126536b58e9, type: 3}
     - {fileID: 21300000, guid: abc677976cd6747bbbaedc3ad873d224, type: 3}
@@ -11836,7 +11846,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: lobster_fish
+  - variant: lobster_fish
+    fishId: lobster_fish
     animationFrames:
     - {fileID: 21300000, guid: 4347d98c05a7543f1a804cbb025baa5d, type: 3}
     - {fileID: 21300000, guid: 1e4ac5897f97e420ab098097e1608134, type: 3}
@@ -11892,7 +11903,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: lion_fish
+  - variant: lion_fish
+    fishId: lion_fish
     animationFrames:
     - {fileID: 21300000, guid: d30f43211dbc14577ba8a8d9e20e5a36, type: 3}
     - {fileID: 21300000, guid: 7c6e026257e014befa73dd7874eb4d63, type: 3}
@@ -11920,7 +11932,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: babyocto_fish
+  - variant: babyocto_fish
+    fishId: babyocto_fish
     animationFrames:
     - {fileID: 21300000, guid: 155c6f721c02a436da99677a94f86c12, type: 3}
     - {fileID: 21300000, guid: e835fcaacee3d44048f6d8ac21600897, type: 3}
@@ -11948,7 +11961,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: saw_fish
+  - variant: saw_fish
+    fishId: saw_fish
     animationFrames:
     - {fileID: 21300000, guid: 1ad2b700b21d54dd1b0bf432eeca072c, type: 3}
     - {fileID: 21300000, guid: 64207c6caf1574396b9a902ab8854725, type: 3}
@@ -11988,7 +12002,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: bluewing_fish
+  - variant: bluewing_fish
+    fishId: bluewing_fish
     animationFrames:
     - {fileID: 21300000, guid: a69c4abee435a40feaf5cea79fc9d8c4, type: 3}
     - {fileID: 21300000, guid: d1024af942adb41c9ae6a8122e05bd8d, type: 3}
@@ -12028,7 +12043,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: hammer_head
+  - variant: hammer_head
+    fishId: hammer_head
     animationFrames:
     - {fileID: 21300000, guid: e637d144ee23a4fca8890901690156bb, type: 3}
     - {fileID: 21300000, guid: 4784bf374dd3b4bce92af32e54a7015e, type: 3}
@@ -12068,7 +12084,8 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  - fishId: golden_clownfish
+  - variant: golden_clownfish
+    fishId: golden_clownfish
     animationFrames:
     - {fileID: 21300000, guid: 28feb5422ca3e4e969b63a79c7760c92, type: 3}
     - {fileID: 21300000, guid: e46a6c24daff64e8889a1610e0587d1e, type: 3}
@@ -12100,8 +12117,9 @@ MonoBehaviour:
     colliderOffset: {x: -24, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: golden_angelfish
+    fishType: 1
+  - variant: golden_angelfish
+    fishId: golden_angelfish
     animationFrames:
     - {fileID: 21300000, guid: aa61ac84bec3f4e199ff2acc43b5163d, type: 3}
     - {fileID: 21300000, guid: db0fb54032a81405293f367bff2d032c, type: 3}
@@ -12126,8 +12144,9 @@ MonoBehaviour:
     colliderOffset: {x: -24, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: golden_wing
+    fishType: 1
+  - variant: golden_wing
+    fishId: golden_wing
     animationFrames:
     - {fileID: 21300000, guid: 1841c4c9b4c044a9b8cf62f3bc223388, type: 3}
     - {fileID: 21300000, guid: a0592f6e6e2a84cde83dab53a6ab6c2e, type: 3}
@@ -12166,8 +12185,9 @@ MonoBehaviour:
     colliderOffset: {x: -67, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: special_armored_fish
+    fishType: 1
+  - variant: special_armored_fish
+    fishId: special_armored_fish
     animationFrames:
     - {fileID: 21300000, guid: 8d90fe6f964bf4f6bace8e3b691582a6, type: 3}
     - {fileID: 21300000, guid: c0b3b1d0c6d2b4a5baca4cec1a79ce49, type: 3}
@@ -12253,8 +12273,9 @@ MonoBehaviour:
     colliderOffset: {x: -62, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: special_angler_fish
+    fishType: 2
+  - variant: special_angler_fish
+    fishId: special_angler_fish
     animationFrames:
     - {fileID: 21300000, guid: 33b0f8adf52354d0a92f231f2e54b39d, type: 3}
     - {fileID: 21300000, guid: 04e99fea61aaa4a119f88a1620ca41aa, type: 3}
@@ -12338,8 +12359,9 @@ MonoBehaviour:
     colliderOffset: {x: 10, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: special_diamond_turtle
+    fishType: 2
+  - variant: special_diamond_turtle
+    fishId: special_diamond_turtle
     animationFrames:
     - {fileID: 21300000, guid: ecfe1c094e99045d3be390f97513f850, type: 3}
     - {fileID: 21300000, guid: a9df0473452e34dfbaabb9533a8e2d32, type: 3}
@@ -12431,8 +12453,9 @@ MonoBehaviour:
     colliderOffset: {x: 21, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: effect_blue_fish
+    fishType: 2
+  - variant: effect_blue_fish
+    fishId: effect_blue_fish
     animationFrames:
     - {fileID: 21300000, guid: 61409766d30ca40eeaaa261d51b7a2ad, type: 3}
     - {fileID: 21300000, guid: 7fd834465153e4f8ca37921b255342e3, type: 3}
@@ -12478,8 +12501,9 @@ MonoBehaviour:
     colliderOffset: {x: -37, y: -10}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: effect_bubblecrab_fish
+    fishType: 3
+  - variant: effect_bubblecrab_fish
+    fishId: effect_bubblecrab_fish
     animationFrames:
     - {fileID: 21300000, guid: edcbbdfcd256d4eeca19b528b2240b40, type: 3}
     - {fileID: 21300000, guid: 675825d431e824f2fa696516dbe80ac0, type: 3}
@@ -12546,8 +12570,9 @@ MonoBehaviour:
     colliderOffset: {x: 0, y: -42}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: effect_rockcrab_fish
+    fishType: 3
+  - variant: effect_rockcrab_fish
+    fishId: effect_rockcrab_fish
     animationFrames:
     - {fileID: 21300000, guid: 1f9aa69b2d7d6490c93b5bd39aa52f58, type: 3}
     - {fileID: 21300000, guid: 24c4d972a7850460d9c2fdb6e92efcda, type: 3}
@@ -12576,8 +12601,9 @@ MonoBehaviour:
     colliderOffset: {x: 0, y: -20}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: immo_squid_fish
+    fishType: 3
+  - variant: immo_squid_fish
+    fishId: immo_squid_fish
     animationFrames:
     - {fileID: 21300000, guid: 7d8ff6e91041846be847576753f8e94f, type: 3}
     - {fileID: 21300000, guid: 353029ac5d40b494aadc479a5e37a814, type: 3}
@@ -12609,9 +12635,10 @@ MonoBehaviour:
     colliderSize: {x: 433, y: 155}
     colliderOffset: {x: -50, y: 0}
     laserImpactScaleFactor: 0.7
-    duration: 10000
-    fishType: 0
-  - fishId: immo_shark_fish
+    duration: 15000
+    fishType: 4
+  - variant: immo_shark_fish
+    fishId: immo_shark_fish
     animationFrames:
     - {fileID: 21300000, guid: 01bab6890b51d4d60a9c9c07bf4f6939, type: 3}
     - {fileID: 21300000, guid: eaf21f2448fba4f53b3837ca6901cebb, type: 3}
@@ -12666,8 +12693,9 @@ MonoBehaviour:
     colliderOffset: {x: -50, y: -7}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: immo_turtle_fish
+    fishType: 4
+  - variant: immo_turtle_fish
+    fishId: immo_turtle_fish
     animationFrames:
     - {fileID: 21300000, guid: 79ec4f25b068f4b609bbc34bfedd428d, type: 3}
     - {fileID: 21300000, guid: 72654660466ac4076a25d647ffcc46b0, type: 3}
@@ -12748,8 +12776,9 @@ MonoBehaviour:
     colliderOffset: {x: 50, y: 22}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: jackpot_dragon_fish
+    fishType: 4
+  - variant: jackpot_dragon_fish
+    fishId: jackpot_dragon_fish
     animationFrames:
     - {fileID: 21300000, guid: b701513f6e607408892d747e61068f05, type: 3}
     - {fileID: 21300000, guid: c80dfe7ac5af8497796d34cdaf697341, type: 3}
@@ -12781,8 +12810,9 @@ MonoBehaviour:
     colliderOffset: {x: -46, y: 60}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
-  - fishId: jackpot_rainbow_fish
+    fishType: 6
+  - variant: jackpot_rainbow_fish
+    fishId: jackpot_rainbow_fish
     animationFrames:
     - {fileID: 21300000, guid: e4c8c48574ebb465cb6e175a40468d9f, type: 3}
     - {fileID: 21300000, guid: ed42a26d03315402ab9432c643f5025f, type: 3}
@@ -12851,7 +12881,7 @@ MonoBehaviour:
     colliderOffset: {x: -58, y: 0}
     laserImpactScaleFactor: 0.7
     duration: 10000
-    fishType: 0
+    fishType: 5
   normalFishPool: {fileID: 231023209}
   goldenFishPool: {fileID: 204897145}
   specialFishPool: {fileID: 1406830002}
@@ -20625,7 +20655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.92156863}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9411765}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -24425,7 +24455,7 @@ MonoBehaviour:
   recoilEase: 6
   muzzleFadeIn: 0.03
   muzzleFadeOut: 0.08
-  fireRate: 10
+  fireRate: 8
 --- !u!1 &1366155039
 GameObject:
   m_ObjectHideFlags: 0

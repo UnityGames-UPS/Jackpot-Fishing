@@ -107,6 +107,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568230748283576281}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -130,7 +131,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: -58, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,7 +143,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 163, y: 56}
   m_EdgeRadius: 0
 --- !u!114 &1340241751870478945
@@ -156,6 +157,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74622555e2f064907ad638d1137ff5b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data:
+    variant: 
+    fishId: 
+    animationFrames: []
+    animationSpeed: 5
+    loop: 1
+    spriteSize: {x: 0, y: 0}
+    colliderSize: {x: 0, y: 0}
+    colliderOffset: {x: 0, y: 0}
+    laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+    animationPresets: []
+    swimPhases: []
 --- !u!114 &5933832088717963670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,7 +193,7 @@ MonoBehaviour:
   m_Direction: 0
   m_Clamping: 1
   motionConstraints: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_OrientationMode: 1
   m_LockRotation: 1
   m_OrientationAxis: 0

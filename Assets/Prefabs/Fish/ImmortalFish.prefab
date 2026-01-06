@@ -192,12 +192,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dabd41fe19fd947c2bbf2eccfe64c982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishData:
-    fishId: 
-    minInterval: 0
-    pathId: 
-    FishType: 0
-  visualData:
+  data:
+    variant: 
     fishId: 
     animationFrames: []
     animationSpeed: 5
@@ -206,6 +202,10 @@ MonoBehaviour:
     colliderSize: {x: 0, y: 0}
     colliderOffset: {x: 0, y: 0}
     laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+    animationPresets: []
+    swimPhases: []
 --- !u!114 &1274565845795068339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Direction: 0
   m_Clamping: 1
   motionConstraints: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_OrientationMode: 1
   m_LockRotation: 1
   m_OrientationAxis: 0

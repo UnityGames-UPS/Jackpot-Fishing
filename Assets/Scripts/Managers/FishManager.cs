@@ -7,6 +7,8 @@ internal class FishManager : MonoBehaviour
 {
   public static FishManager Instance;
 
+  [SerializeField] private SocketIOManager socket;
+
   [Header("Fish Visual Definitions")]
   [SerializeField] private List<FishData> fishesData;
 
@@ -37,19 +39,23 @@ internal class FishManager : MonoBehaviour
   internal void SpawnMockFish()
   {
     int randomIndex = UnityEngine.Random.Range(0, fishesData.Count);
-    BaseFish fish = GetFishFromType(fishesData[randomIndex].fishType);
+    BaseFish fish = GetFishFromType(fishesData[22].fishType);
 
     if (fish == null)
     {
-      Debug.LogError("Fish Not Found! " + fishesData[randomIndex].fishId);
+      Debug.LogError("Fish Not Found! " + fishesData[randomIndex].variant);
       return;
     }
 
-    fish.Initialize(fishesData[randomIndex]);
+    fish.Initialize(fishesData[22]);
   }
 
   internal void DespawnFish(BaseFish fish)
   {
+    // Debug.Log("Called");
+    if (socket != null)
+      socket.RemoveFishFromList(fish);
+
     fish.ResetFish();
     switch (fish)
     {
@@ -83,10 +89,11 @@ internal class FishManager : MonoBehaviour
     FishData data = null;
     fishesData.ForEach((t) =>
     {
-      if(t.fishId == backendFish.variant)
+      if (t.variant == backendFish.variant)
       {
+        t.fishId = backendFish.id;
         t.duration = backendFish.lifespan;
-        data = t;   
+        data = t;
       }
     });
     return data;
@@ -113,7 +120,7 @@ internal class FishManager : MonoBehaviour
 
     if (fish == null)
     {
-      Debug.LogError("Fish Not Found! " + data.fishId);
+      Debug.LogError("Fish Not Found! " + data.variant);
       return null;
     }
 
@@ -125,7 +132,8 @@ internal class FishManager : MonoBehaviour
 [Serializable]
 public class FishData
 {
-  public string fishId;                 // e.g. "angelfish"
+  public string variant;                 // e.g. "angelfish"
+  public string fishId;
   public Sprite[] animationFrames;
   public float animationSpeed = 5f;
   public bool loop = true;

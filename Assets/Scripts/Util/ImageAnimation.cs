@@ -15,7 +15,6 @@ public class ImageAnimation : MonoBehaviour
   }
   internal RectTransform rect;
   internal ImageState currentAnimationState;
-  public static ImageAnimation Instance;
   public List<Sprite> textureArray;
   public Image rendererDelegate;
   public bool useSharedMaterial = true;
@@ -26,7 +25,6 @@ public class ImageAnimation : MonoBehaviour
   public float AnimationSpeed = 5f;
   public float delayBetweenLoop;
   public bool PlayOnAwake = false;
-
   public Action OnAnimationComplete;
 
   void OnValidate()
@@ -40,10 +38,6 @@ public class ImageAnimation : MonoBehaviour
   private void Awake()
   {
     rect = GetComponent<RectTransform>();
-    if (Instance == null)
-    {
-      Instance = this;
-    }
   }
 
   private void OnEnable()
@@ -111,14 +105,14 @@ public class ImageAnimation : MonoBehaviour
       currentAnimationState = ImageState.PLAYING;
     }
   }
-  
+
   internal void SetAnimationData(Sprite[] frames, float speed, bool loop)
   {
     textureArray = new List<Sprite>(frames);
     AnimationSpeed = speed;
     doLoopAnimation = loop;
   }
-  
+
   public void StopAnimation()
   {
     if (currentAnimationState != 0)

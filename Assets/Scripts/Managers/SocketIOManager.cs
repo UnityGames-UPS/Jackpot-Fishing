@@ -19,7 +19,9 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] protected string TestSocketURI = "https://devrealtime.dingdinghouse.com/";
   protected string SocketURI = null;
   [SerializeField] private string testToken;
-  protected string gameNamespace = "playground"; //BackendChanges
+  [SerializeField] private float waitForFishSpawn = 2f;
+  [SerializeField] private List<BaseFish> aliveFishes;
+  protected string gameNamespace = "playground";
   private bool hasEverConnected = false;
   private float lastPongTime = 0f;
   private float pingInterval = 2f;
@@ -54,6 +56,7 @@ public class SocketIOManager : MonoBehaviour
     Application.runInBackground = true;
     DOTween.Init();
     DOTween.defaultTimeScaleIndependent = true;
+    if (aliveFishes == null) aliveFishes = new List<BaseFish>();
     // blocker.SetActive(true);
     isLoaded = false;
   }
@@ -190,7 +193,7 @@ public class SocketIOManager : MonoBehaviour
 
   void ReqFishSpawn()
   {
-    Debug.Log("Spawning Fish");
+    // Debug.Log("Spawning Fish");
     RequestFishEvent obj = new();
     string json = JsonConvert.SerializeObject(obj);
     SendDataWithNamespace("request", json);
@@ -198,7 +201,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void HandleSpawnResult(Root root)
   {
-    if (root?.payload?.spawnBatches == null)
+    if (root?.payload?.fish == null)
       return;
 
     if (spawnFlowRoutine != null)
@@ -209,46 +212,42 @@ public class SocketIOManager : MonoBehaviour
 
   private IEnumerator SpawnFlow(Payload payload)
   {
-    foreach (var batch in payload.spawnBatches)
-    {
-      StartCoroutine(SpawnBatchSequential(batch));
-    }
+    StartCoroutine(SpawnFishes(payload.fish));
 
-    yield return new WaitForSeconds(20f);
+    yield return new WaitForSecondsRealtime(waitForFishSpawn);
 
     ReqFishSpawn();
   }
 
-  private IEnumerator SpawnBatchSequential(SpawnBatch batch)
+  private IEnumerator SpawnFishes(List<Fish> fishes)
   {
-    if (batch.fishes == null || batch.fishes.Count == 0)
-      yield break;
-
-    // Convert batch spawnTime to reference
-    long batchStartTime = Convert.ToInt64(batch.spawnTime);
-
-    List<BaseFish> aliveFishes = new();
-
-    foreach (var backendFish in batch.fishes)
+    if (fishes == null || fishes.Count <= 0)
     {
-      long fishSpawnTime = Convert.ToInt64(backendFish.spawnTime);
-      float delay = (fishSpawnTime - batchStartTime) / 1000f;
+      Debug.LogError("No fishes found in payload");
+      yield break;
+    }
 
-      if (delay > 0)
-        yield return new WaitForSeconds(delay);
+    List<FishData> fishesData = new();
+    fishes.ForEach((t) =>
+    {
+      FishData fishData = FishManager.Instance.ToFishData(t);
+      if (fishData == null) Debug.LogError("Fish data not found for: " + t.variant);
+      fishesData.Add(fishData);
+    });
 
-      FishData data = FishManager.Instance.ToFishData(backendFish);
+    if (fishesData.Count <= 0)
+    {
+      Debug.LogError("no fish data found in list");
+      yield break;
+    }
 
-      if(data == null)
-      {
-        Debug.LogError("FishData Not Found");
-        continue; 
-      }
+    foreach (FishData data in fishesData)
+    {
+      if (data == null)
+        continue;
 
       BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data);
-
-      if (fish != null)
-        aliveFishes.Add(fish);
+      aliveFishes.Add(fish);
     }
   }
 
@@ -395,6 +394,32 @@ public class SocketIOManager : MonoBehaviour
     JSManager.SendCustomMessage("OnExit");
 #endif
   }
+
+  internal void RemoveFishFromList(BaseFish f)
+  {
+    if (aliveFishes == null) return;
+    if (f == null) return;
+
+    BaseFish fishh=null;
+    foreach (BaseFish fish in aliveFishes)
+    {
+      if (fish == null) continue;
+
+      if (fish.FishId == f.FishId)
+      {
+        fishh = fish;
+        break; 
+      }
+    }
+
+    if(fishh == null)
+    {
+      Debug.LogWarning("Failed to find fish to remove: " + f.FishId);
+      return;
+    }
+
+    aliveFishes.Remove(fishh);
+  }
 }
 
 [Serializable]
@@ -451,25 +476,12 @@ public class Fish
   public string id;
   public string type;
   public string variant;
-  public int multiplier;
-  public object spawnTime;
   public int lifespan;
-  public int screenWeightCost;
-  public int hitPoints;
-  public int maxHitPoints;
 }
 
 [Serializable]
 public class Payload
 {
-  public List<SpawnBatch> spawnBatches;
+  public List<Fish> fish;
   public int remainingTime;
-}
-
-[Serializable]
-public class SpawnBatch
-{
-  public List<Fish> fishes;
-  public object spawnTime;
-  public string batchId;
 }
