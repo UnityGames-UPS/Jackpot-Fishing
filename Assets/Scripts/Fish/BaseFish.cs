@@ -16,26 +16,26 @@ internal class BaseFish : MonoBehaviour
   [SerializeField] internal FishData data;
   internal Transform HitPoint => transform.GetChild(0);
   internal RectTransform Rect => GetComponent<RectTransform>();
-  internal string FishId;
   protected Tween movementTween;
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
   protected Tween damageTween;
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
-  private SplineController splineController;
-
+  protected SplineController splineController;
+  protected BoxCollider2D boxCollider;
   internal virtual void DamageAnimation() { }
+  internal virtual void Die() => DespawnFish();
 
   internal virtual void Initialize(FishData data)
   {
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
-    BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+    boxCollider = GetComponent<BoxCollider2D>();
 
+    boxCollider.enabled = true;
     this.data = data;
-    this.FishId = data.fishId;
 
     if (!string.IsNullOrEmpty(data.variant))
     {
@@ -67,36 +67,34 @@ internal class BaseFish : MonoBehaviour
 
   private void SetupCurvyMovement()
   {
-    splineController.PlayAutomatically = false;
-
     bool moveRightToLeft = Random.value > 0.5f;
+    FlipSprite(faceRight: !moveRightToLeft);
 
     CurvySpline spline = CurvyPathProvider.Instance.GetRandomSpline(moveRightToLeft);
 
     if (spline == null)
     {
       Debug.LogError("Null Spline");
-      FishManager.Instance.DespawnFish(this);
+      DespawnFish();
       return;
     }
 
     splineController.Spline = spline;
+    splineController.Position = 0;
     splineController.MoveMode = CurvyController.MoveModeEnum.AbsolutePrecise;
     splineController.OrientationMode = OrientationModeEnum.Tangent;
     splineController.OrientationAxis = moveRightToLeft ? OrientationAxisEnum.Left : OrientationAxisEnum.Right;
     splineController.Clamping = CurvyClamping.Clamp;
+    splineController.PlayAutomatically = true;
 
     float visibleTimeSec = data.duration / 1000f;
     baseSpeed = spline.Length / visibleTimeSec;
     ApplySpeed();
 
-    FlipSprite(faceRight: !moveRightToLeft);
-    splineController.Position = 0;
-
     splineController.OnEndReached.RemoveListener(OnPathComplete);
     splineController.OnEndReached.AddListener(OnPathComplete);
 
-    splineController.PlayAutomatically = true;
+    splineController.Play();
     // Debug.Log($"Fish using spline {spline.name} | Dir: {(moveRightToLeft ? "RL" : "LR")}");
   }
 
@@ -123,16 +121,12 @@ internal class BaseFish : MonoBehaviour
     DespawnFish();
   }
 
-  internal virtual void Die()
-  {
-    DespawnFish();
-  }
-
   protected void DespawnFish()
   {
     fishImage.DOFade(0, 0.2f).OnComplete(() =>
     {
       FishManager.Instance.DespawnFish(this);
+      ResetFish();
     });
   }
 
@@ -148,7 +142,10 @@ internal class BaseFish : MonoBehaviour
     transform.localScale = Vector3.one;
 
     if (splineController != null)
+    {
+      splineController.Stop(); 
       splineController.PlayAutomatically = false;
+    }
 
     speedMultiplier = 1f;
     ApplySpeed();

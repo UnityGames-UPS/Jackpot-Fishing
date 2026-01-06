@@ -46,6 +46,12 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
 
   internal virtual void ReturnToPool(T item)
   {
+    if (!ItemsInUse.Contains(item))
+    {
+      Debug.LogError($"[GenericObjectPool] Trying to return an item that is not in use! {item.name}");
+      return;
+    }
+
     item.gameObject.SetActive(false);
     PoolQueue.Enqueue(item);
     ItemsInUse.Remove(item);

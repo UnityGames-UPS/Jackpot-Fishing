@@ -1,0 +1,144 @@
+{
+  "success": true,
+  "id": "SpawnResult",
+  "payload": {
+    "fish": [
+      {
+        "id": "fish_1767727381564_1707596",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 18836,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": true
+      },
+      {
+        "id": "fish_1767727381564_1480753",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 17834,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_8231873",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 16219,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_7543471",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 15171,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_1709461",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 16259,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_2798604",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 18230,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_1616017",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 18915,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_8796515",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 16821,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_6543585",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 15941,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_3046602",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 19506,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_6033230",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 18826,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_1332731",
+        "type": "normal",
+        "variant": "angel_fish",
+        "lifespan": 15217,
+        "screenWeightCost": 1,
+        "schoolId": "school_1767727381564_208744",
+        "isSchoolLeader": false
+      },
+      {
+        "id": "fish_1767727381564_6330538",
+        "type": "normal",
+        "variant": "saw_fish",
+        "lifespan": 17924,
+        "screenWeightCost": 1
+      },
+      {
+        "id": "fish_1767727381564_8040901",
+        "type": "normal",
+        "variant": "jelly_fish",
+        "lifespan": 17973,
+        "screenWeightCost": 1
+      },
+      {
+        "id": "fish_1767727381564_9560539",
+        "type": "normal",
+        "variant": "orange_fish",
+        "lifespan": 15859,
+        "screenWeightCost": 1
+      },
+      {
+        "id": "fish_1767727381564_4905811",
+        "type": "normal",
+        "variant": "orange_fish",
+        "lifespan": 19315,
+        "screenWeightCost": 1
+      }
+    ]
+  }
+}

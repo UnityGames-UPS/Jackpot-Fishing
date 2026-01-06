@@ -76,7 +76,10 @@ public class BulletView : MonoBehaviour
       HitMarkerPool.Instance.GetFromPool().Play(transform.position);
 
       if (other.TryGetComponent<NormalFish>(out var fish))
+      {
         fish.DamageAnimation();
+        SocketIOManager.Instance.SendHitEvent(fish.data.fishId, "normal", variant: fish.data.variant); //add betIndex here later
+      }
 
       ReturnToPool();
     }

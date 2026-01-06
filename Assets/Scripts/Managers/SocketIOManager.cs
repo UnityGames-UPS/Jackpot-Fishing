@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 public class SocketIOManager : MonoBehaviour
 {
+  internal static SocketIOManager Instance;
   [SerializeField] private GameObject blocker;
   [SerializeField] private UIManager uiManager;
   private SocketManager MainSocketManager;
@@ -19,7 +20,7 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] protected string TestSocketURI = "https://devrealtime.dingdinghouse.com/";
   protected string SocketURI = null;
   [SerializeField] private string testToken;
-  [SerializeField] private float waitForFishSpawn = 2f;
+  [SerializeField] private float SpawnEventInterval = 5f;
   [SerializeField] private List<BaseFish> aliveFishes;
   protected string gameNamespace = "playground";
   private bool hasEverConnected = false;
@@ -39,7 +40,7 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] private float disconnectDelay = 180f;
   private void Start()
   {
-    // OpenSocket();
+    OpenSocket();
   }
 
   void ReceiveAuthToken(string jsonData)
@@ -53,6 +54,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
+    Instance = this;
     Application.runInBackground = true;
     DOTween.Init();
     DOTween.defaultTimeScaleIndependent = true;
@@ -160,40 +162,51 @@ public class SocketIOManager : MonoBehaviour
     }
     else
     {
-      Debug.Log("Namespace used :" + gameNamespace);
+      // Debug.Log("Namespace used :" + gameNamespace);
       MainGameSocket = this.MainSocketManager.GetSocket("/" + gameNamespace);
     }
     // Set subscriptions
     MainGameSocket.On<ConnectResponse>(SocketIOEventTypes.Connect, OnConnected);
     MainGameSocket.On(SocketIOEventTypes.Disconnect, OnDisconnected); //Back2 Start
     MainGameSocket.On<Error>(SocketIOEventTypes.Error, OnError);
-    MainGameSocket.On<string>("game:init", OnListenForEvent);
-    MainGameSocket.On<string>("result", OnListenForEvent);
+    MainGameSocket.On<string>("game:init", ParseResponse);
+    MainGameSocket.On<string>("result", ParseResponse);
     MainGameSocket.On<string>("pong", OnPongReceived);
 
     MainSocketManager.Open();
   }
 
-  private void OnListenForEvent(string obj)
+  private void ParseResponse(string obj)
   {
-    Debug.Log("Event:" + obj);
+    // Debug.Log("RESP:" + obj);
     Root root = JsonConvert.DeserializeObject<Root>(obj);
 
     switch (root.id.ToLower())
     {
       case "initdata":
-        ReqFishSpawn();
+        Debug.Log("INIT: " + obj);
+        SendFishSpawnEvent();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    JSManager.SendCustomMessage("OnEnter");
+#endif
         blocker.SetActive(false);
+        SendPing();
         break;
       case "spawnresult":
+        // Debug.Log("SPAWNRESULT: " + obj);
         HandleSpawnResult(root);
+        break;
+      case "hitresult":
+        Debug.Log("HITRESULT: " + obj);
+        HandleHitResult(root.payload);
         break;
     }
   }
 
-  void ReqFishSpawn()
+  void SendFishSpawnEvent()
   {
-    // Debug.Log("Spawning Fish");
+    // Debug.Log("Sending Spawn Fish Req");
     RequestFishEvent obj = new();
     string json = JsonConvert.SerializeObject(obj);
     SendDataWithNamespace("request", json);
@@ -214,9 +227,9 @@ public class SocketIOManager : MonoBehaviour
   {
     StartCoroutine(SpawnFishes(payload.fish));
 
-    yield return new WaitForSecondsRealtime(waitForFishSpawn);
+    yield return new WaitForSecondsRealtime(SpawnEventInterval);
 
-    ReqFishSpawn();
+    SendFishSpawnEvent();
   }
 
   private IEnumerator SpawnFishes(List<Fish> fishes)
@@ -251,6 +264,32 @@ public class SocketIOManager : MonoBehaviour
     }
   }
 
+  internal void SendHitEvent(string FishId, string WeaponType, int BetIndex = 0, string variant = "")
+  {
+    HitEvent obj = new()
+    {
+      payload = new()
+      {
+        betIndex = BetIndex,
+        fishId = FishId,
+        weaponType = WeaponType
+      }
+    };
+    Debug.Log("HIT:" + variant);
+    SendDataWithNamespace("request", JsonConvert.SerializeObject(obj));
+  }
+
+  void HandleHitResult(Payload HitResult)
+  {
+    if (HitResult.fishKilled != null)
+    {
+      BaseFish fish = aliveFishes.Find(x => x.data.fishId == HitResult.fishKilled.id);
+      if (fish is NormalFish normalFish)
+      {
+        fish.Die();
+      }
+    }
+  }
 
   // Connected event handler implementation
   void OnConnected(ConnectResponse resp)
@@ -266,7 +305,6 @@ public class SocketIOManager : MonoBehaviour
     waitingForPong = false;
     missedPongs = 0;
     lastPongTime = Time.time;
-    SendPing();
   }
 
   private void OnError(Error err)
@@ -355,7 +393,7 @@ public class SocketIOManager : MonoBehaviour
       if (json != null)
       {
         MainGameSocket.Emit(eventName, json);
-        Debug.Log("JSON data sent: " + json);
+        // Debug.Log("JSON data sent: " + json);
       }
       else
       {
@@ -400,21 +438,21 @@ public class SocketIOManager : MonoBehaviour
     if (aliveFishes == null) return;
     if (f == null) return;
 
-    BaseFish fishh=null;
+    BaseFish fishh = null;
     foreach (BaseFish fish in aliveFishes)
     {
       if (fish == null) continue;
 
-      if (fish.FishId == f.FishId)
+      if (fish.data.fishId == f.data.fishId)
       {
         fishh = fish;
-        break; 
+        break;
       }
     }
 
-    if(fishh == null)
+    if (fishh == null)
     {
-      Debug.LogWarning("Failed to find fish to remove: " + f.FishId);
+      Debug.LogWarning("Failed to find fish to remove: " + f.data.fishId);
       return;
     }
 
@@ -484,4 +522,40 @@ public class Payload
 {
   public List<Fish> fish;
   public int remainingTime;
+
+
+  //HitResult
+  public int winAmount;
+  public object electricCharge;
+  public FishKilled fishKilled;
+}
+
+[Serializable]
+public class FishKilled
+{
+  public string id;
+  public string type;
+  public string variant;
+  public int multiplier;
+  public long spawnTime;
+  public int lifespan;
+  public int screenWeightCost;
+  public int hitPoints;
+  public int maxHitPoints;
+}
+
+[Serializable]
+public class HitPayload
+{
+  public int betIndex = 0;
+  public string fishId;
+  public string weaponType;
+}
+
+
+[Serializable]
+public class HitEvent
+{
+  public string type = "HIT";
+  public HitPayload payload;
 }

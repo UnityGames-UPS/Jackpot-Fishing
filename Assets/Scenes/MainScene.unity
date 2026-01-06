@@ -1807,8 +1807,8 @@ MonoBehaviour:
   uiManager: {fileID: 819296386}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 1eb9cd4154744419af2220439207e857
-  waitForFishSpawn: 3
+  testToken: f91bf3693bbd4f31a04498f13809513d
+  SpawnEventInterval: 5
   aliveFishes: []
   disconnectDelay: 180
 --- !u!4 &84247399
@@ -11606,7 +11606,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de6ed34ec82de4b6dad074f2164d38ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  socket: {fileID: 84247398}
   fishesData:
   - variant: small_dragon_fish
     fishId: small_dragon_fish

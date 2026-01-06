@@ -5,9 +5,7 @@ using UnityEngine;
 
 internal class FishManager : MonoBehaviour
 {
-  public static FishManager Instance;
-
-  [SerializeField] private SocketIOManager socket;
+  internal static FishManager Instance;
 
   [Header("Fish Visual Definitions")]
   [SerializeField] private List<FishData> fishesData;
@@ -20,11 +18,6 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
-
-  // [Header("MockData")]
-  // [SerializeField] private List<FishData> mockFishData;
-  // [SerializeField] private List<FishData> mockFishData2;
-  // [SerializeField] private List<FishData> mockFishData3;
 
   private void Awake() => Instance = this;
 
@@ -53,10 +46,8 @@ internal class FishManager : MonoBehaviour
   internal void DespawnFish(BaseFish fish)
   {
     // Debug.Log("Called");
-    if (socket != null)
-      socket.RemoveFishFromList(fish);
+    SocketIOManager.Instance?.RemoveFishFromList(fish);
 
-    fish.ResetFish();
     switch (fish)
     {
       case NormalFish nf: normalFishPool.ReturnToPool(nf); break;
@@ -86,18 +77,30 @@ internal class FishManager : MonoBehaviour
 
   internal FishData ToFishData(Fish backendFish)
   {
-    FishData data = null;
-    fishesData.ForEach((t) =>
+    var baseData = fishesData.Find(t => t.variant == backendFish.variant);
+    if (baseData == null)
+      return null;
+
+    FishData runtimeData = new FishData
     {
-      if (t.variant == backendFish.variant)
-      {
-        t.fishId = backendFish.id;
-        t.duration = backendFish.lifespan;
-        data = t;
-      }
-    });
-    return data;
+      variant = baseData.variant,
+      animationFrames = baseData.animationFrames,
+      animationSpeed = baseData.animationSpeed,
+      loop = baseData.loop,
+      spriteSize = baseData.spriteSize,
+      colliderSize = baseData.colliderSize,
+      colliderOffset = baseData.colliderOffset,
+      laserImpactScaleFactor = baseData.laserImpactScaleFactor,
+      fishType = baseData.fishType,
+
+      // backend-specific
+      fishId = backendFish.id,
+      duration = backendFish.lifespan
+    };
+
+    return runtimeData;
   }
+
 
   private FishType ParseFishType(string type)
   {
