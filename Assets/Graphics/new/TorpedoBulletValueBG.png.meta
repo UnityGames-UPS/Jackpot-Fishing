@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e1c5b195c81be4d29845feb56120f70f
+guid: 124b3eed106464bdca495e03f71065ec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6323223751117134394
-    second: TorpedoBulletValueBG_0
+      213: -8335255461950273907
+    second: TorpedoBulletValueBG1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TorpedoBulletValueBG_0
+      name: TorpedoBulletValueBG1_0
       rect:
         serializedVersion: 2
         x: 8
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6c5a95f00856f38a0800000000000000
-      internalID: -6323223751117134394
+      spriteID: d86c156c159335c80800000000000000
+      internalID: -8335255461950273907
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      TorpedoBulletValueBG_0: -6323223751117134394
+      TorpedoBulletValueBG1_0: -8335255461950273907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
