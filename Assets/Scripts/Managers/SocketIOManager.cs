@@ -13,7 +13,6 @@ public class SocketIOManager : MonoBehaviour
 {
   internal static SocketIOManager Instance;
   [SerializeField] private GameObject blocker;
-  [SerializeField] private UIManager uiManager;
   private SocketManager MainSocketManager;
   private Socket MainGameSocket;
   [SerializeField] internal JSFunctCalls JSManager;
@@ -22,6 +21,8 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] private string testToken;
   [SerializeField] private float SpawnEventInterval = 5f;
   [SerializeField] private List<BaseFish> aliveFishes;
+  [SerializeField] internal List<int> bets = new();
+  [SerializeField] internal List<float> GunCosts = new() { 1, 1, 6 }; //1: normal 2: torpedo 3: electric
   protected string gameNamespace = "playground";
   private bool hasEverConnected = false;
   private float lastPongTime = 0f;
@@ -38,6 +39,26 @@ public class SocketIOManager : MonoBehaviour
   private Coroutine disconnectTimerCoroutine;
   private Coroutine spawnFlowRoutine;
   [SerializeField] private float disconnectDelay = 180f;
+
+  private void LateUpdate()
+  {
+    if (aliveFishes.Count == 0)
+      return;
+
+    for (int i = aliveFishes.Count - 1; i >= 0; i--)
+    {
+      var fish = aliveFishes[i];
+
+      if (fish == null ||
+          fish.data == null ||
+          !fish.gameObject.activeInHierarchy)
+      {
+        aliveFishes.RemoveAt(i);
+      }
+    }
+  }
+
+
   private void Start()
   {
     OpenSocket();
@@ -181,20 +202,28 @@ public class SocketIOManager : MonoBehaviour
     // Debug.Log("RESP:" + obj);
     Root root = JsonConvert.DeserializeObject<Root>(obj);
 
+    if (root.player != null && root.player.balance != 0)
+    {
+      UIManager.Instance?.UpdateBalance(root.player.balance);
+    }
+
     switch (root.id.ToLower())
     {
       case "initdata":
         Debug.Log("INIT: " + obj);
-        SendFishSpawnEvent();
+        bets = root.gameData.bets;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnEnter");
 #endif
         blocker.SetActive(false);
+        SendFishSpawnEvent();
         SendPing();
+
+        UIManager.Instance.HandeGameInit();
         break;
       case "spawnresult":
-        // Debug.Log("SPAWNRESULT: " + obj);
+        Debug.Log("SPAWNRESULT: " + obj);
         HandleSpawnResult(root);
         break;
       case "hitresult":
@@ -254,23 +283,26 @@ public class SocketIOManager : MonoBehaviour
       yield break;
     }
 
+    SpawnBatchContext context = new SpawnBatchContext
+    {
+      moveRightToLeft = UnityEngine.Random.value > 0.5f,
+      usePathSet = UnityEngine.Random.value > 0.25f   // ← your new requirement
+    };
+
     foreach (FishData data in fishesData)
     {
-      if (data == null)
-        continue;
-
-      BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data);
+      BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data, context);
       aliveFishes.Add(fish);
     }
   }
 
-  internal void SendHitEvent(string FishId, string WeaponType, int BetIndex = 0, string variant = "")
+  internal void SendHitEvent(string FishId, string WeaponType, string variant = "")
   {
     HitEvent obj = new()
     {
       payload = new()
       {
-        betIndex = BetIndex,
+        betIndex = UIManager.Instance.BetCounter,
         fishId = FishId,
         weaponType = WeaponType
       }
@@ -286,7 +318,7 @@ public class SocketIOManager : MonoBehaviour
       BaseFish fish = aliveFishes.Find(x => x.data.fishId == HitResult.fishKilled.id);
       if (fish is NormalFish normalFish)
       {
-        fish.Die();
+        normalFish.Die();
       }
     }
   }
@@ -495,7 +527,7 @@ public class JackpotValues
 [Serializable]
 public class Player
 {
-  public double balance;
+  public float balance;
 }
 
 [Serializable]

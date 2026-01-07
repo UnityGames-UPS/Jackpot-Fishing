@@ -39,6 +39,7 @@ public class SimpleGun : BaseGun
     BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
     bullet.Fire(muzzle.up);
+    DeductBalance();
   }
 
   void PlayRecoil()
@@ -67,5 +68,15 @@ public class SimpleGun : BaseGun
     muzzleTween = DOTween.Sequence()
         .Append(muzzleImage.DOFade(0.7f, muzzleFadeIn))
         .Append(muzzleImage.DOFade(0f, muzzleFadeOut));
+  }
+
+
+  void DeductBalance()
+  {
+    float gunCost = UIManager.Instance?.currentBet * SocketIOManager.Instance?.GunCosts[0] ?? 0;
+    float newBalance = UIManager.Instance?.currentBalance - gunCost ?? 0;
+    // Debug.Log(UIManager.Instance?.currentBet + " " + SocketIOManager.Instance?.GunCosts[0]);
+    // Debug.Log(newBalance);
+    UIManager.Instance.UpdateBalance(newBalance);
   }
 }

@@ -2,10 +2,10 @@
 // JackpotFish class
 internal class JackpotFish : BaseFish
 {
-  internal override void Die()
+  internal override void Initialize(FishData data)
   {
-    base.Die();
-    // trigger jackpot animation
+    base.Initialize(data);
+    SetupFallbackMovement();
   }
 }
 

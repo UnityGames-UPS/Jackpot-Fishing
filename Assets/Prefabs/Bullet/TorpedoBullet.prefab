@@ -91,7 +91,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4df924dfe59f94e2cb1e3ce9c145b279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAnimationState: 0
   textureArray: []
   rendererDelegate: {fileID: 8238563344673719371}
   useSharedMaterial: 1
@@ -107,6 +106,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8461353090451537557}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -130,7 +130,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 30}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,12 +142,11 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 63, y: 142}
   m_EdgeRadius: 0
 --- !u!50 &2315286732395201225
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -157,8 +157,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
+  m_LinearDamping: 0
+  m_AngularDamping: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -183,12 +183,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e4ac359bd87478b941841472955e0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 6
-  boostSpeed: 12
-  hitDistance: 0.1
-  switchPercent: 0.6
+  hitDistance: 0.01
+  phase1Duration: 0.5
+  phase2Duration: 0.2
+  rotationSpeed: 720
   pulseAmount: 0.8
-  imageAnimation: {fileID: 5971062978638595805}
   sideAnim:
   - {fileID: 21300000, guid: b43e274c04fe946f6a338d5fd1bd87ae, type: 3}
   - {fileID: 21300000, guid: 72c3fce585b9b4f799a50559f3478e15, type: 3}
@@ -251,3 +250,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fdbfc8ccf547e4009a29e0d0eea12ec4, type: 3}
   sideAnimSpeed: 19
   backAnimSpeed: 19
+  phase1Percent: 0.5
+  minPhase1Distance: 0.4
+  maxPhase1Distance: 5

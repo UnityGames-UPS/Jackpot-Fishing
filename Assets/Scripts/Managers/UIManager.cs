@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -7,6 +8,16 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+  internal static UIManager Instance;
+
+  [Header("Gun Panel")]
+  [SerializeField] private TMP_Text BalanceText;
+  [SerializeField] private TMP_Text TotalBetText;
+  [SerializeField] private Button PlusBetButton;
+  [SerializeField] private Button MinusBetButton;
+  internal int currentBet;
+  internal float currentBalance;
+
   [Header("LEFT PANEL")]
   [SerializeField] private Button LeftPanelopenbtn;
   [SerializeField] private RectTransform Leftpanel;
@@ -28,6 +39,9 @@ public class UIManager : MonoBehaviour
   [SerializeField] private GameObject TargetLockFGAnim;
   [SerializeField] private Button TorpedoBttn;
   [SerializeField] private GameObject TorpedoFGAnim;
+  [SerializeField] private GameObject TorpedoText;
+  [SerializeField] private GameObject TorpedoBulletValueGO;
+  [SerializeField] private TMP_Text TorpedoBulletValueText;
   [SerializeField] private Button AutoAimBtn;
   [SerializeField] private Button AutoSelectBtn;
 
@@ -62,8 +76,6 @@ public class UIManager : MonoBehaviour
   [SerializeField] private TMP_Text pageCount;
   [SerializeField] private List<GameObject> InfoPages;
 
-
-
   [Header("paytable PANEL")]
   [SerializeField] private Button INavPrev;
   [SerializeField] private Button INavNext;
@@ -82,6 +94,14 @@ public class UIManager : MonoBehaviour
   private bool isHallSelectionOpen = false;
   private bool isTargetLock = false;
   private bool isTorpedoGun = false;
+  private Tween balanceTween;
+  internal int BetCounter = 0;
+
+  void Awake()
+  {
+    Instance = this;
+  }
+
   void Start()
   {
     if (InfoBtn) InfoBtn.onClick.RemoveAllListeners();
@@ -189,6 +209,77 @@ public class UIManager : MonoBehaviour
     {
       TorpedoBttn.onClick.AddListener(() => OnClickGunSwitch(1));
     }
+
+    if (PlusBetButton)
+    {
+      PlusBetButton.onClick.RemoveAllListeners();
+      PlusBetButton.onClick.AddListener(() => ChangeBet(true));
+    }
+
+    if (MinusBetButton)
+    {
+      MinusBetButton.onClick.RemoveAllListeners();
+      MinusBetButton.onClick.AddListener(() => ChangeBet(false));
+    }
+  }
+
+  internal void HandeGameInit()
+  {
+    SetBetText();
+    SetTorpedoBulletValue();
+  }
+
+  void ChangeBet(bool IncDec)
+  {
+    if (IncDec)
+    {
+      BetCounter++;
+      if (BetCounter >= SocketIOManager.Instance?.bets.Count)
+      {
+        BetCounter = 0; // Loop back to the first bet
+      }
+    }
+    else
+    {
+      BetCounter--;
+      if (BetCounter < 0)
+      {
+        BetCounter = SocketIOManager.Instance?.bets.Count - 1 ?? 0; // Loop to the last bet
+      }
+    }
+    SetBetText();
+    SetTorpedoBulletValue();
+  }
+
+  void SetBetText()
+  {
+    currentBet = SocketIOManager.Instance?.bets[BetCounter] ?? 0;
+    if (TotalBetText) TotalBetText.text = currentBet.ToString();
+  }
+
+  void SetTorpedoBulletValue()
+  {
+    float torpedoBulletValue = SocketIOManager.Instance?.bets[BetCounter] * SocketIOManager.Instance?.GunCosts[1] ?? 0;
+    TorpedoBulletValueText.text = torpedoBulletValue.ToString();
+  }
+
+  internal void UpdateBalance(float bal)
+  {
+    if (currentBalance != bal)
+    {
+      float UiBalance = currentBalance;
+      balanceTween?.Kill();
+      balanceTween = DOTween.To(() => UiBalance, (val) => UiBalance = val, bal, 0.1f).OnUpdate(() =>
+      {
+        SetBalanceText(UiBalance);
+      });
+      currentBalance = bal;
+    }
+  }
+
+  void SetBalanceText(float val)
+  {
+    if (BalanceText) BalanceText.text = val.ToString("N2");
   }
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo
@@ -205,9 +296,17 @@ public class UIManager : MonoBehaviour
       case 1:
         isTorpedoGun = !isTorpedoGun;
         if (isTorpedoGun)
+        {
           TorpedoFGAnim.SetActive(true);
+          TorpedoText.SetActive(false);
+          TorpedoBulletValueGO.SetActive(true);
+        }
         else
+        {
           TorpedoFGAnim.SetActive(false);
+          TorpedoText.SetActive(true);
+          TorpedoBulletValueGO.SetActive(false);
+        }
         break;
     }
 

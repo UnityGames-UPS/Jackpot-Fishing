@@ -21,27 +21,27 @@ internal class FishManager : MonoBehaviour
 
   private void Awake() => Instance = this;
 
-  void Update()
-  {
-    if (Input.GetKeyDown(KeyCode.Space))
-    {
-      SpawnMockFish();
-    }
-  }
+  // void Update()
+  // {
+  //   if (Input.GetKeyDown(KeyCode.Space))
+  //   {
+  //     SpawnMockFish();
+  //   }
+  // }
 
-  internal void SpawnMockFish()
-  {
-    int randomIndex = UnityEngine.Random.Range(0, fishesData.Count);
-    BaseFish fish = GetFishFromType(fishesData[22].fishType);
+  // internal void SpawnMockFish()
+  // {
+  //   int randomIndex = UnityEngine.Random.Range(0, fishesData.Count);
+  //   BaseFish fish = GetFishFromType(fishesData[22].fishType);
 
-    if (fish == null)
-    {
-      Debug.LogError("Fish Not Found! " + fishesData[randomIndex].variant);
-      return;
-    }
+  //   if (fish == null)
+  //   {
+  //     Debug.LogError("Fish Not Found! " + fishesData[randomIndex].variant);
+  //     return;
+  //   }
 
-    fish.Initialize(fishesData[22]);
-  }
+  //   fish.Initialize(fishesData[22]);
+  // }
 
   internal void DespawnFish(BaseFish fish)
   {
@@ -117,7 +117,7 @@ internal class FishManager : MonoBehaviour
     };
   }
 
-  internal BaseFish SpawnFishFromBackend(FishData data)
+  internal BaseFish SpawnFishFromBackend(FishData data, SpawnBatchContext context)
   {
     BaseFish fish = GetFishFromType(data.fishType);
 
@@ -127,9 +127,15 @@ internal class FishManager : MonoBehaviour
       return null;
     }
 
-    fish.Initialize(data);
+    if (fish is NormalFish nf)
+      nf.Initialize(data, context);
+    else
+      fish.Initialize(data);
+
     return fish;
   }
+
+
 }
 
 [Serializable]

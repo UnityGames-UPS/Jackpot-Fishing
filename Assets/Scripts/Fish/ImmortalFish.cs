@@ -7,6 +7,7 @@ internal class ImmortalFish : BaseFish
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
+    SetupFallbackMovement();
     if (data.variant == "immo_squid_fish")
     {
       speedPulseRoutine = StartCoroutine(OctopusSpeedPulse());

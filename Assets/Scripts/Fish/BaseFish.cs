@@ -3,8 +3,8 @@ using DG.Tweening;
 using UnityEngine.UI;
 using FluffyUnderware.Curvy;
 using FluffyUnderware.Curvy.Controllers;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(SplineController))]
@@ -14,78 +14,94 @@ using System.Collections;
 internal class BaseFish : MonoBehaviour
 {
   [SerializeField] internal FishData data;
+
   internal Transform HitPoint => transform.GetChild(0);
   internal RectTransform Rect => GetComponent<RectTransform>();
+
   protected Tween movementTween;
+  protected Tween damageTween;
+
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
-  protected Tween damageTween;
+  protected BoxCollider2D boxCollider;
+  protected SplineController splineController;
+
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
-  protected SplineController splineController;
-  protected BoxCollider2D boxCollider;
-  internal virtual void DamageAnimation() { }
-  internal virtual void Die() => DespawnFish();
 
+  private Coroutine lifeTimeoutRoutine;
+  private bool isDespawning;
+
+#if UNITY_EDITOR
+  private float spawnTime; // optional debug
+#endif
+
+  internal virtual void DamageAnimation() { }
+
+  internal virtual void Die() { }
+
+  // --------------------------------------------------------
+  // INIT
+  // --------------------------------------------------------
   internal virtual void Initialize(FishData data)
   {
+    this.data = data;
+
+#if UNITY_EDITOR
+    spawnTime = Time.realtimeSinceStartup;
+#endif
+
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
     boxCollider = GetComponent<BoxCollider2D>();
 
+    // Collider & hit point
     boxCollider.enabled = true;
-    this.data = data;
+    boxCollider.size = data.colliderSize;
+    boxCollider.offset = data.colliderOffset;
 
-    if (!string.IsNullOrEmpty(data.variant))
-    {
-      if (this.data != null && imageAnimation != null)
-      {
-        imageAnimation.SetAnimationData(
-          this.data.animationFrames,
-          this.data.animationSpeed,
-          this.data.loop
-        );
-        imageAnimation.StartAnimation();
+    HitPoint.localPosition = new Vector3(data.colliderOffset.x, data.colliderOffset.y, 0);
 
-        Rect.sizeDelta = this.data.spriteSize;
+    // Animation
+    imageAnimation.SetAnimationData(data.animationFrames, data.animationSpeed, data.loop);
+    imageAnimation.StartAnimation();
 
-        if (boxCollider != null)
-        {
-          boxCollider.size = this.data.colliderSize;
-          boxCollider.offset = this.data.colliderOffset;
-        }
-        HitPoint.localPosition = new Vector3(this.data.colliderOffset.x, this.data.colliderOffset.y, 0);
-      }
-    }
+    Rect.sizeDelta = data.spriteSize;
 
-    fishImage.color = new Color(Color.white.r, Color.white.g, Color.white.b, a: 0);
-    fishImage.DOFade(1, 0.2f);
+    // Fade in
+    fishImage.color = new Color(1, 1, 1, 0);
+    fishImage.DOFade(1f, 0.2f).SetUpdate(true);
 
-    SetupCurvyMovement();
+    // HARD lifespan guarantee
+    StartLifeTimeout(data.duration);
   }
 
-  private void SetupCurvyMovement()
+  protected void SetupFallbackMovement()
   {
-    bool moveRightToLeft = Random.value > 0.5f;
-    FlipSprite(faceRight: !moveRightToLeft);
+    bool rtl = UnityEngine.Random.value > 0.5f;
+    FlipSprite(faceRight: !rtl);
 
-    CurvySpline spline = CurvyPathProvider.Instance.GetRandomSpline(moveRightToLeft);
+    var splines =
+      CurvyPathProvider.Instance.GetFallbackSplines(rtl);
 
-    if (spline == null)
-    {
-      Debug.LogError("Null Spline");
-      DespawnFish();
-      return;
-    }
+    CurvySpline spline = splines[UnityEngine.Random.Range(0, splines.Count)];
 
+    ApplySpline(spline, rtl);
+  }
+
+  protected void ApplySpline(CurvySpline spline, bool rtl)
+  {
+    splineController.Stop();
     splineController.Spline = spline;
     splineController.Position = 0;
+    splineController.Speed = 0;
+
     splineController.MoveMode = CurvyController.MoveModeEnum.AbsolutePrecise;
     splineController.OrientationMode = OrientationModeEnum.Tangent;
-    splineController.OrientationAxis = moveRightToLeft ? OrientationAxisEnum.Left : OrientationAxisEnum.Right;
     splineController.Clamping = CurvyClamping.Clamp;
     splineController.PlayAutomatically = true;
+    splineController.OrientationAxis = rtl ? OrientationAxisEnum.Left : OrientationAxisEnum.Right;
 
     float visibleTimeSec = data.duration / 1000f;
     baseSpeed = spline.Length / visibleTimeSec;
@@ -95,15 +111,15 @@ internal class BaseFish : MonoBehaviour
     splineController.OnEndReached.AddListener(OnPathComplete);
 
     splineController.Play();
-    // Debug.Log($"Fish using spline {spline.name} | Dir: {(moveRightToLeft ? "RL" : "LR")}");
   }
 
   protected void ApplySpeed()
   {
-    splineController.Speed = baseSpeed * speedMultiplier;
+    if (splineController != null)
+      splineController.Speed = baseSpeed * speedMultiplier;
   }
 
-  private void FlipSprite(bool faceRight)
+  protected void FlipSprite(bool faceRight)
   {
     Vector3 scale = transform.localScale;
     scale.x = Mathf.Abs(scale.x) * (faceRight ? -1 : 1);
@@ -121,19 +137,79 @@ internal class BaseFish : MonoBehaviour
     DespawnFish();
   }
 
+  // --------------------------------------------------------
+  // DESPAWN LOGIC (IDEMPOTENT)
+  // --------------------------------------------------------
   protected void DespawnFish()
   {
-    fishImage.DOFade(0, 0.2f).OnComplete(() =>
-    {
-      FishManager.Instance.DespawnFish(this);
-      ResetFish();
-    });
-  }
+    if (isDespawning)
+      return;
 
-  internal virtual void ResetFish()
-  {
+    isDespawning = true;
+
     movementTween?.Kill();
     damageTween?.Kill();
+    DOTween.Kill(fishImage);
+
+    // Visual fade is optional, logic must NOT depend on it
+    fishImage.DOFade(0f, 0.15f)
+             .SetUpdate(true)
+             .OnComplete(FinalizeDespawn);
+  }
+
+  private void ForceDespawn()
+  {
+    if (isDespawning)
+      return;
+
+    isDespawning = true;
+    FinalizeDespawn();
+  }
+
+  private void FinalizeDespawn()
+  {
+    if (lifeTimeoutRoutine != null)
+    {
+      StopCoroutine(lifeTimeoutRoutine);
+      lifeTimeoutRoutine = null;
+    }
+
+    FishManager.Instance.DespawnFish(this);
+    ResetFish();
+  }
+
+  // --------------------------------------------------------
+  // LIFETIME WATCHDOG (AUTHORITATIVE)
+  // --------------------------------------------------------
+  private void StartLifeTimeout(int durationMs)
+  {
+    if (lifeTimeoutRoutine != null)
+      StopCoroutine(lifeTimeoutRoutine);
+
+    lifeTimeoutRoutine = StartCoroutine(LifeTimeoutRoutine(durationMs));
+  }
+
+  private IEnumerator LifeTimeoutRoutine(int durationMs)
+  {
+    yield return new WaitForSecondsRealtime(durationMs / 1000f + 1.5f);
+
+    if (!isDespawning)
+    {
+      Debug.LogWarning($"[Fish Timeout] Forced despawn: {data.variant} {data.fishType}");
+      ForceDespawn();
+    }
+  }
+
+  // --------------------------------------------------------
+  // RESET (POOL SAFE)
+  // --------------------------------------------------------
+  internal virtual void ResetFish()
+  {
+    data = null;
+    movementTween?.Kill();
+    damageTween?.Kill();
+
+    isDespawning = false;
 
     if (fishImage != null)
       fishImage.color = Color.white;
@@ -143,15 +219,30 @@ internal class BaseFish : MonoBehaviour
 
     if (splineController != null)
     {
-      splineController.Stop(); 
-      splineController.PlayAutomatically = false;
+      splineController.Stop();
+      splineController.Position = 0;
+      splineController.Speed = 0;
     }
 
     speedMultiplier = 1f;
-    ApplySpeed();
   }
 
-  internal void PlayLaserImpact() { }
+  // --------------------------------------------------------
+  // OPTIONAL EDITOR-ONLY SAFETY WARNING
+  // --------------------------------------------------------
+#if UNITY_EDITOR
+  private void LateUpdate()
+  {
+    if (!isDespawning &&
+        data != null &&
+        Time.realtimeSinceStartup - spawnTime >
+        (data.duration / 1000f) + 2f)
+    {
+      Debug.LogWarning($"[Fish Overstayed] {data.variant} {data.fishType}");
+    }
+  }
+#endif
 
+  internal void PlayLaserImpact() { }
   internal void StopLaserImpact() { }
 }

@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class TorpedoGun : BaseGun
 {
-  [Range(0.1f, 1f)]
-  [SerializeField] private float BlastScaleFactor = 0.7f;
   internal override float FireInterval => 6f;
 
   internal override void Awake()
@@ -18,7 +16,8 @@ public class TorpedoGun : BaseGun
 
     TorpedoBulletView torpedo = TorpedoPool.Instance.GetFromPool();
     torpedo.transform.SetPositionAndRotation(muzzle.position, Quaternion.identity);
-    torpedo.Init(fish, BlastScaleFactor);
+    Vector3 dir = (fish.transform.position - muzzle.position).normalized;
+    torpedo.Init(fish, dir);
   }
 
   internal override void Fire()

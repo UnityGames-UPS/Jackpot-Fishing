@@ -2,10 +2,11 @@
 // SpecialFish class
 internal class SpecialFish : BaseFish
 {
-  internal override void Die()
+  internal override void Initialize(FishData data)
   {
-    base.Die();
-    // trigger special effect e.g. zap nearby fish
+    base.Initialize(data);
+    SetupFallbackMovement();
   }
+
 }
 
