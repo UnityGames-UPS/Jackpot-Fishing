@@ -50,10 +50,10 @@ public class GunManager : MonoBehaviour
   {
     while (true)
     {
-      if (currentGun is SimpleGun)
+      if (currentGun is SimpleGun SimpleGun)
       {
         currentGun.Fire();
-        yield return new WaitForSeconds(currentGun.FireInterval);
+        yield return new WaitForSeconds(SimpleGun.FireInterval);
       }
     }
   }

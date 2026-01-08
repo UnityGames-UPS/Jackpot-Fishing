@@ -4357,9 +4357,8 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 5dd59280a0a144beab62eeaacf7baa10
-  SpawnEventInterval: 3
-  aliveFishes: []
+  testToken: 6c30dbfe0977478cbaf7c6e09a3763aa
+  SpawnEventInterval: 4
   bets: 
   GunCosts:
   - 1
@@ -35218,6 +35217,7 @@ MonoBehaviour:
   immortalFishPool: {fileID: 1784850969}
   jackpotFishPool: {fileID: 2097831409}
   jackpotDragonPool: {fileID: 990261847}
+  enableMockSpawning: 1
 --- !u!4 &690078718
 Transform:
   m_ObjectHideFlags: 0
@@ -35903,12 +35903,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2030419597}
-  - {fileID: 2105880314}
-  - {fileID: 665419655}
-  - {fileID: 1787908978}
   - {fileID: 1366155040}
+  - {fileID: 1787908978}
+  - {fileID: 665419655}
   - {fileID: 304763159}
   - {fileID: 1288656715}
+  - {fileID: 2105880314}
   m_Father: {fileID: 469943435}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -48042,6 +48042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d7115704c584c23be38c8b3494f49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FireInterval: 0.5
 --- !u!1 &946015108
 GameObject:
   m_ObjectHideFlags: 0
@@ -51223,7 +51224,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc895fad9ea82421ca6bcdfae279ddcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunManager: {fileID: 1157570055}
 --- !u!114 &1009898498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63854,7 +63854,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1288656715}
   m_Layer: 5
-  m_Name: JackpotDragon
+  m_Name: JackpotDragons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103525,8 +103525,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1361010121}
-  - {fileID: 631682821}
   - {fileID: 945862000}
+  - {fileID: 631682821}
   - {fileID: 796786933}
   - {fileID: 48572275}
   m_Father: {fileID: 469943435}

@@ -104,9 +104,7 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-    animationPresets: []
-    swimPhases: []
-  redColor: {r: 0.990566, g: 0.378471, b: 0.378471, a: 1}
+  redColor: {r: 1, g: 0.25943398, b: 0.25943398, a: 1}
 --- !u!114 &1897645829412585457
 MonoBehaviour:
   m_ObjectHideFlags: 0

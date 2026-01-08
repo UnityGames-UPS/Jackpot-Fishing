@@ -16,7 +16,7 @@ public class SimpleGun : BaseGun
   [Header("Firing")]
   [SerializeField] protected float fireRate = 6f;
 
-  internal override float FireInterval => 1f / fireRate;
+  internal float FireInterval => 1f / fireRate;
   private Image muzzleImage;
   private Tween recoilTween;
   private Tween muzzleTween;
@@ -34,12 +34,16 @@ public class SimpleGun : BaseGun
 
   internal override void Fire()
   {
+    if (!UIManager.Instance.OnGunFired())
+    {
+      return;
+    }
+    
     PlayMuzzleFlash();
     PlayRecoil();
     BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
     bullet.Fire(muzzle.up);
-    DeductBalance();
   }
 
   void PlayRecoil()
@@ -68,15 +72,5 @@ public class SimpleGun : BaseGun
     muzzleTween = DOTween.Sequence()
         .Append(muzzleImage.DOFade(0.7f, muzzleFadeIn))
         .Append(muzzleImage.DOFade(0f, muzzleFadeOut));
-  }
-
-
-  void DeductBalance()
-  {
-    float gunCost = UIManager.Instance?.currentBet * SocketIOManager.Instance?.GunCosts[0] ?? 0;
-    float newBalance = UIManager.Instance?.currentBalance - gunCost ?? 0;
-    // Debug.Log(UIManager.Instance?.currentBet + " " + SocketIOManager.Instance?.GunCosts[0]);
-    // Debug.Log(newBalance);
-    UIManager.Instance.UpdateBalance(newBalance);
   }
 }

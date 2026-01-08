@@ -20,7 +20,6 @@ public class SocketIOManager : MonoBehaviour
   protected string SocketURI = null;
   [SerializeField] private string testToken;
   [SerializeField] private float SpawnEventInterval = 5f;
-  [SerializeField] private List<BaseFish> aliveFishes;
   [SerializeField] internal List<int> bets = new();
   [SerializeField] internal List<float> GunCosts = new() { 1, 1, 6 }; //1: normal 2: torpedo 3: electric
   protected string gameNamespace = "playground";
@@ -39,25 +38,6 @@ public class SocketIOManager : MonoBehaviour
   private Coroutine disconnectTimerCoroutine;
   private Coroutine spawnFlowRoutine;
   [SerializeField] private float disconnectDelay = 180f;
-
-  private void LateUpdate()
-  {
-    if (aliveFishes.Count == 0)
-      return;
-
-    for (int i = aliveFishes.Count - 1; i >= 0; i--)
-    {
-      var fish = aliveFishes[i];
-
-      if (fish == null ||
-          fish.data == null ||
-          !fish.gameObject.activeInHierarchy)
-      {
-        aliveFishes.RemoveAt(i);
-      }
-    }
-  }
-
 
   private void Start()
   {
@@ -79,7 +59,6 @@ public class SocketIOManager : MonoBehaviour
     Application.runInBackground = true;
     DOTween.Init();
     DOTween.defaultTimeScaleIndependent = true;
-    if (aliveFishes == null) aliveFishes = new List<BaseFish>();
     // blocker.SetActive(true);
     isLoaded = false;
   }
@@ -212,18 +191,18 @@ public class SocketIOManager : MonoBehaviour
       case "initdata":
         Debug.Log("INIT: " + obj);
         bets = root.gameData.bets;
+        SendFishSpawnEvent();
+        UIManager.Instance.HandeGameInit();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnEnter");
 #endif
         blocker.SetActive(false);
-        SendFishSpawnEvent();
         SendPing();
 
-        UIManager.Instance.HandeGameInit();
         break;
       case "spawnresult":
-        Debug.Log("SPAWNRESULT: " + obj);
+        // Debug.Log("SPAWNRESULT: " + obj);
         HandleSpawnResult(root);
         break;
       case "hitresult":
@@ -292,7 +271,6 @@ public class SocketIOManager : MonoBehaviour
     foreach (FishData data in fishesData)
     {
       BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data, context);
-      aliveFishes.Add(fish);
     }
   }
 
@@ -307,19 +285,33 @@ public class SocketIOManager : MonoBehaviour
         weaponType = WeaponType
       }
     };
-    Debug.Log("HIT:" + variant);
-    SendDataWithNamespace("request", JsonConvert.SerializeObject(obj));
+    string json = JsonConvert.SerializeObject(obj);
+    // Debug.Log("HIT: " + json);
+    Debug.Log("HIT: " + variant + " with " + WeaponType);
+    SendDataWithNamespace("request", json);
   }
 
   void HandleHitResult(Payload HitResult)
   {
+    // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
     if (HitResult.fishKilled != null)
     {
-      BaseFish fish = aliveFishes.Find(x => x.data.fishId == HitResult.fishKilled.id);
+      BaseFish fish = FishManager.Instance
+        .GetActiveFishes()
+        .FirstOrDefault(x => x.data.fishId == HitResult.fishKilled.id);
+
+      if (fish == null)
+      {
+        Debug.LogError("No alive fish found to kill.");
+        return;
+      }
+
       if (fish is NormalFish normalFish)
       {
+        // Debug.Log("FISH DIED: " + fish.data.variant);
         normalFish.Die();
       }
+
     }
   }
 
@@ -463,32 +455,6 @@ public class SocketIOManager : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnExit");
 #endif
-  }
-
-  internal void RemoveFishFromList(BaseFish f)
-  {
-    if (aliveFishes == null) return;
-    if (f == null) return;
-
-    BaseFish fishh = null;
-    foreach (BaseFish fish in aliveFishes)
-    {
-      if (fish == null) continue;
-
-      if (fish.data.fishId == f.data.fishId)
-      {
-        fishh = fish;
-        break;
-      }
-    }
-
-    if (fishh == null)
-    {
-      Debug.LogWarning("Failed to find fish to remove: " + f.data.fishId);
-      return;
-    }
-
-    aliveFishes.Remove(fishh);
   }
 }
 

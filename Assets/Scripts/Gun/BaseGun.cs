@@ -3,7 +3,6 @@ using UnityEngine;
 public abstract class BaseGun : MonoBehaviour
 {
   protected Transform muzzle;
-  internal virtual float FireInterval { get; }
 
   internal virtual void Awake()
   {

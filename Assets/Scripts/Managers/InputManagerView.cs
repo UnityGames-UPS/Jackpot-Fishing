@@ -6,41 +6,91 @@ public class InputManagerView : MonoBehaviour,
     IDragHandler,
     IPointerUpHandler
 {
-  [SerializeField] private GunManager gunManager;
+  public static InputManagerView Instance;
+  private BaseFish currentPointerFish;
+  private Vector2 lastPointerScreenPos;
+  private bool pointerHeld;
+
+  void Awake()
+  {
+    Instance = this;
+  }
+
+  void Update()
+  {
+    if (!pointerHeld)
+      return;
+
+    // Keep sampling fish even when pointer does NOT move
+    currentPointerFish = RaycastFish(lastPointerScreenPos);
+  }
 
   public void OnPointerDown(PointerEventData eventData)
   {
-    gunManager.UpdateAim(eventData.position);
+    pointerHeld = true;
+    lastPointerScreenPos = eventData.position;
+    GunManager.Instance.UpdateAim(eventData.position);
 
     BaseFish hitFish = RaycastFish(eventData.position);
 
-    if (gunManager.currentGun is LazerGun lazerGun)
+    if (GunManager.Instance.currentGun is LazerGun lazerGun)
     {
       if (hitFish != null) lazerGun.StartLaser(hitFish);
       else lazerGun.StopLaser();
       return;
     }
 
-    if (gunManager.currentGun is TorpedoGun torpedoGun)
+    if (GunManager.Instance.currentGun is TorpedoGun torpedoGun)
     {
-      if (hitFish != null)
-        torpedoGun.FireTorpedo(hitFish);
+      if (UIManager.Instance.IsTargetLockEnabled)
+      {
+        torpedoGun.HandlePointerDown(hitFish);
+      }
+      else
+      {
+        torpedoGun.UpdateUnlockedFire(hitFish);
+        currentPointerFish = hitFish;
+      }
+
       return;
     }
 
-    gunManager.SetBulletFiring(true);
+    GunManager.Instance.SetBulletFiring(true);
   }
 
 
   public void OnDrag(PointerEventData eventData)
   {
-    gunManager.UpdateAim(eventData.position);
+    pointerHeld = true;
+    lastPointerScreenPos = eventData.position;
+    GunManager.Instance.UpdateAim(eventData.position);
+
+    if (GunManager.Instance.currentGun is TorpedoGun torpedoGun &&
+        !UIManager.Instance.IsTargetLockEnabled)
+    {
+      BaseFish hitFish = RaycastFish(eventData.position);
+      torpedoGun.UpdateUnlockedFire(hitFish);
+      currentPointerFish = hitFish;
+    }
   }
+
 
   public void OnPointerUp(PointerEventData eventData)
   {
-    if (gunManager.currentGun is not LazerGun)
-      gunManager.SetBulletFiring(false);
+    pointerHeld = false;
+    currentPointerFish = null;
+    currentPointerFish = null;
+
+    if (GunManager.Instance.currentGun is TorpedoGun torpedoGun)
+    {
+      if (!UIManager.Instance.IsTargetLockEnabled)
+        torpedoGun.StopFiring(); // ALWAYS stop firing
+      return;
+    }
+
+    if (GunManager.Instance.currentGun is SimpleGun gun)
+      GunManager.Instance.SetBulletFiring(false);
+
   }
 
   private BaseFish RaycastFish(Vector2 screenPos)
@@ -53,4 +103,10 @@ public class InputManagerView : MonoBehaviour,
 
     return hit.collider.GetComponent<BaseFish>();
   }
+
+  internal BaseFish GetCurrentPointerFish()
+  {
+    return pointerHeld ? currentPointerFish : null;
+  }
+
 }

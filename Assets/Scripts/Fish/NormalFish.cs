@@ -6,13 +6,26 @@ using UnityEngine;
 
 internal class NormalFish : BaseFish
 {
-  [SerializeField] Color redColor;
+
   private Coroutine segmentedSpeedRoutine;
 
   internal void Initialize(FishData data, SpawnBatchContext context)
   {
     base.Initialize(data);
-    SetupCurvyMovement(context);
+    if (context == null)
+    {
+      SetupFallbackMovement();
+    }
+    else if (data.variant != "bluewing_fish" &&
+             data.variant != "hammer_head" &&
+             data.variant != "saw_fish")
+    {
+      SetupCurvyMovement(context);
+    }
+    else
+    {
+      SetupFallbackMovement();
+    }
     segmentedSpeedRoutine = StartCoroutine(SegmentedSpeedRoutine());
   }
 
@@ -84,7 +97,7 @@ internal class NormalFish : BaseFish
            splineController.Position < splineController.Length)
     {
       // 1️⃣ choose a small distance chunk (tweak)
-      float segmentDistance = Random.Range(6f, 12f);
+      float segmentDistance = Random.Range(5f, 20f);
 
       float startPos = splineController.Position;
       float targetPos = Mathf.Min(
@@ -93,7 +106,7 @@ internal class NormalFish : BaseFish
       );
 
       // 2️⃣ choose a temporary speed multiplier
-      float tempSpeed = Random.Range(0.85f, 1.15f);
+      float tempSpeed = Random.Range(0.85f, 1f);
 
       SetSpeedMultiplier(tempSpeed);
 
@@ -109,23 +122,9 @@ internal class NormalFish : BaseFish
     SetSpeedMultiplier(1f);
   }
 
-
-  internal override void DamageAnimation()
-  {
-    if (fishImage == null) return;
-
-    damageTween?.Kill();
-
-    damageTween = DOTween.Sequence()
-        .Append(fishImage.DOColor(redColor, 0.05f))
-        .AppendInterval(0.3f)
-        .Append(fishImage.DOColor(Color.white, 0.1f));
-  }
-
   internal override void Die()
   {
-    boxCollider.enabled = false;
-
+    base.Die();
     if (splineController != null)
     {
       splineController.PlayAutomatically = false;

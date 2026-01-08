@@ -5,6 +5,7 @@ using FluffyUnderware.Curvy;
 using FluffyUnderware.Curvy.Controllers;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(SplineController))]
@@ -14,42 +15,22 @@ using System.Collections.Generic;
 internal class BaseFish : MonoBehaviour
 {
   [SerializeField] internal FishData data;
-
   internal Transform HitPoint => transform.GetChild(0);
   internal RectTransform Rect => GetComponent<RectTransform>();
-
   protected Tween movementTween;
   protected Tween damageTween;
-
   protected ImageAnimation imageAnimation;
   protected Image fishImage;
   protected BoxCollider2D boxCollider;
   protected SplineController splineController;
-
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
-
   private Coroutine lifeTimeoutRoutine;
   private bool isDespawning;
 
-#if UNITY_EDITOR
-  private float spawnTime; // optional debug
-#endif
-
-  internal virtual void DamageAnimation() { }
-
-  internal virtual void Die() { }
-
-  // --------------------------------------------------------
-  // INIT
-  // --------------------------------------------------------
   internal virtual void Initialize(FishData data)
   {
     this.data = data;
-
-#if UNITY_EDITOR
-    spawnTime = Time.realtimeSinceStartup;
-#endif
 
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
@@ -72,9 +53,6 @@ internal class BaseFish : MonoBehaviour
     // Fade in
     fishImage.color = new Color(1, 1, 1, 0);
     fishImage.DOFade(1f, 0.2f).SetUpdate(true);
-
-    // HARD lifespan guarantee
-    StartLifeTimeout(data.duration);
   }
 
   protected void SetupFallbackMovement()
@@ -137,6 +115,31 @@ internal class BaseFish : MonoBehaviour
     DespawnFish();
   }
 
+  internal virtual IEnumerator DamageAnimation(Color damageColor)
+  {
+    if (fishImage == null)
+    {
+      Debug.LogError("fishImage not found for " + data.variant);
+      yield break;
+    }
+
+    if (damageTween != null && damageTween.IsPlaying())
+      yield return damageTween.WaitForCompletion();
+
+    damageTween?.Kill();
+
+    damageTween = DOTween.Sequence()
+        .Append(fishImage.DOColor(damageColor, 0.05f).SetEase(Ease.InQuad))
+        .AppendInterval(0.1f).SetEase(Ease.InQuad)
+        .Append(fishImage.DOColor(Color.white, 0.05f).SetEase(Ease.InQuad));
+  }
+
+  internal virtual void Die()
+  {
+    boxCollider.enabled = false;
+
+  }
+
   // --------------------------------------------------------
   // DESPAWN LOGIC (IDEMPOTENT)
   // --------------------------------------------------------
@@ -178,26 +181,9 @@ internal class BaseFish : MonoBehaviour
     ResetFish();
   }
 
-  // --------------------------------------------------------
-  // LIFETIME WATCHDOG (AUTHORITATIVE)
-  // --------------------------------------------------------
-  private void StartLifeTimeout(int durationMs)
+  private bool IsFishStillValid()
   {
-    if (lifeTimeoutRoutine != null)
-      StopCoroutine(lifeTimeoutRoutine);
-
-    lifeTimeoutRoutine = StartCoroutine(LifeTimeoutRoutine(durationMs));
-  }
-
-  private IEnumerator LifeTimeoutRoutine(int durationMs)
-  {
-    yield return new WaitForSecondsRealtime(durationMs / 1000f + 1.5f);
-
-    if (!isDespawning)
-    {
-      Debug.LogWarning($"[Fish Timeout] Forced despawn: {data.variant} {data.fishType}");
-      ForceDespawn();
-    }
+    return data != null && data.fishId != null && !isDespawning;
   }
 
   // --------------------------------------------------------
@@ -226,22 +212,15 @@ internal class BaseFish : MonoBehaviour
 
     speedMultiplier = 1f;
   }
-
-  // --------------------------------------------------------
-  // OPTIONAL EDITOR-ONLY SAFETY WARNING
-  // --------------------------------------------------------
-#if UNITY_EDITOR
-  private void LateUpdate()
+  internal void SetAlpha(float alpha)
   {
-    if (!isDespawning &&
-        data != null &&
-        Time.realtimeSinceStartup - spawnTime >
-        (data.duration / 1000f) + 2f)
-    {
-      Debug.LogWarning($"[Fish Overstayed] {data.variant} {data.fishType}");
-    }
+    if (fishImage == null)
+      return;
+
+    Color c = fishImage.color;
+    c.a = alpha;
+    fishImage.color = c;
   }
-#endif
 
   internal void PlayLaserImpact() { }
   internal void StopLaserImpact() { }

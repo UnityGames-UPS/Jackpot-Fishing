@@ -8,6 +8,13 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+  public enum GunType
+  {
+    Simple,
+    Laser,
+    Torpedo
+  }
+
   internal static UIManager Instance;
 
   [Header("Gun Panel")]
@@ -85,6 +92,9 @@ public class UIManager : MonoBehaviour
   [Header("Close PANEL Btn")]
   [SerializeField] private Button CloseHelp;
   [SerializeField] private Button CloseRooster;
+
+  private GunType activeGun = GunType.Simple;
+
   private int infoPageIndex = 0;
   private int paytablePageIndex = 0;
   private float slideDistance = 1080f;
@@ -96,6 +106,8 @@ public class UIManager : MonoBehaviour
   private bool isTorpedoGun = false;
   private Tween balanceTween;
   internal int BetCounter = 0;
+  internal bool IsTargetLockEnabled => isTargetLock;
+
 
   void Awake()
   {
@@ -292,6 +304,7 @@ public class UIManager : MonoBehaviour
           TargetLockFGAnim.SetActive(true);
         else
           TargetLockFGAnim.SetActive(false);
+        UpdateActiveGun();
         break;
       case 1:
         isTorpedoGun = !isTorpedoGun;
@@ -307,6 +320,8 @@ public class UIManager : MonoBehaviour
           TorpedoText.SetActive(true);
           TorpedoBulletValueGO.SetActive(false);
         }
+        UpdateActiveGun();
+        UpdateTorpedoFishVisuals();
         break;
     }
 
@@ -327,6 +342,44 @@ public class UIManager : MonoBehaviour
       GunManager.Instance.SwitchGun<TorpedoGun>();
     }
   }
+
+  internal bool OnGunFired()
+  {
+    float cost = GetGunCost();
+
+    if (currentBalance < cost)
+    {
+      Debug.LogError("❌ Not enough balance"); // add popup message here
+      return false;
+    }
+
+    UpdateBalance(currentBalance - cost);
+    return true;
+  }
+
+  float GetGunCost()
+  {
+    float bet = currentBet;
+
+    return activeGun switch
+    {
+      GunType.Simple => bet * SocketIOManager.Instance.GunCosts[0],
+      GunType.Torpedo => bet * SocketIOManager.Instance.GunCosts[1],
+      GunType.Laser => bet * SocketIOManager.Instance.GunCosts[2],
+      _ => 0f
+    };
+  }
+
+  void UpdateActiveGun()
+  {
+    if (!isTargetLock && !isTorpedoGun)
+      activeGun = GunType.Simple;
+    else if (isTorpedoGun)
+      activeGun = GunType.Torpedo;
+    else
+      activeGun = GunType.Laser;
+  }
+
 
   void OnClickCloseRoster()
   {
@@ -550,5 +603,44 @@ public class UIManager : MonoBehaviour
       paytablePageIndex--;
       ShowPaytablePage();
     }
+  }
+  void UpdateTorpedoFishVisuals()
+  {
+    bool torpedoActive = isTorpedoGun;
+
+    foreach (var fish in FishManager.Instance.GetActiveFishes())
+    {
+      if (fish == null || fish.data == null)
+        continue;
+
+      bool valid = IsValidTorpedoTarget(fish);
+
+      fish.SetAlpha(
+        torpedoActive && !valid ? 0.25f : 1f
+      );
+    }
+  }
+
+  internal bool IsValidTorpedoTarget(BaseFish fish)
+  {
+    if (fish == null || fish.data == null)
+      return false;
+
+    // ❌ Variant blacklist (fine-grained control)
+    switch (fish.data.variant)
+    {
+      case "small_dragon_fish":
+      case "orange_fish":
+      case "angel_fish":
+      case "pinecone_fish":
+      case "puffer_fish":
+      case "turtle_fish":
+      case "jelly_fish":
+      case "lion_fish":
+      case "babyocto_fish":
+        return false;
+    }
+
+    return true;
   }
 }

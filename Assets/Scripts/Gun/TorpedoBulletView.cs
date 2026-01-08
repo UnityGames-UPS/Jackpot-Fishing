@@ -15,7 +15,6 @@ public class TorpedoBulletView : MonoBehaviour
 
   [Header("Phase Durations (constant time)")]
   [SerializeField] private float phase1Duration = 0.18f;
-  [SerializeField] private float phase2Duration = 0.22f;
 
   [Header("Rotation")]
   [SerializeField] private float rotationSpeed = 720f; // deg/sec
@@ -35,23 +34,31 @@ public class TorpedoBulletView : MonoBehaviour
   [SerializeField] private float minPhase1Distance = 0.4f;
   [SerializeField] private float maxPhase1Distance = 3.5f;
 
-  [Header("Phase-2 Correction")]
-  [SerializeField] private float snapCorrectionDistance = 0.4f;
-  [SerializeField] private float snapStrength = 0.5f; // 0–1
+  [Header("Phase-2 Homing")]
+  [SerializeField] private float minHomingSpeed = 6f;
+  [SerializeField] private float homingAcceleration = 25f;
+  [SerializeField] private float maxPhase2Lifetime = 0.6f;
+  [SerializeField] private float homingGain = 2.5f;
+  [SerializeField] private float maxHomingSpeed = 18f;
+
+  [Header("On Fish Hit")]
+  [SerializeField] private Color fishDamageColor;
 
   private ImageAnimation imageAnimation;
   private BaseFish target;
+  private bool finalized;
+  private bool fishHit;
+
+  private float phase2Timer;
+  private float currentPhase2Speed;
 
   private Vector3 startPos;
   private Vector3 phase1EndPos;
-  private Vector3 phase2TargetPos;
   private Vector3 fireDir;
 
   private float phase1Distance;
   private float phase1Speed;
-  private float phase2Speed;
   private float traveled;
-  private bool phase2HasValidFish;
 
   private TorpedoPhase phase;
 
@@ -91,7 +98,11 @@ public class TorpedoBulletView : MonoBehaviour
     imageAnimation.SetAnimationData(sideAnim, sideAnimSpeed, true);
     imageAnimation.StartAnimation();
 
+    finalized = false;
+    fishHit = false;
+
     gameObject.SetActive(true);
+
   }
 
   // ---------------- UPDATE ----------------
@@ -151,58 +162,81 @@ public class TorpedoBulletView : MonoBehaviour
     imageAnimation.SetAnimationData(backAnim, backAnimSpeed, true);
     imageAnimation.StartAnimation();
 
-    if (target != null && target.gameObject.activeInHierarchy)
-    {
-      phase2TargetPos = target.HitPoint.transform.position;
-      phase2HasValidFish = true;
-    }
-    else
-    {
-      phase2TargetPos = Vector3.zero; // screen center
-      phase2HasValidFish = false;
-    }
-
-    float phase2Distance = Vector3.Distance(
-      transform.position,
-      phase2TargetPos
-    );
-
-    // 🔑 constant-time phase 2
-    phase2Speed = phase2Distance / phase2Duration;
+    phase2Timer = 0f;
+    currentPhase2Speed = minHomingSpeed;
 
     phase = TorpedoPhase.Phase2;
   }
 
+
   void UpdatePhase2()
   {
-    Vector3 targetPos = phase2TargetPos;
+    phase2Timer += Time.deltaTime;
 
-    if (
-      phase2HasValidFish &&
-      target != null &&
-      target.gameObject.activeInHierarchy
-    )
+    // ⛔ Hard safety: Phase-2 can NEVER stall
+    if (phase2Timer >= maxPhase2Lifetime)
     {
-      float distToLockedTarget =
-        Vector3.Distance(transform.position, phase2TargetPos);
-
-      if (distToLockedTarget <= snapCorrectionDistance)
-      {
-        Vector3 liveFishPos = target.HitPoint.transform.position;
-        targetPos = Vector3.Lerp(
-          phase2TargetPos,
-          liveFishPos,
-          snapStrength
-        );
-      }
+      ExplodeAt(transform.position);
+      ReturnToPool();
+      return;
     }
 
-    Vector3 dir = (targetPos - transform.position).normalized;
+    Vector3 targetPos;
 
-    float step = phase2Speed * Time.deltaTime;
-    transform.position += dir * step;
+    // ---------------- TARGET RESOLUTION ----------------
+    targetPos = GetBestTargetPoint();
 
-    // smooth rotation
+    if (targetPos == Vector3.zero)
+    {
+      targetPos = transform.position; // explode where it is
+    }
+
+
+    Vector3 toTarget = targetPos - transform.position;
+    float distance = toTarget.magnitude;
+
+    if (distance <= hitDistance)
+    {
+      fishHit = true;
+
+      if (target != null && target.data != null)
+      {
+        SocketIOManager.Instance.SendHitEvent(
+          target.data.fishId,
+          "torpedo",
+          variant: target.data.variant
+        );
+
+        StartCoroutine(
+          target.DamageAnimation(fishDamageColor) // or torpedo-specific color
+        );
+      }
+
+      ExplodeAt(targetPos);
+      ReturnToPool();
+      return;
+    }
+
+
+    Vector3 dir = toTarget.normalized;
+
+    // ---------------- TRUE HOMING SPEED ----------------
+    float desiredSpeed = Mathf.Clamp(
+      distance * homingGain,
+      minHomingSpeed,
+      maxHomingSpeed
+    );
+
+    currentPhase2Speed = Mathf.MoveTowards(
+      currentPhase2Speed,
+      desiredSpeed,
+      homingAcceleration * Time.deltaTime
+    );
+
+
+    transform.position += dir * currentPhase2Speed * Time.deltaTime;
+
+    // ---------------- ROTATION ----------------
     Quaternion targetRot =
       Quaternion.LookRotation(Vector3.forward, dir);
 
@@ -211,13 +245,8 @@ public class TorpedoBulletView : MonoBehaviour
       targetRot,
       rotationSpeed * Time.deltaTime
     );
-
-    if (Vector3.Distance(transform.position, targetPos) <= hitDistance)
-    {
-      ExplodeAt(targetPos);
-      ReturnToPool();
-    }
   }
+
 
   // ---------------- BLAST ----------------
 
@@ -238,9 +267,49 @@ public class TorpedoBulletView : MonoBehaviour
 
   void ReturnToPool()
   {
+    if (finalized) return;
+    finalized = true;
+
     phase = TorpedoPhase.Finished;
     imageAnimation.StopAnimation();
+
+    if (!fishHit)
+    {
+      SocketIOManager.Instance.SendHitEvent("", "torpedo");
+    }
+
     target = null;
     TorpedoPool.Instance.ReturnToPool(this);
   }
+  Vector3 GetBestTargetPoint()
+  {
+    if (target == null)
+      return Vector3.zero;
+
+    if (target.HitPoint != null && IsVisible(target.HitPoint.position))
+      return target.HitPoint.position;
+
+    BoxCollider2D col = target.GetComponent<BoxCollider2D>();
+    if (col == null)
+      return target.transform.position;
+
+    Bounds b = col.bounds;
+    Camera cam = Camera.main;
+
+    // Clamp fish center to screen edge
+    Vector3 vp = cam.WorldToViewportPoint(b.center);
+    vp.x = Mathf.Clamp(vp.x, 0.05f, 0.95f);
+    vp.y = Mathf.Clamp(vp.y, 0.05f, 0.95f);
+
+    return cam.ViewportToWorldPoint(vp);
+  }
+
+
+
+  bool IsVisible(Vector3 worldPos)
+  {
+    Vector3 v = Camera.main.WorldToViewportPoint(worldPos);
+    return v.z > 0 && v.x > 0 && v.x < 1 && v.y > 0 && v.y < 1;
+  }
+
 }

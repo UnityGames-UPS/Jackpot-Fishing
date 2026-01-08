@@ -7,6 +7,8 @@ public class BulletView : MonoBehaviour
   [SerializeField] private float lifeTime = 4f;
   [SerializeField] private float wallPushDistance = 0.05f;
 
+  [Header("On Fish Hit")]
+  [SerializeField] private Color fishDamageColor;
 
   [Header("Debug")]
   [SerializeField] private bool drawDebugRay = false;
@@ -14,6 +16,8 @@ public class BulletView : MonoBehaviour
   private Rigidbody2D rb;
   private float lifeTimer;
   private bool active;
+  private bool fishHit;
+  private bool finalized;
 
   void Awake()
   {
@@ -32,8 +36,9 @@ public class BulletView : MonoBehaviour
 
     lifeTimer = lifeTime;
     active = true;
+    fishHit = false;
+    finalized = false;
   }
-
 
   void FixedUpdate()
   {
@@ -66,19 +71,19 @@ public class BulletView : MonoBehaviour
       ReturnToPool();
   }
 
-
   void OnTriggerEnter2D(Collider2D other)
   {
     if (!active) return;
 
     if (other.CompareTag("Fish"))
     {
+      fishHit = true;
       HitMarkerPool.Instance.GetFromPool().Play(transform.position);
 
-      if (other.TryGetComponent<NormalFish>(out var fish))
+      if (other.TryGetComponent<BaseFish>(out var fish))
       {
-        fish.DamageAnimation();
-        SocketIOManager.Instance.SendHitEvent(fish.data.fishId, "normal", variant: fish.data.variant); //add betIndex here later
+        StartCoroutine(fish.DamageAnimation(fishDamageColor));
+        SocketIOManager.Instance.SendHitEvent(fish.data.fishId, "normal", variant: fish.data.variant);
       }
 
       ReturnToPool();
@@ -113,9 +118,19 @@ public class BulletView : MonoBehaviour
 
   void ReturnToPool()
   {
+    if (finalized) return;
+
+    finalized = true;
     active = false;
     rb.linearVelocity = Vector2.zero;
     BulletPool.Instance.ReturnToPool(this);
+    HandleMiss();
+  }
+
+  void HandleMiss()
+  {
+    if (fishHit) return;
+    SocketIOManager.Instance.SendHitEvent("", "normal");
   }
 
   void DebugRay(Vector2 currentPos, float delta)

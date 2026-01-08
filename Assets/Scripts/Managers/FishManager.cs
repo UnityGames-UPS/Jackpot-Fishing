@@ -18,35 +18,78 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
+  [SerializeField] private bool enableMockSpawning = true;
+  private readonly List<BaseFish> activeFishes = new();
 
   private void Awake() => Instance = this;
 
-  // void Update()
-  // {
-  //   if (Input.GetKeyDown(KeyCode.Space))
-  //   {
-  //     SpawnMockFish();
-  //   }
-  // }
+  private void Update()
+  {
+    if (!enableMockSpawning)
+      return;
 
-  // internal void SpawnMockFish()
-  // {
-  //   int randomIndex = UnityEngine.Random.Range(0, fishesData.Count);
-  //   BaseFish fish = GetFishFromType(fishesData[22].fishType);
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+      SpawnMockFish();
+    }
+  }
+  internal void SpawnMockFish()
+  {
+    if (fishesData == null || fishesData.Count == 0)
+    {
+      Debug.LogWarning("[FishManager] No fish data for mock spawn");
+      return;
+    }
 
-  //   if (fish == null)
-  //   {
-  //     Debug.LogError("Fish Not Found! " + fishesData[randomIndex].variant);
-  //     return;
-  //   }
+    // FishData baseData =
+    // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
 
-  //   fish.Initialize(fishesData[22]);
-  // }
+    FishData baseData =
+      fishesData[22];
+
+    BaseFish fish = GetFishFromType(baseData.fishType);
+
+    if (fish == null)
+    {
+      Debug.LogError("Fish Not Found! " + baseData.variant);
+      return;
+    }
+
+    // ✅ Clone data (no backend id)
+    FishData runtimeData = new FishData
+    {
+      variant = baseData.variant,
+      animationFrames = baseData.animationFrames,
+      animationSpeed = baseData.animationSpeed,
+      loop = baseData.loop,
+      spriteSize = baseData.spriteSize,
+      colliderSize = baseData.colliderSize,
+      colliderOffset = baseData.colliderOffset,
+      laserImpactScaleFactor = baseData.laserImpactScaleFactor,
+      fishType = baseData.fishType,
+
+      fishId = null,                 // 🚫 no backend
+      duration = baseData.duration
+    };
+
+    if (fish is NormalFish nf)
+    {
+      // ✅ NULL CONTEXT → fallback path
+      nf.Initialize(runtimeData, null);
+    }
+    else
+    {
+      fish.Initialize(runtimeData);
+    }
+
+    activeFishes.Add(fish);
+  }
+
 
   internal void DespawnFish(BaseFish fish)
   {
     // Debug.Log("Called");
-    SocketIOManager.Instance?.RemoveFishFromList(fish);
+    activeFishes.Remove(fish);
 
     switch (fish)
     {
@@ -128,13 +171,20 @@ internal class FishManager : MonoBehaviour
     }
 
     if (fish is NormalFish nf)
+    {
       nf.Initialize(data, context);
+    }
     else
       fish.Initialize(data);
 
+    activeFishes.Add(fish);
     return fish;
   }
 
+  internal IReadOnlyList<BaseFish> GetActiveFishes()
+  {
+    return activeFishes;
+  }
 
 }
 

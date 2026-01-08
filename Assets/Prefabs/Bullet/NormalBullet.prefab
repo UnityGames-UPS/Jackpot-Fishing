@@ -166,4 +166,5 @@ MonoBehaviour:
   speed: 25
   lifeTime: 4
   wallPushDistance: 0.1
+  fishDamageColor: {r: 1, g: 0.3443396, b: 0.3443396, a: 1}
   drawDebugRay: 0
