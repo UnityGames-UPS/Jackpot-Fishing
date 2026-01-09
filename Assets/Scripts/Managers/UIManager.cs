@@ -93,7 +93,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Button CloseHelp;
   [SerializeField] private Button CloseRooster;
 
-  private GunType activeGun = GunType.Simple;
+  internal GunType activeGun = GunType.Simple;
 
   private int infoPageIndex = 0;
   private int paytablePageIndex = 0;
@@ -321,7 +321,6 @@ public class UIManager : MonoBehaviour
           TorpedoBulletValueGO.SetActive(false);
         }
         UpdateActiveGun();
-        UpdateTorpedoFishVisuals();
         break;
     }
 
@@ -378,6 +377,8 @@ public class UIManager : MonoBehaviour
       activeGun = GunType.Torpedo;
     else
       activeGun = GunType.Laser;
+
+    UpdateTorpedoFishVisuals();
   }
 
 
@@ -604,9 +605,9 @@ public class UIManager : MonoBehaviour
       ShowPaytablePage();
     }
   }
-  void UpdateTorpedoFishVisuals()
+  internal void UpdateTorpedoFishVisuals()
   {
-    bool torpedoActive = isTorpedoGun;
+    bool torpedoActive = activeGun == GunType.Torpedo;
 
     foreach (var fish in FishManager.Instance.GetActiveFishes())
     {

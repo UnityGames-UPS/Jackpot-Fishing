@@ -20,6 +20,7 @@ public class SocketIOManager : MonoBehaviour
   protected string SocketURI = null;
   [SerializeField] private string testToken;
   [SerializeField] private float SpawnEventInterval = 5f;
+  [SerializeField] private float electricHitInterval = 1.5f;
   [SerializeField] internal List<int> bets = new();
   [SerializeField] internal List<float> GunCosts = new() { 1, 1, 6 }; //1: normal 2: torpedo 3: electric
   protected string gameNamespace = "playground";
@@ -38,6 +39,7 @@ public class SocketIOManager : MonoBehaviour
   private Coroutine disconnectTimerCoroutine;
   private Coroutine spawnFlowRoutine;
   [SerializeField] private float disconnectDelay = 180f;
+  internal float ElectricHitInterval => electricHitInterval;
 
   private void Start()
   {
@@ -63,24 +65,22 @@ public class SocketIOManager : MonoBehaviour
     isLoaded = false;
   }
 
-  private void OnApplicationFocus(bool hasFocus)
-  {
-    if (!hasFocus)
-    {
-      // App lost focus, start disconnect timer
-      disconnectTimerCoroutine = StartCoroutine(DisconnectTimer());
-    }
-    else
-    {
-      // App regained focus, cancel disconnect timer
-      if (disconnectTimerCoroutine != null)
-      {
-        StopCoroutine(disconnectTimerCoroutine);
-        disconnectTimerCoroutine = null;
-        // Debug.Log("Disconnect timer cancelled. App regained focus.");
-      }
-    }
-  }
+  // private void OnApplicationFocus(bool hasFocus)
+  // {
+  //   if (!hasFocus)
+  //   {
+  //     disconnectTimerCoroutine = StartCoroutine(DisconnectTimer());
+  //   }
+  //   else
+  //   {
+  //     if (disconnectTimerCoroutine != null)
+  //     {
+  //       StopCoroutine(disconnectTimerCoroutine);
+  //       disconnectTimerCoroutine = null;
+  //       // Debug.Log("Disconnect timer cancelled. App regained focus.");
+  //     }
+  //   }
+  // }
 
   private IEnumerator DisconnectTimer()
   {
@@ -191,6 +191,8 @@ public class SocketIOManager : MonoBehaviour
       case "initdata":
         Debug.Log("INIT: " + obj);
         bets = root.gameData.bets;
+        ApplyWeaponCosts(root.gameData);
+        ApplyGameIntervals(root.gameData);
         SendFishSpawnEvent();
         UIManager.Instance.HandeGameInit();
 
@@ -206,7 +208,7 @@ public class SocketIOManager : MonoBehaviour
         HandleSpawnResult(root);
         break;
       case "hitresult":
-        Debug.Log("HITRESULT: " + obj);
+        Debug.Log("HR: " + obj);
         HandleHitResult(root.payload);
         break;
     }
@@ -218,6 +220,27 @@ public class SocketIOManager : MonoBehaviour
     RequestFishEvent obj = new();
     string json = JsonConvert.SerializeObject(obj);
     SendDataWithNamespace("request", json);
+  }
+
+  private void ApplyWeaponCosts(GameData gameData)
+  {
+    if (gameData?.weapons == null)
+      return;
+
+    float normalCost = gameData.weapons.normal?.cost ?? (GunCosts.Count > 0 ? GunCosts[0] : 1f);
+    float torpedoCost = gameData.weapons.torpedo?.cost ?? (GunCosts.Count > 1 ? GunCosts[1] : 1f);
+    float electricCost = gameData.weapons.electric?.cost ?? (GunCosts.Count > 2 ? GunCosts[2] : 1f);
+
+    GunCosts = new List<float> { normalCost, torpedoCost, electricCost };
+  }
+
+  private void ApplyGameIntervals(GameData gameData)
+  {
+    if (gameData == null)
+      return;
+
+    if (gameData.electricInterval > 0)
+      electricHitInterval = gameData.electricInterval / 1000f;
   }
 
   private void HandleSpawnResult(Root root)
@@ -286,13 +309,18 @@ public class SocketIOManager : MonoBehaviour
       }
     };
     string json = JsonConvert.SerializeObject(obj);
-    // Debug.Log("HIT: " + json);
-    Debug.Log("HIT: " + variant + " with " + WeaponType);
+    Debug.Log("HIT: " + json);
+    // Debug.Log("HIT: " + variant + " " + FishId + " with " + WeaponType);
     SendDataWithNamespace("request", json);
   }
 
   void HandleHitResult(Payload HitResult)
   {
+    if (GunManager.Instance.currentGun is TorpedoGun gun)
+    {
+      gun.awaitingHitResult = false;
+    }
+
     // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
     if (HitResult.fishKilled != null)
     {
@@ -306,10 +334,27 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
-      if (fish is NormalFish normalFish)
+      GunManager.Instance?.ForceStopTorpedoFire(fish);
+      fish.MarkPendingDeath();
+
+      // Weapon-aware death handling
+      if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
       {
-        // Debug.Log("FISH DIED: " + fish.data.variant);
-        normalFish.Die();
+        fish.deathCause = BaseFish.DeathCause.Torpedo;
+        fish.MarkPendingDeath();
+        fish.KillOnTorpedoArrival = true;
+        // Wait for torpedo (with fail-safe)
+        fish.WaitForTorpedoKill();
+      }
+      else
+      {
+        fish.deathCause =
+          UIManager.Instance.activeGun == UIManager.GunType.Laser
+            ? BaseFish.DeathCause.Laser
+            : BaseFish.DeathCause.Bullet;
+
+        // Instant despawn for non-torpedo weapons
+        fish.Die(true);
       }
 
     }
@@ -479,6 +524,23 @@ public class GameData
   public int historyLimit;
   public JackpotValues jackpotValues;
   public long sessionStartTime;
+  public Weapons weapons;
+  public int electricInterval;
+}
+
+[Serializable]
+public class Weapons
+{
+  public WeaponCost normal;
+  public WeaponCost torpedo;
+  public WeaponCost electric;
+}
+
+[Serializable]
+public class WeaponCost
+{
+  public float cost;
+  public int chargeRequired;
 }
 
 [Serializable]

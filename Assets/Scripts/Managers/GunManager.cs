@@ -67,7 +67,7 @@ public class GunManager : MonoBehaviour
 
     if (currentGun != null)
     {
-      if(currentGun is LazerGun)
+      if (currentGun is LazerGun)
         currentGun.transform.parent.gameObject.SetActive(false);
       else
         currentGun.gameObject.SetActive(false);
@@ -76,7 +76,7 @@ public class GunManager : MonoBehaviour
     GunSwitchAnimation.StartAnimation();
     currentGun = newGun;
 
-    if(currentGun is LazerGun)
+    if (currentGun is LazerGun)
       currentGun.transform.parent.gameObject.SetActive(true);
     else
       currentGun.gameObject.SetActive(true);
@@ -95,4 +95,13 @@ public class GunManager : MonoBehaviour
 
     Debug.LogError($"Gun of type {typeof(T)} not found");
   }
+
+  internal void ForceStopTorpedoFire(BaseFish killedFish)
+  {
+    if (currentGun is TorpedoGun torpedoGun)
+    {
+      torpedoGun.OnFishKilled(killedFish);
+    }
+  }
+
 }

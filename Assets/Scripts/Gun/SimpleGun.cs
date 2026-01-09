@@ -22,9 +22,8 @@ public class SimpleGun : BaseGun
   private Tween muzzleTween;
   private Vector3 initialLocalPos;
 
-  internal override void Awake()
+  internal void Awake()
   {
-    base.Awake();
     initialLocalPos = transform.localPosition;
     muzzleImage = muzzle.GetComponent<Image>();
 

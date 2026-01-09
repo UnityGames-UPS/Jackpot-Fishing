@@ -4357,8 +4357,9 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 6c30dbfe0977478cbaf7c6e09a3763aa
+  testToken: f9c4aafbf51a4eaa974da1645ee86884
   SpawnEventInterval: 4
+  electricHitInterval: 1.5
   bets: 
   GunCosts:
   - 1
@@ -7466,7 +7467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9f1dc6fc116467cba93fd80230bdd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 100
+  InitialCount: 20
   PrefabToPool: {fileID: 5532265270703622877, guid: 9801ee6e4624e41d39113360ae8b1dad, type: 3}
   ParentTransform: {fileID: 1334794351}
   ItemsInUse: []
@@ -48042,7 +48043,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d7115704c584c23be38c8b3494f49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FireInterval: 0.5
+  recoilDistance: 10
+  recoilDuration: 0.08
+  returnDuration: 0.12
+  recoilEase: 6
+  minFireCooldown: 0.5
+  viewportPadding: 0.1
 --- !u!1 &946015108
 GameObject:
   m_ObjectHideFlags: 0
@@ -60258,7 +60264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11da0c74850464e9aa38723693bb9334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 50
+  InitialCount: 20
   PrefabToPool: {fileID: 1250418551276246728, guid: 966956f4f463c40cfbfa627eae04d5fa, type: 3}
   ParentTransform: {fileID: 476027353}
   ItemsInUse: []
@@ -67521,7 +67527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ab1c23dcc604b398fd15cb93780460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 50
+  InitialCount: 20
   PrefabToPool: {fileID: 8144276284928121197, guid: 3fbf914cc16d54a5a8e284ec2e0b144e, type: 3}
   ParentTransform: {fileID: 671263521}
   ItemsInUse: []
@@ -98339,6 +98345,8 @@ MonoBehaviour:
   laserImpactAnimation: {fileID: 1134196806}
   laserImpactBGAnimation: {fileID: 211605844}
   impactScaleFactor: 0.7
+  fishDamageColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  viewportPadding: 0.1
 --- !u!114 &1966824574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99884,7 +99892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec64ddb86f99843cdabbf6e94d9907ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 200
+  InitialCount: 20
   PrefabToPool: {fileID: 6956865711151574178, guid: 870c34bb8fb414fef8ec349763c46860, type: 3}
   ParentTransform: {fileID: 2080007030}
   ItemsInUse: []

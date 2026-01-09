@@ -88,7 +88,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4df924dfe59f94e2cb1e3ce9c145b279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAnimationState: 0
   textureArray:
   - {fileID: 21300000, guid: 7dfb108f012684653a3fc0d2f4c1dc25, type: 3}
   - {fileID: 21300000, guid: 69b06d4fb588c404a87b788c75dc1c5b, type: 3}
@@ -124,6 +123,6 @@ MonoBehaviour:
   rendererDelegate: {fileID: 8182662690008360941}
   useSharedMaterial: 1
   doLoopAnimation: 0
-  AnimationSpeed: 22
+  AnimationSpeed: 40
   delayBetweenLoop: 0
   PlayOnAwake: 1

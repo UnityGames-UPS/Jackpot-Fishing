@@ -122,14 +122,11 @@ internal class NormalFish : BaseFish
     SetSpeedMultiplier(1f);
   }
 
-  internal override void Die()
+  internal override void Die(bool despawnAtEnd)
   {
-    base.Die();
-    if (splineController != null)
-    {
-      splineController.PlayAutomatically = false;
-      splineController.Pause();
-    }
+    if (WaitingForKillingTorpedo)
+      return;
+    base.Die(despawnAtEnd);
 
     Sequence dieSeq = DOTween.Sequence();
     dieSeq.AppendInterval(0.1f);
@@ -142,7 +139,8 @@ internal class NormalFish : BaseFish
 
     dieSeq.OnComplete(() =>
     {
-      DespawnFish();
+      if (!PendingVisualDeath)
+        DespawnFish();
     });
   }
 }

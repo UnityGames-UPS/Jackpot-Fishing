@@ -12,14 +12,19 @@ public class LazerGun : BaseGun
   [SerializeField] private RectTransform laserImpactAnimation;
   [SerializeField] private RectTransform laserImpactBGAnimation;
   [SerializeField] private float impactScaleFactor = 0.8f;
+  [Header("Hit")]
+  [SerializeField] private Color fishDamageColor = new Color(1f, 0.35f, 0.35f, 1f);
+  [SerializeField] private float viewportPadding = 0.1f;
 
   private BaseFish lockedFish;
   private RectTransform lockedFishRect;
   private bool laserActive;
+  private bool isFiring;
+  private string lockedVariant;
+  private float nextHitTime;
 
-  internal override void Awake()
+  internal void Awake()
   {
-    base.Awake();
     if (worldCamera == null)
       worldCamera = Camera.main;
 
@@ -28,18 +33,36 @@ public class LazerGun : BaseGun
     laserImpactBGAnimation.gameObject.SetActive(false);
   }
 
+  private void OnDisable()
+  {
+    StopAndClear();
+  }
+
   private void Update()
   {
-    if (!laserActive || lockedFish == null)
+    if (!isFiring)
       return;
 
-    if (!IsFishVisible(lockedFish))
+    if (!IsFishValidForBeam(lockedFish))
     {
-      StopLaser();
-      return;
+      lockedFish = ResolveVariantTarget();
+
+      if (lockedFish == null)
+      {
+        if (lockedVariant != null)
+        {
+          StopLaser();
+          return;
+        }
+
+        StopAndClear();
+        return;
+      }
     }
 
+    EnsureLaserActive(lockedFish);
     UpdateBeam();
+    TrySendHit();
   }
 
   internal override void Fire()
@@ -47,26 +70,39 @@ public class LazerGun : BaseGun
     // Laser does not use fire loop
   }
 
-  internal void StartLaser(BaseFish fish)
+  internal void HandlePointerDown(BaseFish hitFish)
   {
-    if (fish == null)
-      return;
+    if (lockedVariant != null || lockedFish != null)
+      ClearLock();
 
-    if (lockedFish != fish)
+    if (!IsFishValidForBeam(hitFish))
     {
-      lockedFish?.StopLaserImpact();
-
-      lockedFish = fish;
-      lockedFishRect = lockedFish.GetComponent<RectTransform>();
-
-      lockedFish.PlayLaserImpact();
+      StopAndClear();
+      return;
     }
 
-    laserActive = true;
-    laserBeam.gameObject.SetActive(true);
+    lockedVariant = hitFish.data.variant;
+    lockedFish = hitFish;
+    StartFiring();
+  }
 
-    ToggleLaserImpact(true);
-    UpdateBeam();
+  internal void UpdateUnlockedFire(BaseFish hitFish)
+  {
+    if (!IsFishValidForBeam(hitFish))
+    {
+      StopAndClear();
+      return;
+    }
+
+    lockedVariant = null;
+    lockedFish = hitFish;
+    StartFiring();
+  }
+
+  internal void StopFiring()
+  {
+    isFiring = false;
+    StopLaser();
   }
 
   internal void StopLaser()
@@ -76,14 +112,15 @@ public class LazerGun : BaseGun
     ToggleLaserImpact(false);
 
     lockedFish?.StopLaserImpact();
-    lockedFish = null;
-    lockedFishRect = null;
 
     laserBeam.gameObject.SetActive(false);
   }
 
   private void UpdateBeam()
   {
+    if (lockedFish == null)
+      return;
+
     Vector3 worldStart = muzzle.position;
     Vector3 worldEnd = lockedFish.HitPoint.position;
 
@@ -119,10 +156,7 @@ public class LazerGun : BaseGun
 
   private void ToggleLaserImpact(bool enable)
   {
-    if (laserImpactAnimation == null || laserImpactBGAnimation == null || lockedFishRect == null)
-      return;
-
-    if (enable)
+    if (enable && lockedFishRect)
     {
       // Scale impact relative to fish size
       laserImpactBGAnimation.sizeDelta = lockedFishRect.sizeDelta * lockedFish.data.laserImpactScaleFactor;
@@ -136,9 +170,109 @@ public class LazerGun : BaseGun
   private const float margin = 0.05f;
   private bool IsFishVisible(BaseFish fish)
   {
-    Vector3 viewportPos = worldCamera.WorldToViewportPoint(fish.transform.position);
-    return viewportPos.z > 0 &&
-           viewportPos.x > -margin && viewportPos.x < 1 + margin &&
-           viewportPos.y > -margin && viewportPos.y < 1 + margin;
+    var cam = Camera.main;
+    var bounds = fish.GetComponent<BoxCollider2D>().bounds;
+
+    Vector3 min = cam.WorldToViewportPoint(bounds.min);
+    Vector3 max = cam.WorldToViewportPoint(bounds.max);
+
+    if (max.z <= 0)
+      return false;
+
+    return max.x > viewportPadding &&
+           min.x < 1f - viewportPadding &&
+           max.y > viewportPadding &&
+           min.y < 1f - viewportPadding;
+  }
+
+  private bool IsFishValidForBeam(BaseFish fish)
+  {
+    if (fish == null || fish.data == null)
+      return false;
+
+    if (fish.isDespawning || fish.PendingVisualDeath)
+      return false;
+
+    if (!fish.gameObject.activeInHierarchy)
+      return false;
+
+    return IsFishVisible(fish);
+  }
+
+  private BaseFish ResolveVariantTarget()
+  {
+    if (lockedVariant == null)
+      return null;
+
+    foreach (var fish in FishManager.Instance.GetActiveFishes())
+    {
+      if (IsFishValidForBeam(fish) &&
+          fish.data.variant == lockedVariant)
+      {
+        return fish;
+      }
+    }
+
+    return null;
+  }
+
+  private void EnsureLaserActive(BaseFish fish)
+  {
+    if (lockedFish != fish || !laserActive)
+    {
+      lockedFish?.StopLaserImpact();
+
+      lockedFish = fish;
+      lockedFishRect = lockedFish.GetComponent<RectTransform>();
+
+      lockedFish.PlayLaserImpact();
+
+      laserActive = true;
+      laserBeam.gameObject.SetActive(true);
+      ToggleLaserImpact(true);
+    }
+  }
+
+  private void TrySendHit()
+  {
+    if (lockedFish == null)
+      return;
+
+    if (Time.time < nextHitTime)
+      return;
+
+    if (!UIManager.Instance.OnGunFired())
+      return;
+
+    nextHitTime = Time.time + SocketIOManager.Instance.ElectricHitInterval;
+
+    StartCoroutine(lockedFish.DamageAnimation(fishDamageColor));
+
+    SocketIOManager.Instance.SendHitEvent(
+      lockedFish.data.fishId,
+      "electric",
+      lockedFish.data.variant
+    );
+  }
+
+  private void StartFiring()
+  {
+    isFiring = true;
+  }
+
+  private void StopAndClear()
+  {
+    isFiring = false;
+    StopLaser();
+    lockedFish = null;
+    lockedFishRect = null;
+    lockedVariant = null;
+  }
+
+  private void ClearLock()
+  {
+    lockedFish = null;
+    lockedFishRect = null;
+    lockedVariant = null;
   }
 }

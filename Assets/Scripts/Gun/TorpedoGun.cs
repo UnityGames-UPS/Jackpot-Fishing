@@ -1,42 +1,44 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class TorpedoGun : BaseGun
 {
-  [SerializeField] internal float FireInterval = 0.6f;
+  [Header("Recoil")]
+  [SerializeField] private float recoilDistance = 0.15f;
+  [SerializeField] private float recoilDuration = 0.08f;
+  [SerializeField] private float returnDuration = 0.12f;
+  [SerializeField] private Ease recoilEase = Ease.OutQuad;
 
-  private float lastFireTime;
   private bool isFiring;
+  internal bool awaitingHitResult;
 
-  private BaseFish lockedFish;
+  // 🔑 Variant-level lock (gameplay)
   private string lockedVariant;
 
-  // ---------------- INPUT ENTRY ----------------
+  // 🔑 Instance-level lock (per shot)
+  private BaseFish currentTarget;
+  [SerializeField] private float minFireCooldown = 0.25f; // tweak feel
+  [SerializeField] private float viewportPadding = 0.1f;
+  private float nextAllowedFireTime;
+  private Tween recoilTween;
+  private Vector3 initialLocalPos;
+
+
+  // ---------------- INPUT ----------------
+
   internal void HandlePointerDown(BaseFish hitFish)
   {
+    if (lockedVariant != null || currentTarget != null)
+      ClearLock();
+
     if (!UIManager.Instance.IsValidTorpedoTarget(hitFish))
     {
-      ClearCurrentLock();
+      StopFiring();
       return;
     }
 
-    if (hitFish == null)
-    {
-      ClearCurrentLock();
-      return;
-    }
-
-    if (lockedVariant != null &&
-        hitFish.data.variant != lockedVariant)
-    {
-      ClearCurrentLock();
-      return;
-    }
-
-    if (lockedVariant == null)
-    {
-      lockedFish = hitFish;
-      lockedVariant = hitFish.data.variant;
-    }
+    lockedVariant = hitFish.data.variant;
+    currentTarget = hitFish;
 
     StartFiring();
   }
@@ -45,9 +47,13 @@ public class TorpedoGun : BaseGun
   {
     if (!UIManager.Instance.IsValidTorpedoTarget(hitFish))
     {
-      StopFiring();
+      StopAndClear();
       return;
     }
+
+    // unlocked = no variant lock
+    lockedVariant = null;
+    currentTarget = hitFish;
 
     StartFiring();
   }
@@ -57,13 +63,6 @@ public class TorpedoGun : BaseGun
     isFiring = false;
   }
 
-
-  internal void ClearCurrentLock()
-  {
-    lockedFish = null;
-    lockedVariant = null;
-  }
-
   // ---------------- LOOP ----------------
 
   private void Update()
@@ -71,104 +70,168 @@ public class TorpedoGun : BaseGun
     if (!isFiring)
       return;
 
-
-    if (Time.time - lastFireTime < FireInterval)
+    if (awaitingHitResult)
       return;
 
-    BaseFish target;
-
-    if (UIManager.Instance.IsTargetLockEnabled)
-    {
-      target = ResolveTarget();
-    }
-    else
-    {
-      target = InputManagerView.Instance.GetCurrentPointerFish();
-    }
-
-    if (target == null)
-    {
-      StopFiring();
+    // 🆕 local cooldown (prevents machine gun)
+    if (Time.time < nextAllowedFireTime)
       return;
-    }
 
-    if (!UIManager.Instance.IsValidTorpedoTarget(target))
+    if (!IsFishValidForShot(currentTarget))
     {
-      StopFiring();
-      return;
+      currentTarget = ResolveVariantTarget();
+
+      if (currentTarget == null)
+      {
+        if (lockedVariant != null)
+          return;
+
+        StopAndClear();
+        return;
+      }
     }
 
-    TryFire(target);
+    FireAtCurrentTarget();
   }
+
 
   internal void StartFiring()
   {
     isFiring = true;
   }
 
-  private bool IsFishValidForLock(BaseFish fish)
+  // ---------------- FIRE ----------------
+
+  private void FireAtCurrentTarget()
   {
-    if (fish == null || !fish.gameObject.activeInHierarchy)
+    if (!UIManager.Instance.OnGunFired())
+      return;
+
+    PlayRecoil();
+
+    BaseFish fish = currentTarget;
+
+    awaitingHitResult = true;
+
+    TorpedoBulletView torpedo =
+      TorpedoPool.Instance.GetFromPool();
+
+    torpedo.transform.SetPositionAndRotation(
+      muzzle.position,
+      Quaternion.identity
+    );
+
+    torpedo.Init(fish);
+
+    SocketIOManager.Instance.SendHitEvent(
+      fish.data.fishId,
+      "torpedo",
+      fish.data.variant
+    );
+
+    // 🆕 prevent rapid refire
+    nextAllowedFireTime = Time.time + minFireCooldown;
+  }
+
+  private void PlayRecoil()
+  {
+    recoilTween?.Kill();
+
+    Vector3 recoilDir = -transform.up; // opposite of firing direction
+
+    recoilTween = transform
+      .DOLocalMove(initialLocalPos + recoilDir * recoilDistance, recoilDuration)
+      .SetEase(recoilEase)
+      .OnComplete(() =>
+      {
+        transform
+          .DOLocalMove(initialLocalPos, returnDuration)
+          .SetEase(Ease.OutQuad);
+      });
+  }
+
+
+  // ---------------- TARGET RESOLUTION ----------------
+
+  private BaseFish ResolveVariantTarget()
+  {
+    if (lockedVariant == null)
+      return null;
+
+    foreach (var fish in FishManager.Instance.GetActiveFishes())
+    {
+      if (IsFishValidForShot(fish) &&
+          fish.data.variant == lockedVariant)
+      {
+        return fish;
+      }
+    }
+
+    return null;
+  }
+
+  private bool IsFishValidForShot(BaseFish fish)
+  {
+    if (fish == null)
       return false;
 
+    if (fish.isDespawning || fish.PendingVisualDeath)
+      return false;
+
+    if (!fish.gameObject.activeInHierarchy)
+      return false;
+
+    return IsFishInViewport(fish);
+  }
+
+  private bool IsFishInViewport(BaseFish fish)
+  {
     var cam = Camera.main;
     var bounds = fish.GetComponent<BoxCollider2D>().bounds;
 
     Vector3 min = cam.WorldToViewportPoint(bounds.min);
     Vector3 max = cam.WorldToViewportPoint(bounds.max);
 
-    // any overlap with screen
-    return max.x > 0 && min.x < 1 &&
-           max.y > 0 && min.y < 1 &&
-           max.z > 0;
+    if (max.z <= 0)
+      return false;
+
+    return max.x > viewportPadding &&
+           min.x < 1f - viewportPadding &&
+           max.y > viewportPadding &&
+           min.y < 1f - viewportPadding;
   }
 
-  // ---------------- TARGET RESOLUTION ----------------
+  // ---------------- BACKEND CALLBACK ----------------
 
-  private BaseFish ResolveTarget()
+  internal void OnFishKilled(BaseFish fish)
   {
-    if (lockedVariant == null)
-      return null;
-
-    // Prefer locked fish if still alive
-    if (lockedFish != null &&
-        lockedFish.gameObject.activeInHierarchy)
-      return lockedFish;
-
-    // Find another fish of same variant
-    foreach (var fish in FishManager.Instance.GetActiveFishes())
-    {
-      if (fish != null &&
-          fish.data != null &&
-          fish.data.variant == lockedVariant)
-      {
-        lockedFish = fish;
-        return fish;
-      }
-    }
-
-    // No fish of this variant left
-    ClearCurrentLock();
-    return null;
+    if (currentTarget == fish)
+      currentTarget = null;
   }
 
-  // ---------------- FIRE ----------------
-
-  private void TryFire(BaseFish fish)
+  internal BaseFish GetLockedFish()
   {
-    if (!UIManager.Instance.OnGunFired())
-      return;
-
-    TorpedoBulletView torpedo = TorpedoPool.Instance.GetFromPool();
-    torpedo.transform.SetPositionAndRotation(muzzle.position, Quaternion.identity);
-
-    Vector3 dir = (fish.transform.position - muzzle.position).normalized;
-    torpedo.Init(fish, dir);
-
-    lastFireTime = Time.time;
+    return currentTarget;
   }
 
+  private void StopAndClear()
+  {
+    isFiring = false;
+    awaitingHitResult = false;
+    currentTarget = null;
+    lockedVariant = null;
+  }
 
+  private void ClearLock()
+  {
+    currentTarget = null;
+    lockedVariant = null;
+  }
+
+  internal void Awake()
+  {
+    initialLocalPos = transform.localPosition;
+  }
 
   internal override void Fire() { }
 }

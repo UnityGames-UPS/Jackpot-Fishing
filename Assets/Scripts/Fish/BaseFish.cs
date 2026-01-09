@@ -15,6 +15,7 @@ using System;
 internal class BaseFish : MonoBehaviour
 {
   [SerializeField] internal FishData data;
+  internal bool KillOnTorpedoArrival;
   internal Transform HitPoint => transform.GetChild(0);
   internal RectTransform Rect => GetComponent<RectTransform>();
   protected Tween movementTween;
@@ -26,11 +27,29 @@ internal class BaseFish : MonoBehaviour
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
   private Coroutine lifeTimeoutRoutine;
-  private bool isDespawning;
+  internal bool isDespawning;
+  internal bool PendingVisualDeath;
+  private bool finalized;
+
+  internal enum DeathCause
+  {
+    None,
+    Torpedo,
+    Bullet,
+    Laser,
+    ServerCleanup
+  }
+
+  internal DeathCause deathCause = DeathCause.None;
+  internal bool WaitingForKillingTorpedo;
+  private Coroutine killFailSafeRoutine;
+
 
   internal virtual void Initialize(FishData data)
   {
     this.data = data;
+
+    finalized = false;
 
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
@@ -51,8 +70,18 @@ internal class BaseFish : MonoBehaviour
     Rect.sizeDelta = data.spriteSize;
 
     // Fade in
-    fishImage.color = new Color(1, 1, 1, 0);
-    fishImage.DOFade(1f, 0.2f).SetUpdate(true);
+    if(UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
+    {
+      if (!UIManager.Instance.IsValidTorpedoTarget(this))
+      {
+        SetAlpha(0.25f);
+      }
+    }
+    else
+    {
+      fishImage.color = new Color(1, 1, 1, 0);
+      fishImage.DOFade(1f, 0.2f).SetUpdate(true);
+    }
   }
 
   protected void SetupFallbackMovement()
@@ -129,15 +158,33 @@ internal class BaseFish : MonoBehaviour
     damageTween?.Kill();
 
     damageTween = DOTween.Sequence()
-        .Append(fishImage.DOColor(damageColor, 0.05f).SetEase(Ease.InQuad))
-        .AppendInterval(0.1f).SetEase(Ease.InQuad)
-        .Append(fishImage.DOColor(Color.white, 0.05f).SetEase(Ease.InQuad));
+        .Append(fishImage.DOColor(damageColor, 0.06f).SetEase(Ease.OutQuad))
+        .AppendInterval(0.08f).SetEase(Ease.OutQuad)
+        .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
   }
 
-  internal virtual void Die()
+  internal virtual void Die(bool despawnAtEnd = true)
   {
-    boxCollider.enabled = false;
+    if (isDespawning)
+      return;
 
+    if (KillOnTorpedoArrival)
+      return;
+
+    PendingVisualDeath = false;
+
+    if (WaitingForKillingTorpedo)
+      return;
+
+    boxCollider.enabled = false;
+    if (splineController != null)
+    {
+      splineController.PlayAutomatically = false;
+      splineController.Pause();
+    }
+
+    if (despawnAtEnd)
+      DespawnFish();
   }
 
   // --------------------------------------------------------
@@ -145,13 +192,20 @@ internal class BaseFish : MonoBehaviour
   // --------------------------------------------------------
   protected void DespawnFish()
   {
+    if (PendingVisualDeath)
+      return;
+
     if (isDespawning)
       return;
 
     isDespawning = true;
 
+    // Debug.Log("Despawning fish : " + data?.variant + " " + data?.fishId);
+
     movementTween?.Kill();
     damageTween?.Kill();
+
+    DOTween.Kill(transform);
     DOTween.Kill(fishImage);
 
     // Visual fade is optional, logic must NOT depend on it
@@ -171,6 +225,9 @@ internal class BaseFish : MonoBehaviour
 
   private void FinalizeDespawn()
   {
+    if (finalized)
+      return;
+    finalized = true;
     if (lifeTimeoutRoutine != null)
     {
       StopCoroutine(lifeTimeoutRoutine);
@@ -196,6 +253,10 @@ internal class BaseFish : MonoBehaviour
     damageTween?.Kill();
 
     isDespawning = false;
+    PendingVisualDeath = false;
+
+    WaitingForKillingTorpedo = false;
+    deathCause = DeathCause.None;
 
     if (fishImage != null)
       fishImage.color = Color.white;
@@ -221,6 +282,66 @@ internal class BaseFish : MonoBehaviour
     c.a = alpha;
     fishImage.color = c;
   }
+  internal void MarkPendingDeath()
+  {
+    PendingVisualDeath = true;
+  }
+  internal void WaitForTorpedoKill(float timeout = 10f)
+  {
+    WaitingForKillingTorpedo = true;
+
+    if (killFailSafeRoutine != null)
+      StopCoroutine(killFailSafeRoutine);
+
+    killFailSafeRoutine = StartCoroutine(KillFailSafe(timeout));
+  }
+
+  private IEnumerator KillFailSafe(float t)
+  {
+    yield return new WaitForSecondsRealtime(t);
+
+    if (WaitingForKillingTorpedo)
+    {
+      LogDeath("TORPEDO_FAILSAFE");
+
+      WaitingForKillingTorpedo = false;
+      KillOnTorpedoArrival = false;
+      Die(true);
+    }
+  }
+
+  internal void OnKillingTorpedoArrived()
+  {
+    LogDeath("TORPEDO_ARRIVAL");
+
+    if (!WaitingForKillingTorpedo)
+      return;
+
+    WaitingForKillingTorpedo = false;
+
+    if (killFailSafeRoutine != null)
+    {
+      StopCoroutine(killFailSafeRoutine);
+      killFailSafeRoutine = null;
+    }
+    KillOnTorpedoArrival = false;
+    Die(true);
+  }
+
+  private void LogDeath(string source)
+  {
+    Debug.Log(
+      $"☠️ FISH DEATH | " +
+      $"source={source} | " +
+      $"variant={data?.variant} | " +
+      $"id={data?.fishId} | " +
+      $"PendingVisualDeath={PendingVisualDeath} | " +
+      $"WaitingForTorpedo={WaitingForKillingTorpedo} | " +
+      $"KillOnArrival={KillOnTorpedoArrival} | " +
+      $"deathCause={deathCause}"
+    );
+  }
+
 
   internal void PlayLaserImpact() { }
   internal void StopLaserImpact() { }

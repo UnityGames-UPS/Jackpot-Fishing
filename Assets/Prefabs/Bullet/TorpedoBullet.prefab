@@ -183,10 +183,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e4ac359bd87478b941841472955e0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitDistance: 0.01
   phase1Duration: 0.5
-  rotationSpeed: 720
   pulseAmount: 0.8
+  minSpeed: 18
+  maxSpeed: 20
+  accel: 25
+  maxLifetime: 0.6
+  hitDistance: 0.1
   sideAnim:
   - {fileID: 21300000, guid: b43e274c04fe946f6a338d5fd1bd87ae, type: 3}
   - {fileID: 21300000, guid: 72c3fce585b9b4f799a50559f3478e15, type: 3}
@@ -247,14 +250,5 @@ MonoBehaviour:
   - {fileID: 21300000, guid: cb987cb3873174b99ba7a0a22b471ce4, type: 3}
   - {fileID: 21300000, guid: 25c8fd8c95a854f088a697fca55468ba, type: 3}
   - {fileID: 21300000, guid: fdbfc8ccf547e4009a29e0d0eea12ec4, type: 3}
-  sideAnimSpeed: 19
-  backAnimSpeed: 19
-  phase1Percent: 0.4
-  minPhase1Distance: 0.4
-  maxPhase1Distance: 5
-  minHomingSpeed: 18
-  homingAcceleration: 25
-  maxPhase2Lifetime: 0.6
-  homingGain: 2.5
-  maxHomingSpeed: 22
-  fishDamageColor: {r: 1, g: 0.34509805, b: 0.34509805, a: 1}
+  animSpeed: 19
+  rotationSpeed: 720
