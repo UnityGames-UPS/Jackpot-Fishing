@@ -208,7 +208,7 @@ public class SocketIOManager : MonoBehaviour
         HandleSpawnResult(root);
         break;
       case "hitresult":
-        Debug.Log("HR: " + obj);
+        Debug.Log(obj);
         HandleHitResult(root.payload);
         break;
     }
@@ -309,7 +309,7 @@ public class SocketIOManager : MonoBehaviour
       }
     };
     string json = JsonConvert.SerializeObject(obj);
-    Debug.Log("HIT: " + json);
+    Debug.Log(json + variant ?? "");
     // Debug.Log("HIT: " + variant + " " + FishId + " with " + WeaponType);
     SendDataWithNamespace("request", json);
   }
@@ -334,6 +334,15 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
+      bool isLocalTorpedoKill = false;
+      if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo &&
+          GunManager.Instance.currentGun is TorpedoGun torpedoGun)
+      {
+        isLocalTorpedoKill = torpedoGun.GetLockedFish() == fish;
+      }
+
+      bool isVisibleForTorpedo = IsFishVisibleForTorpedo(fish);
+
       GunManager.Instance?.ForceStopTorpedoFire(fish);
       fish.MarkPendingDeath();
 
@@ -341,10 +350,16 @@ public class SocketIOManager : MonoBehaviour
       if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
       {
         fish.deathCause = BaseFish.DeathCause.Torpedo;
-        fish.MarkPendingDeath();
-        fish.KillOnTorpedoArrival = true;
-        // Wait for torpedo (with fail-safe)
-        fish.WaitForTorpedoKill();
+        if (isLocalTorpedoKill && isVisibleForTorpedo)
+        {
+          fish.KillOnTorpedoArrival = true;
+          // Wait for torpedo (with short fail-safe)
+          fish.WaitForTorpedoKill(1f);
+        }
+        else
+        {
+          fish.Die(true);
+        }
       }
       else
       {
@@ -358,6 +373,30 @@ public class SocketIOManager : MonoBehaviour
       }
 
     }
+  }
+
+  private const float torpedoViewportPadding = 0.1f;
+  private bool IsFishVisibleForTorpedo(BaseFish fish)
+  {
+    if (fish == null)
+      return false;
+
+    var cam = Camera.main;
+    if (cam == null)
+      return false;
+
+    var bounds = fish.GetComponent<BoxCollider2D>().bounds;
+
+    Vector3 min = cam.WorldToViewportPoint(bounds.min);
+    Vector3 max = cam.WorldToViewportPoint(bounds.max);
+
+    if (max.z <= 0)
+      return false;
+
+    return max.x > torpedoViewportPadding &&
+           min.x < 1f - torpedoViewportPadding &&
+           max.y > torpedoViewportPadding &&
+           min.y < 1f - torpedoViewportPadding;
   }
 
   // Connected event handler implementation

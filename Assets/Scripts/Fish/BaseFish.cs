@@ -82,6 +82,7 @@ internal class BaseFish : MonoBehaviour
       fishImage.color = new Color(1, 1, 1, 0);
       fishImage.DOFade(1f, 0.2f).SetUpdate(true);
     }
+
   }
 
   protected void SetupFallbackMovement()
@@ -285,6 +286,8 @@ internal class BaseFish : MonoBehaviour
   internal void MarkPendingDeath()
   {
     PendingVisualDeath = true;
+    if (boxCollider != null)
+      boxCollider.enabled = false;
   }
   internal void WaitForTorpedoKill(float timeout = 10f)
   {

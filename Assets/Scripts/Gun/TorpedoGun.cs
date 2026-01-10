@@ -18,8 +18,10 @@ public class TorpedoGun : BaseGun
   // 🔑 Instance-level lock (per shot)
   private BaseFish currentTarget;
   [SerializeField] private float minFireCooldown = 0.25f; // tweak feel
+  [SerializeField] private float variantSwitchCooldown = 0.35f;
   [SerializeField] private float viewportPadding = 0.1f;
   private float nextAllowedFireTime;
+  private float nextAllowedVariantSwitchTime;
   private Tween recoilTween;
   private Vector3 initialLocalPos;
 
@@ -37,8 +39,18 @@ public class TorpedoGun : BaseGun
       return;
     }
 
-    lockedVariant = hitFish.data.variant;
+    string nextVariant = hitFish.data.variant;
+    if (lockedVariant != null &&
+        nextVariant != lockedVariant &&
+        Time.time < nextAllowedVariantSwitchTime)
+    {
+      StopFiring();
+      return;
+    }
+
+    lockedVariant = nextVariant;
     currentTarget = hitFish;
+    nextAllowedVariantSwitchTime = Time.time + variantSwitchCooldown;
 
     StartFiring();
   }
