@@ -304,6 +304,7 @@ public class UIManager : MonoBehaviour
           TargetLockFGAnim.SetActive(true);
         else
           TargetLockFGAnim.SetActive(false);
+        if (!isTargetLock && GunManager.Instance != null && GunManager.Instance.currentGun is TorpedoGun torpedoGun) torpedoGun.DisableTargetLock();
         UpdateActiveGun();
         break;
       case 1:
@@ -356,7 +357,7 @@ public class UIManager : MonoBehaviour
     return true;
   }
 
-  float GetGunCost()
+  internal float GetGunCost()
   {
     float bet = currentBet;
 

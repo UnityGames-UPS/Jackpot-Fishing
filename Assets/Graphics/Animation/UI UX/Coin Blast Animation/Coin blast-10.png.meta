@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 468e0a2f884294e90b1f74524fef1f95
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2271399639189049008
+    second: Coin blast-10_0
+  - first:
+      213: 1181438177423437639
+    second: Coin blast-10_1
+  - first:
+      213: 5683238198441689112
+    second: Coin blast-10_2
+  - first:
+      213: 2938214044119768909
+    second: Coin blast-10_3
+  - first:
+      213: 818831451135371835
+    second: Coin blast-10_4
+  - first:
+      213: 1436369316253476661
+    second: Coin blast-10_5
+  - first:
+      213: -4936740659866826874
+    second: Coin blast-10_6
+  - first:
+      213: 5250911179862225549
+    second: Coin blast-10_7
+  - first:
+      213: 5485156400497939859
+    second: Coin blast-10_8
+  - first:
+      213: 4734772524367117875
+    second: Coin blast-10_9
+  - first:
+      213: -2598870230399508336
+    second: Coin blast-10_10
+  - first:
+      213: -8489483683720928186
+    second: Coin blast-10_11
+  - first:
+      213: 9106244140734094734
+    second: Coin blast-10_12
+  - first:
+      213: -159379001505817424
+    second: Coin blast-10_13
+  - first:
+      213: -4898967298912761171
+    second: Coin blast-10_14
+  - first:
+      213: 4349634206224123028
+    second: Coin blast-10_15
+  - first:
+      213: -8069270459672514972
+    second: Coin blast-10_16
+  - first:
+      213: 4346968547873068742
+    second: Coin blast-10_17
+  - first:
+      213: -627249556494693948
+    second: Coin blast-10_18
+  - first:
+      213: -1188139782418175711
+    second: Coin blast-10_19
+  - first:
+      213: 1276255844647660865
+    second: Coin blast-10_20
+  - first:
+      213: 4415542449301991350
+    second: Coin blast-10_21
+  - first:
+      213: -4385771108640216066
+    second: Coin blast-10_22
+  - first:
+      213: -1948369596007725021
+    second: Coin blast-10_23
+  - first:
+      213: 1569067460986431020
+    second: Coin blast-10_24
+  - first:
+      213: 7248915160595130190
+    second: Coin blast-10_25
+  - first:
+      213: -3533593651359693691
+    second: Coin blast-10_26
+  - first:
+      213: 5282776937107604719
+    second: Coin blast-10_27
+  - first:
+      213: 355574004505709879
+    second: Coin blast-10_28
+  - first:
+      213: 836252721814705025
+    second: Coin blast-10_29
+  - first:
+      213: 5199589420654513569
+    second: Coin blast-10_30
+  - first:
+      213: -1164022411536621580
+    second: Coin blast-10_31
+  - first:
+      213: 1085848912918568793
+    second: Coin blast-10_32
+  - first:
+      213: 2234474395159221256
+    second: Coin blast-10_33
+  - first:
+      213: 3263065123176838908
+    second: Coin blast-10_34
+  - first:
+      213: -1754072683861794918
+    second: Coin blast-10_35
+  - first:
+      213: 6810608242322166412
+    second: Coin blast-10_36
+  - first:
+      213: 4595275028617818715
+    second: Coin blast-10_37
+  - first:
+      213: -2040734541653247873
+    second: Coin blast-10_38
+  - first:
+      213: -7632311671595479613
+    second: Coin blast-10_39
+  - first:
+      213: -9184532915130629103
+    second: Coin blast-10_40
+  - first:
+      213: -6195473880043922532
+    second: Coin blast-10_41
+  - first:
+      213: 316322849712678274
+    second: Coin blast-10_42
+  - first:
+      213: 3991257812540361607
+    second: Coin blast-10_43
+  - first:
+      213: 237739876599409909
+    second: Coin blast-10_44
+  - first:
+      213: -6744244642967913290
+    second: Coin blast-10_45
+  - first:
+      213: -7542431087326199452
+    second: Coin blast-10_46
+  - first:
+      213: -5109770121187273361
+    second: Coin blast-10_47
+  - first:
+      213: 2801532529319558577
+    second: Coin blast-10_48
+  - first:
+      213: -8475255236696251880
+    second: Coin blast-10_49
+  - first:
+      213: -4128910241384866096
+    second: Coin blast-10_50
+  - first:
+      213: 5129002938971944826
+    second: Coin blast-10_51
+  - first:
+      213: 7115916690993554811
+    second: Coin blast-10_52
+  - first:
+      213: 8022580942200088618
+    second: Coin blast-10_53
+  - first:
+      213: 2086029662340936970
+    second: Coin blast-10_54
+  - first:
+      213: 4260802516247315583
+    second: Coin blast-10_55
+  - first:
+      213: 5692097529869249967
+    second: Coin blast-10_56
+  - first:
+      213: -1440444615966650704
+    second: Coin blast-10_57
+  - first:
+      213: -7873226510890720935
+    second: Coin blast-10_58
+  - first:
+      213: 1150679793204265105
+    second: Coin blast-10_59
+  - first:
+      213: -674649288714854828
+    second: Coin blast-10_60
+  - first:
+      213: 2355317017729854654
+    second: Coin blast-10_61
+  - first:
+      213: 3929021703303335683
+    second: Coin blast-10_62
+  - first:
+      213: 816971628806422575
+    second: Coin blast-10_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Coin blast-10_0
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 377
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0be40dcffe1a58f10800000000000000
+      internalID: 2271399639189049008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_1
+      rect:
+        serializedVersion: 2
+        x: 263
+        y: 363
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74fa86943cf456010800000000000000
+      internalID: 1181438177423437639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_2
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 321
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8104c08c70beede40800000000000000
+      internalID: 5683238198441689112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_3
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 347
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4f92d51b12a6c820800000000000000
+      internalID: 2938214044119768909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_4
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 328
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3a67dfcdd21d5b00800000000000000
+      internalID: 818831451135371835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_5
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 340
+        width: 23
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5372f8d68420fe310800000000000000
+      internalID: 1436369316253476661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_6
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 321
+        width: 8
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 687096c968c2d7bb0800000000000000
+      internalID: -4936740659866826874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_7
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 332
+        width: 13
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d82b0d6c5ebfed840800000000000000
+      internalID: 5250911179862225549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_8
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 321
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 395d3254fa03f1c40800000000000000
+      internalID: 5485156400497939859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 344
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e7e27668a45b140800000000000000
+      internalID: 4734772524367117875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_10
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 322
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09023bb7b45feebd0800000000000000
+      internalID: -2598870230399508336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_11
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 339
+        width: 41
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 644e651a19b4f2a80800000000000000
+      internalID: -8489483683720928186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_12
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 266
+        width: 26
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8d107e8cc0ef5e70800000000000000
+      internalID: 9106244140734094734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_13
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 271
+        width: 41
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bcd69e74a5c9cdf0800000000000000
+      internalID: -159379001505817424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_14
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 310
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: daacc0e823f530cb0800000000000000
+      internalID: -4898967298912761171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_15
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 295
+        width: 8
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49480e4e3410d5c30800000000000000
+      internalID: 4349634206224123028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_16
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 306
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46eaaae0541340090800000000000000
+      internalID: -8069270459672514972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_17
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 284
+        width: 42
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c615c1fcd8835c30800000000000000
+      internalID: 4346968547873068742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_18
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 299
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c9cc970adf8b47f0800000000000000
+      internalID: -627249556494693948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_19
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 303
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1296475b921e28fe0800000000000000
+      internalID: -1188139782418175711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_20
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 306
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14d6db6cdeb26b110800000000000000
+      internalID: 1276255844647660865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_21
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 304
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bfad4d8678274d30800000000000000
+      internalID: 4415542449301991350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_22
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 285
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efb245bd96c9223c0800000000000000
+      internalID: -4385771108640216066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_23
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 292
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 328c9c2ec2006f4e0800000000000000
+      internalID: -1948369596007725021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_24
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 291
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2668b0ea8276c510800000000000000
+      internalID: 1569067460986431020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_25
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 281
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e476732aee1599460800000000000000
+      internalID: 7248915160595130190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_26
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 280
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 584412ebb4726fec0800000000000000
+      internalID: -3533593651359693691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_27
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 252
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe4cceb82a1305940800000000000000
+      internalID: 5282776937107604719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_28
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 255
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73d0de55ca04fe400800000000000000
+      internalID: 355574004505709879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_29
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 219
+        width: 65
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 183183a7b67fa9b00800000000000000
+      internalID: 836252721814705025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_30
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 254
+        width: 46
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1adcdfb8707a82840800000000000000
+      internalID: 5199589420654513569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_31
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 215
+        width: 78
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ff14c1b8cf88dfe0800000000000000
+      internalID: -1164022411536621580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_32
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 266
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95f514e45d5b11f00800000000000000
+      internalID: 1085848912918568793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_33
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 258
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 804db27af92720f10800000000000000
+      internalID: 2234474395159221256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_34
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 240
+        width: 69
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf6fbe9e07cb84d20800000000000000
+      internalID: 3263065123176838908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_35
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 234
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9f9330003848a7e0800000000000000
+      internalID: -1754072683861794918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_36
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 181
+        width: 42
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c82d5fbbc14248e50800000000000000
+      internalID: 6810608242322166412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_37
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 230
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b52fcfdaa42b5cf30800000000000000
+      internalID: 4595275028617818715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_38
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 177
+        width: 44
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7873e32fbadda3e0800000000000000
+      internalID: -2040734541653247873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_39
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 219
+        width: 37
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cdcb7fe8f4941690800000000000000
+      internalID: -7632311671595479613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_40
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 222
+        width: 23
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11481c5b9fbf98080800000000000000
+      internalID: -9184532915130629103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_41
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 197
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9b55c4c451450aa0800000000000000
+      internalID: -6195473880043922532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_42
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 166
+        width: 49
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 285a673b4fdc36400800000000000000
+      internalID: 316322849712678274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_43
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 182
+        width: 28
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78b887b75dbc36730800000000000000
+      internalID: 3991257812540361607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_44
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 165
+        width: 28
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fc27ad782f9c4300800000000000000
+      internalID: 237739876599409909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_45
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 184
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bcf091da31a762a0800000000000000
+      internalID: -6744244642967913290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_46
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 131
+        width: 45
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4610f0933e6e35790800000000000000
+      internalID: -7542431087326199452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_47
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 151
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f655ab2c5237619b0800000000000000
+      internalID: -5109770121187273361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_48
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 162
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bd3bc40efa01e620800000000000000
+      internalID: 2801532529319558577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_49
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 142
+        width: 45
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81263fb1448d16a80800000000000000
+      internalID: -8475255236696251880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_50
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 145
+        width: 21
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0de58c8e20a23b6c0800000000000000
+      internalID: -4128910241384866096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_51
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 145
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a777b559ff0ed2740800000000000000
+      internalID: 5129002938971944826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_52
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 169
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b75a1f95780d0c260800000000000000
+      internalID: 7115916690993554811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_53
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 127
+        width: 26
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a28a7a98cdee55f60800000000000000
+      internalID: 8022580942200088618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_54
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 142
+        width: 16
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0572c6fce013fc10800000000000000
+      internalID: 2086029662340936970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_55
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 159
+        width: 14
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7403075059612b30800000000000000
+      internalID: 4260802516247315583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_56
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 122
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fad2cbe9b846efe40800000000000000
+      internalID: 5692097529869249967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_57
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 131
+        width: 27
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0be0faae043820ce0800000000000000
+      internalID: -1440444615966650704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_58
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 123
+        width: 19
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 951ab26d33eacb290800000000000000
+      internalID: -7873226510890720935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_59
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 126
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1900924ec2908ff00800000000000000
+      internalID: 1150679793204265105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_60
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 113
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45e5e2edb0a23a6f0800000000000000
+      internalID: -674649288714854828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_61
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 114
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebc683f3954cfa020800000000000000
+      internalID: 2355317017729854654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_62
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 100
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30f023c1c60b68630800000000000000
+      internalID: 3929021703303335683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Coin blast-10_63
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 91
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f20449e2e57765b00800000000000000
+      internalID: 816971628806422575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Coin blast-10_0: 2271399639189049008
+      Coin blast-10_1: 1181438177423437639
+      Coin blast-10_10: -2598870230399508336
+      Coin blast-10_11: -8489483683720928186
+      Coin blast-10_12: 9106244140734094734
+      Coin blast-10_13: -159379001505817424
+      Coin blast-10_14: -4898967298912761171
+      Coin blast-10_15: 4349634206224123028
+      Coin blast-10_16: -8069270459672514972
+      Coin blast-10_17: 4346968547873068742
+      Coin blast-10_18: -627249556494693948
+      Coin blast-10_19: -1188139782418175711
+      Coin blast-10_2: 5683238198441689112
+      Coin blast-10_20: 1276255844647660865
+      Coin blast-10_21: 4415542449301991350
+      Coin blast-10_22: -4385771108640216066
+      Coin blast-10_23: -1948369596007725021
+      Coin blast-10_24: 1569067460986431020
+      Coin blast-10_25: 7248915160595130190
+      Coin blast-10_26: -3533593651359693691
+      Coin blast-10_27: 5282776937107604719
+      Coin blast-10_28: 355574004505709879
+      Coin blast-10_29: 836252721814705025
+      Coin blast-10_3: 2938214044119768909
+      Coin blast-10_30: 5199589420654513569
+      Coin blast-10_31: -1164022411536621580
+      Coin blast-10_32: 1085848912918568793
+      Coin blast-10_33: 2234474395159221256
+      Coin blast-10_34: 3263065123176838908
+      Coin blast-10_35: -1754072683861794918
+      Coin blast-10_36: 6810608242322166412
+      Coin blast-10_37: 4595275028617818715
+      Coin blast-10_38: -2040734541653247873
+      Coin blast-10_39: -7632311671595479613
+      Coin blast-10_4: 818831451135371835
+      Coin blast-10_40: -9184532915130629103
+      Coin blast-10_41: -6195473880043922532
+      Coin blast-10_42: 316322849712678274
+      Coin blast-10_43: 3991257812540361607
+      Coin blast-10_44: 237739876599409909
+      Coin blast-10_45: -6744244642967913290
+      Coin blast-10_46: -7542431087326199452
+      Coin blast-10_47: -5109770121187273361
+      Coin blast-10_48: 2801532529319558577
+      Coin blast-10_49: -8475255236696251880
+      Coin blast-10_5: 1436369316253476661
+      Coin blast-10_50: -4128910241384866096
+      Coin blast-10_51: 5129002938971944826
+      Coin blast-10_52: 7115916690993554811
+      Coin blast-10_53: 8022580942200088618
+      Coin blast-10_54: 2086029662340936970
+      Coin blast-10_55: 4260802516247315583
+      Coin blast-10_56: 5692097529869249967
+      Coin blast-10_57: -1440444615966650704
+      Coin blast-10_58: -7873226510890720935
+      Coin blast-10_59: 1150679793204265105
+      Coin blast-10_6: -4936740659866826874
+      Coin blast-10_60: -674649288714854828
+      Coin blast-10_61: 2355317017729854654
+      Coin blast-10_62: 3929021703303335683
+      Coin blast-10_63: 816971628806422575
+      Coin blast-10_7: 5250911179862225549
+      Coin blast-10_8: 5485156400497939859
+      Coin blast-10_9: 4734772524367117875
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -21,7 +21,8 @@ public class LazerGun : BaseGun
   private bool laserActive;
   private bool isFiring;
   private string lockedVariant;
-  private float nextHitTime;
+  private bool awaitingHitResult;
+  private float nextAllowedHitTime;
 
   internal void Awake()
   {
@@ -238,13 +239,16 @@ public class LazerGun : BaseGun
     if (lockedFish == null)
       return;
 
-    if (Time.time < nextHitTime)
+    if (awaitingHitResult)
+      return;
+
+    if (Time.time < nextAllowedHitTime)
       return;
 
     if (!UIManager.Instance.OnGunFired())
       return;
 
-    nextHitTime = Time.time + SocketIOManager.Instance.ElectricHitInterval;
+    awaitingHitResult = true;
 
     StartCoroutine(lockedFish.DamageAnimation(fishDamageColor));
 
@@ -274,5 +278,11 @@ public class LazerGun : BaseGun
     lockedFish = null;
     lockedFishRect = null;
     lockedVariant = null;
+  }
+
+  internal void OnHitResult()
+  {
+    awaitingHitResult = false;
+    nextAllowedHitTime = Time.time + SocketIOManager.Instance.ElectricHitInterval;
   }
 }

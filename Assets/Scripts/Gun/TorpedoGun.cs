@@ -19,11 +19,21 @@ public class TorpedoGun : BaseGun
   private BaseFish currentTarget;
   [SerializeField] private float minFireCooldown = 0.25f; // tweak feel
   [SerializeField] private float variantSwitchCooldown = 0.35f;
-  [SerializeField] private float viewportPadding = 0.1f;
   private float nextAllowedFireTime;
   private float nextAllowedVariantSwitchTime;
   private Tween recoilTween;
   private Vector3 initialLocalPos;
+  [Header("Torpedo Lock Visual")]
+  [SerializeField] private RectTransform torpedoLockRect;
+  [SerializeField] private float torpedoLockScaleMultiplier = 1.2f;
+  [SerializeField] private float torpedoLockScaleDuration = 0.2f;
+  [SerializeField] private float torpedoLockRotateDuration = 1.25f;
+  private Canvas torpedoLockCanvas;
+  private Vector3 torpedoLockInitScale;
+  private Tween torpedoLockScaleTween;
+  private Tween torpedoLockRotateTween;
+  private bool torpedoLockScaleCached;
+  private BaseFish torpedoLockTarget;
 
 
   // ---------------- INPUT ----------------
@@ -51,6 +61,7 @@ public class TorpedoGun : BaseGun
     lockedVariant = nextVariant;
     currentTarget = hitFish;
     nextAllowedVariantSwitchTime = Time.time + variantSwitchCooldown;
+    UpdateTorpedoLockTarget(currentTarget);
 
     StartFiring();
   }
@@ -66,6 +77,7 @@ public class TorpedoGun : BaseGun
     // unlocked = no variant lock
     lockedVariant = null;
     currentTarget = hitFish;
+    ClearTorpedoLockVisual();
 
     StartFiring();
   }
@@ -75,10 +87,17 @@ public class TorpedoGun : BaseGun
     isFiring = false;
   }
 
+  internal void DisableTargetLock()
+  {
+    StopAndClear();
+  }
+
   // ---------------- LOOP ----------------
 
   private void Update()
   {
+    MaintainLockTarget();
+
     if (!isFiring)
       return;
 
@@ -91,16 +110,11 @@ public class TorpedoGun : BaseGun
 
     if (!IsFishValidForShot(currentTarget))
     {
-      currentTarget = ResolveVariantTarget();
-
-      if (currentTarget == null)
-      {
-        if (lockedVariant != null)
-          return;
-
-        StopAndClear();
+      if (lockedVariant != null)
         return;
-      }
+
+      StopAndClear();
+      return;
     }
 
     FireAtCurrentTarget();
@@ -193,24 +207,7 @@ public class TorpedoGun : BaseGun
     if (!fish.gameObject.activeInHierarchy)
       return false;
 
-    return IsFishInViewport(fish);
-  }
-
-  private bool IsFishInViewport(BaseFish fish)
-  {
-    var cam = Camera.main;
-    var bounds = fish.GetComponent<BoxCollider2D>().bounds;
-
-    Vector3 min = cam.WorldToViewportPoint(bounds.min);
-    Vector3 max = cam.WorldToViewportPoint(bounds.max);
-
-    if (max.z <= 0)
-      return false;
-
-    return max.x > viewportPadding &&
-           min.x < 1f - viewportPadding &&
-           max.y > viewportPadding &&
-           min.y < 1f - viewportPadding;
+    return fish.TorpedoTargetVisible;
   }
 
   // ---------------- BACKEND CALLBACK ----------------
@@ -218,7 +215,27 @@ public class TorpedoGun : BaseGun
   internal void OnFishKilled(BaseFish fish)
   {
     if (currentTarget == fish)
+    {
       currentTarget = null;
+      if (Time.time < nextAllowedVariantSwitchTime)
+      {
+        if (torpedoLockTarget == fish)
+          ClearTorpedoLockVisual();
+        return;
+      }
+
+      BaseFish resolved = ResolveVariantTarget();
+      if (resolved != null)
+      {
+        currentTarget = resolved;
+        nextAllowedVariantSwitchTime = Time.time + variantSwitchCooldown;
+        UpdateTorpedoLockTarget(currentTarget);
+        return;
+      }
+
+      if (torpedoLockTarget == fish)
+        ClearTorpedoLockVisual();
+    }
   }
 
   internal BaseFish GetLockedFish()
@@ -232,18 +249,148 @@ public class TorpedoGun : BaseGun
     awaitingHitResult = false;
     currentTarget = null;
     lockedVariant = null;
+    ClearTorpedoLockVisual();
   }
 
   private void ClearLock()
   {
     currentTarget = null;
     lockedVariant = null;
+    ClearTorpedoLockVisual();
   }
 
   internal void Awake()
   {
     initialLocalPos = transform.localPosition;
+    if (torpedoLockRect != null)
+    {
+      torpedoLockCanvas = torpedoLockRect.GetComponentInParent<Canvas>();
+      torpedoLockRect.gameObject.SetActive(false);
+    }
   }
 
   internal override void Fire() { }
+
+  private void MaintainLockTarget()
+  {
+    if (lockedVariant == null)
+    {
+      ClearTorpedoLockVisual();
+      return;
+    }
+
+    if (IsFishValidForShot(currentTarget))
+    {
+      UpdateTorpedoLockTarget(currentTarget);
+      return;
+    }
+
+    UpdateTorpedoLockTarget(null);
+
+    if (Time.time < nextAllowedVariantSwitchTime)
+      return;
+
+    BaseFish resolved = ResolveVariantTarget();
+    if (resolved == null)
+      return;
+
+    if (resolved != currentTarget)
+      nextAllowedVariantSwitchTime = Time.time + variantSwitchCooldown;
+
+    currentTarget = resolved;
+    UpdateTorpedoLockTarget(currentTarget);
+  }
+
+  private void UpdateTorpedoLockTarget(BaseFish target)
+  {
+    if (torpedoLockRect == null)
+      return;
+
+    if (torpedoLockTarget == target)
+    {
+      if (torpedoLockTarget != null)
+        UpdateTorpedoLockPosition(torpedoLockTarget.ColliderMidPoint);
+      return;
+    }
+
+    torpedoLockTarget = target;
+
+    if (torpedoLockTarget == null)
+    {
+      ClearTorpedoLockVisual();
+      return;
+    }
+
+    StartTorpedoLockVisual();
+    UpdateTorpedoLockPosition(torpedoLockTarget.ColliderMidPoint);
+  }
+
+  private void StartTorpedoLockVisual()
+  {
+    if (torpedoLockRect == null)
+      return;
+
+    if (!torpedoLockScaleCached)
+    {
+      torpedoLockInitScale = torpedoLockRect.localScale;
+      torpedoLockScaleCached = true;
+    }
+
+    torpedoLockRect.gameObject.SetActive(true);
+    torpedoLockRect.localRotation = Quaternion.identity;
+    torpedoLockRect.localScale = torpedoLockInitScale * torpedoLockScaleMultiplier;
+
+    torpedoLockScaleTween?.Kill();
+    torpedoLockRotateTween?.Kill();
+
+    torpedoLockScaleTween = torpedoLockRect
+      .DOScale(torpedoLockInitScale, torpedoLockScaleDuration)
+      .SetEase(Ease.OutQuad);
+
+    torpedoLockRotateTween = torpedoLockRect
+      .DORotate(new Vector3(0f, 0f, 360f), torpedoLockRotateDuration, RotateMode.FastBeyond360)
+      .SetLoops(-1, LoopType.Restart)
+      .SetEase(Ease.Linear);
+  }
+
+  private void ClearTorpedoLockVisual()
+  {
+    if (torpedoLockRect == null)
+      return;
+
+    torpedoLockScaleTween?.Kill();
+    torpedoLockRotateTween?.Kill();
+    torpedoLockRect.localRotation = Quaternion.identity;
+    if (torpedoLockScaleCached)
+      torpedoLockRect.localScale = torpedoLockInitScale;
+    if (torpedoLockRect.gameObject.activeSelf)
+      torpedoLockRect.gameObject.SetActive(false);
+    torpedoLockTarget = null;
+  }
+
+  private void UpdateTorpedoLockPosition(Vector3 worldPos)
+  {
+    if (torpedoLockRect == null)
+      return;
+
+    Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+    RectTransform canvasRect = torpedoLockCanvas != null
+      ? torpedoLockCanvas.transform as RectTransform
+      : null;
+    Camera uiCamera = null;
+
+    if (torpedoLockCanvas != null &&
+        torpedoLockCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+      uiCamera = torpedoLockCanvas.worldCamera;
+
+    if (canvasRect != null &&
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(
+          canvasRect, screenPos, uiCamera, out Vector3 uiPos))
+    {
+      torpedoLockRect.position = uiPos;
+      return;
+    }
+
+    torpedoLockRect.position = screenPos;
+  }
 }

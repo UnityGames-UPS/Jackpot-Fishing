@@ -52,9 +52,9 @@ public class GunManager : MonoBehaviour
     {
       if (currentGun is SimpleGun SimpleGun)
       {
-        currentGun.Fire();
-        yield return new WaitForSeconds(SimpleGun.FireInterval);
+        SimpleGun.TryFire();
       }
+      yield return null;
     }
   }
 

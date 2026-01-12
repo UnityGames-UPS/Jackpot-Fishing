@@ -73,21 +73,7 @@ public class BulletView : MonoBehaviour
 
   void OnTriggerEnter2D(Collider2D other)
   {
-    if (!active) return;
-
-    if (other.CompareTag("Fish"))
-    {
-      fishHit = true;
-      HitMarkerPool.Instance.GetFromPool().Play(transform.position);
-
-      if (other.TryGetComponent<BaseFish>(out var fish))
-      {
-        StartCoroutine(fish.DamageAnimation(fishDamageColor));
-        SocketIOManager.Instance.SendHitEvent(fish.data.fishId, "normal", variant: fish.data.variant);
-      }
-
-      ReturnToPool();
-    }
+    // Fish hit handling moved to BaseFish.
   }
 
   void ReflectFromHit(RaycastHit2D hit)
@@ -130,7 +116,19 @@ public class BulletView : MonoBehaviour
   void HandleMiss()
   {
     if (fishHit) return;
+    // TODO: handle miss bullets with backend once success=false includes fishId/weaponType.
     SocketIOManager.Instance.SendHitEvent("", "normal");
+  }
+
+  internal void OnFishHit(BaseFish fish)
+  {
+    if (!active)
+      return;
+
+    fishHit = true;
+    HitMarkerPool.Instance.GetFromPool().Play(transform.position);
+    StartCoroutine(fish.DamageAnimation(fishDamageColor));
+    ReturnToPool();
   }
 
   void DebugRay(Vector2 currentPos, float delta)

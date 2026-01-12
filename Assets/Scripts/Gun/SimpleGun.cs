@@ -21,6 +21,7 @@ public class SimpleGun : BaseGun
   private Tween recoilTween;
   private Tween muzzleTween;
   private Vector3 initialLocalPos;
+  private float nextAllowedFireTime;
 
   internal void Awake()
   {
@@ -33,16 +34,23 @@ public class SimpleGun : BaseGun
 
   internal override void Fire()
   {
-    if (!UIManager.Instance.OnGunFired())
-    {
+    TryFire();
+  }
+
+  internal void TryFire()
+  {
+    if (Time.time < nextAllowedFireTime)
       return;
-    }
-    
+
+    if (!UIManager.Instance.OnGunFired())
+      return;
+
     PlayMuzzleFlash();
     PlayRecoil();
     BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
     bullet.Fire(muzzle.up);
+    nextAllowedFireTime = Time.time + FireInterval;
   }
 
   void PlayRecoil()

@@ -19,7 +19,7 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
   [SerializeField] private bool enableMockSpawning = true;
-  private readonly List<BaseFish> activeFishes = new();
+  [SerializeField] private List<BaseFish> activeFishes = new();
 
   private void Awake() => Instance = this;
 
@@ -180,6 +180,8 @@ internal class FishManager : MonoBehaviour
     activeFishes.Add(fish);
     return fish;
   }
+
+
 
   internal IReadOnlyList<BaseFish> GetActiveFishes()
   {

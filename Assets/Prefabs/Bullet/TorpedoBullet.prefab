@@ -189,7 +189,7 @@ MonoBehaviour:
   maxSpeed: 20
   accel: 25
   maxLifetime: 0.6
-  hitDistance: 0.1
+  hitDistance: 0.01
   sideAnim:
   - {fileID: 21300000, guid: b43e274c04fe946f6a338d5fd1bd87ae, type: 3}
   - {fileID: 21300000, guid: 72c3fce585b9b4f799a50559f3478e15, type: 3}
@@ -252,3 +252,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fdbfc8ccf547e4009a29e0d0eea12ec4, type: 3}
   animSpeed: 19
   rotationSpeed: 720
+  fishDamageColor: {r: 1, g: 0.35, b: 0.35, a: 1}

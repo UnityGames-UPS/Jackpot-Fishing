@@ -169,7 +169,7 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  redColor: {r: 1, g: 0.25882354, b: 0.25882354, a: 1}
+  torpedoViewportPadding: 0.005
 --- !u!114 &5933832088717963670
 MonoBehaviour:
   m_ObjectHideFlags: 0

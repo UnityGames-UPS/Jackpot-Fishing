@@ -17,7 +17,17 @@ internal class BaseFish : MonoBehaviour
   [SerializeField] internal FishData data;
   internal bool KillOnTorpedoArrival;
   internal Transform HitPoint => transform.GetChild(0);
+  internal Vector3 ColliderMidPoint
+  {
+    get
+    {
+      if (boxCollider == null)
+        boxCollider = GetComponent<BoxCollider2D>();
+      return boxCollider.bounds.center;
+    }
+  }
   internal RectTransform Rect => GetComponent<RectTransform>();
+  internal Action OnFishDespawned;
   protected Tween movementTween;
   protected Tween damageTween;
   protected ImageAnimation imageAnimation;
@@ -26,10 +36,13 @@ internal class BaseFish : MonoBehaviour
   protected SplineController splineController;
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
+  [SerializeField] private float torpedoViewportPadding = 0.05f;
   private Coroutine lifeTimeoutRoutine;
+  private Coroutine despawnFinalizeRoutine;
   internal bool isDespawning;
   internal bool PendingVisualDeath;
   private bool finalized;
+  internal bool TorpedoTargetVisible;
 
   internal enum DeathCause
   {
@@ -48,8 +61,13 @@ internal class BaseFish : MonoBehaviour
   internal virtual void Initialize(FishData data)
   {
     this.data = data;
+    OnFishDespawned = null;
 
     finalized = false;
+    TorpedoTargetVisible = false;
+    isDespawning = false;
+    PendingVisualDeath = false;
+    KillOnTorpedoArrival = false;
 
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
@@ -83,6 +101,29 @@ internal class BaseFish : MonoBehaviour
       fishImage.DOFade(1f, 0.2f).SetUpdate(true);
     }
 
+  }
+
+  private void Update()
+  {
+    UpdateTorpedoVisibility();
+  }
+
+  private void OnTriggerEnter2D(Collider2D other)
+  {
+    if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
+      return;
+
+    if (!other.TryGetComponent<BulletView>(out var bullet))
+      return;
+
+    bullet.OnFishHit(this);
+    if (data == null || string.IsNullOrEmpty(data.fishId))
+    {
+      Debug.LogWarning($"[Fish] Bullet hit missing fishId | variant={data?.variant}");
+      return;
+    }
+
+    SocketIOManager.Instance.SendHitEvent(data.fishId, "normal", variant: data.variant);
   }
 
   protected void SetupFallbackMovement()
@@ -193,11 +234,22 @@ internal class BaseFish : MonoBehaviour
   // --------------------------------------------------------
   protected void DespawnFish()
   {
-    if (PendingVisualDeath)
-      return;
-
     if (isDespawning)
       return;
+
+    if (!gameObject.activeInHierarchy)
+    {
+      FinalizeDespawn();
+      return;
+    }
+
+    if (PendingVisualDeath)
+    {
+      Debug.LogWarning(
+        $"[Fish] Despawn while pending | " +
+        $"variant={data?.variant} | id={data?.fishId}"
+      );
+    }
 
     isDespawning = true;
 
@@ -213,15 +265,9 @@ internal class BaseFish : MonoBehaviour
     fishImage.DOFade(0f, 0.15f)
              .SetUpdate(true)
              .OnComplete(FinalizeDespawn);
-  }
 
-  private void ForceDespawn()
-  {
-    if (isDespawning)
-      return;
-
-    isDespawning = true;
-    FinalizeDespawn();
+    if (despawnFinalizeRoutine == null && gameObject.activeInHierarchy)
+      despawnFinalizeRoutine = StartCoroutine(DespawnFinalizeFallback(0.5f));
   }
 
   private void FinalizeDespawn()
@@ -234,8 +280,19 @@ internal class BaseFish : MonoBehaviour
       StopCoroutine(lifeTimeoutRoutine);
       lifeTimeoutRoutine = null;
     }
+    if (killFailSafeRoutine != null)
+    {
+      StopCoroutine(killFailSafeRoutine);
+      killFailSafeRoutine = null;
+    }
+    if (despawnFinalizeRoutine != null)
+    {
+      StopCoroutine(despawnFinalizeRoutine);
+      despawnFinalizeRoutine = null;
+    }
 
     FishManager.Instance.DespawnFish(this);
+    OnFishDespawned?.Invoke();
     ResetFish();
   }
 
@@ -249,15 +306,28 @@ internal class BaseFish : MonoBehaviour
   // --------------------------------------------------------
   internal virtual void ResetFish()
   {
+    OnFishDespawned = null;
     data = null;
     movementTween?.Kill();
     damageTween?.Kill();
 
     isDespawning = false;
     PendingVisualDeath = false;
+    KillOnTorpedoArrival = false;
 
     WaitingForKillingTorpedo = false;
     deathCause = DeathCause.None;
+    TorpedoTargetVisible = false;
+    if (killFailSafeRoutine != null)
+    {
+      StopCoroutine(killFailSafeRoutine);
+      killFailSafeRoutine = null;
+    }
+    if (despawnFinalizeRoutine != null)
+    {
+      StopCoroutine(despawnFinalizeRoutine);
+      despawnFinalizeRoutine = null;
+    }
 
     if (fishImage != null)
       fishImage.color = Color.white;
@@ -273,6 +343,47 @@ internal class BaseFish : MonoBehaviour
     }
 
     speedMultiplier = 1f;
+  }
+
+  private void UpdateTorpedoVisibility()
+  {
+    if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
+    {
+      TorpedoTargetVisible = false;
+      return;
+    }
+
+    var cam = Camera.main;
+    if (cam == null)
+    {
+      TorpedoTargetVisible = false;
+      return;
+    }
+
+    if (boxCollider == null)
+      boxCollider = GetComponent<BoxCollider2D>();
+
+    if (boxCollider == null)
+    {
+      TorpedoTargetVisible = false;
+      return;
+    }
+
+    var bounds = boxCollider.bounds;
+    Vector3 min = cam.WorldToViewportPoint(bounds.min);
+    Vector3 max = cam.WorldToViewportPoint(bounds.max);
+
+    if (max.z <= 0)
+    {
+      TorpedoTargetVisible = false;
+      return;
+    }
+
+    TorpedoTargetVisible =
+      min.x > torpedoViewportPadding &&
+      max.x < 1f - torpedoViewportPadding &&
+      min.y > torpedoViewportPadding &&
+      max.y < 1f - torpedoViewportPadding;
   }
   internal void SetAlpha(float alpha)
   {
@@ -329,6 +440,22 @@ internal class BaseFish : MonoBehaviour
     }
     KillOnTorpedoArrival = false;
     Die(true);
+  }
+
+  private IEnumerator DespawnFinalizeFallback(float t)
+  {
+    yield return new WaitForSecondsRealtime(t);
+
+    despawnFinalizeRoutine = null;
+
+    if (finalized)
+      yield break;
+
+    Debug.LogWarning(
+      $"[Fish] Despawn finalize fallback | " +
+      $"variant={data?.variant} | id={data?.fishId}"
+    );
+    FinalizeDespawn();
   }
 
   private void LogDeath(string source)

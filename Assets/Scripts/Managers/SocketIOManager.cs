@@ -239,6 +239,9 @@ public class SocketIOManager : MonoBehaviour
     if (gameData == null)
       return;
 
+    if (gameData.spawnInterval > 0)
+      SpawnEventInterval = gameData.spawnInterval / 1000f;
+
     if (gameData.electricInterval > 0)
       electricHitInterval = gameData.electricInterval / 1000f;
   }
@@ -320,19 +323,27 @@ public class SocketIOManager : MonoBehaviour
     {
       gun.awaitingHitResult = false;
     }
+    else if (GunManager.Instance.currentGun is LazerGun lazerGun)
+    {
+      lazerGun.OnHitResult();
+    }
 
     // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
     if (HitResult.fishKilled != null)
     {
+      Debug.Log("Fish Killed: " + HitResult.fishKilled.variant);
       BaseFish fish = FishManager.Instance
         .GetActiveFishes()
         .FirstOrDefault(x => x.data.fishId == HitResult.fishKilled.id);
 
       if (fish == null)
       {
-        Debug.LogError("No alive fish found to kill.");
+        Debug.LogError("No alive fish found to kill. " + HitResult.fishKilled.variant + " " + HitResult.fishKilled.id);
         return;
       }
+
+      // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
+      fish.OnFishDespawned = () => PlayCoinBlastAnimation(fish.ColliderMidPoint);
 
       bool isLocalTorpedoKill = false;
       if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo &&
@@ -354,7 +365,7 @@ public class SocketIOManager : MonoBehaviour
         {
           fish.KillOnTorpedoArrival = true;
           // Wait for torpedo (with short fail-safe)
-          fish.WaitForTorpedoKill(1f);
+          fish.WaitForTorpedoKill(2f);
         }
         else
         {
@@ -375,28 +386,18 @@ public class SocketIOManager : MonoBehaviour
     }
   }
 
-  private const float torpedoViewportPadding = 0.1f;
+  void PlayCoinBlastAnimation(Vector3 pos)
+  {
+    var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
+    coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
+  }
+
   private bool IsFishVisibleForTorpedo(BaseFish fish)
   {
     if (fish == null)
       return false;
 
-    var cam = Camera.main;
-    if (cam == null)
-      return false;
-
-    var bounds = fish.GetComponent<BoxCollider2D>().bounds;
-
-    Vector3 min = cam.WorldToViewportPoint(bounds.min);
-    Vector3 max = cam.WorldToViewportPoint(bounds.max);
-
-    if (max.z <= 0)
-      return false;
-
-    return max.x > torpedoViewportPadding &&
-           min.x < 1f - torpedoViewportPadding &&
-           max.y > torpedoViewportPadding &&
-           min.y < 1f - torpedoViewportPadding;
+    return fish.TorpedoTargetVisible;
   }
 
   // Connected event handler implementation
@@ -564,6 +565,7 @@ public class GameData
   public JackpotValues jackpotValues;
   public long sessionStartTime;
   public Weapons weapons;
+  public int spawnInterval;
   public int electricInterval;
 }
 
