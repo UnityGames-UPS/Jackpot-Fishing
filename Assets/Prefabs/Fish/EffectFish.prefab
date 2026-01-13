@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8810277185060403634}
   - component: {fileID: 4819495654449933258}
   - component: {fileID: 664486131906535265}
-  - component: {fileID: 1912547416451926941}
   - component: {fileID: 7750850535439090357}
+  - component: {fileID: 1912547416451926941}
   m_Layer: 5
   m_Name: EffectFish
   m_TagString: Fish
@@ -145,31 +145,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 150, y: 245}
   m_EdgeRadius: 0
---- !u!114 &1912547416451926941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6220881146848465911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2420620c804c9471cb3eb064932eaa1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data:
-    variant: 
-    fishId: 
-    animationFrames: []
-    animationSpeed: 5
-    loop: 1
-    spriteSize: {x: 0, y: 0}
-    colliderSize: {x: 0, y: 0}
-    colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
-    duration: 10000
-    fishType: 0
-  torpedoViewportPadding: 0.005
 --- !u!114 &7750850535439090357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +199,33 @@ MonoBehaviour:
   m_OnSwitch:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1912547416451926941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6220881146848465911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2420620c804c9471cb3eb064932eaa1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    variant: 
+    fishId: 
+    animationFrames: []
+    animationSpeed: 5
+    loop: 1
+    spriteSize: {x: 0, y: 0}
+    colliderSize: {x: 0, y: 0}
+    colliderOffset: {x: 0, y: 0}
+    laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+  torpedoViewportPadding: 0.0005
+  crabEdgePercentMin: 0.25
+  crabEdgePercentMax: 0.4
 --- !u!1 &8940523912092782683
 GameObject:
   m_ObjectHideFlags: 0

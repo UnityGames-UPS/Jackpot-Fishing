@@ -25,6 +25,11 @@ public class UIManager : MonoBehaviour
   internal int currentBet;
   internal float currentBalance;
 
+  [Header("Refund Text")]
+  [SerializeField] private Transform refundTextAnchor;
+  [SerializeField] private float refundTextOffsetX;
+  [SerializeField] private float refundTextOffsetY;
+
   [Header("LEFT PANEL")]
   [SerializeField] private Button LeftPanelopenbtn;
   [SerializeField] private RectTransform Leftpanel;
@@ -292,6 +297,40 @@ public class UIManager : MonoBehaviour
   void SetBalanceText(float val)
   {
     if (BalanceText) BalanceText.text = val.ToString("N2");
+  }
+
+  internal void PlayRefundText(float amount)
+  {
+    if (amount <= 0f)
+      return;
+    if (refundTextAnchor == null)
+      return;
+
+    var refund = RefundTextPool.Instance.GetFromPool();
+    if (refund == null)
+      return;
+
+    float offsetX = UnityEngine.Random.Range(0f, refundTextOffsetX);
+    float offsetY = UnityEngine.Random.Range(0f, refundTextOffsetY);
+    Vector3 pos = refundTextAnchor.position +
+                  new Vector3(offsetX, offsetY, 0f);
+    refund.Play(pos, amount);
+  }
+
+  internal void PlayCoinBlastForFish(BaseFish fish)
+  {
+    if (fish == null || fish.data == null)
+      return;
+
+    if (fish.data.fishType == FishType.Normal ||
+        fish.data.fishType == FishType.Immortal)
+      return;
+
+    var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
+    coinAnimation.transform.SetPositionAndRotation(
+      fish.ColliderMidPoint,
+      Quaternion.identity
+    );
   }
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo

@@ -209,7 +209,7 @@ public class SocketIOManager : MonoBehaviour
         break;
       case "hitresult":
         Debug.Log(obj);
-        HandleHitResult(root.payload);
+        HandleHitResult(root);
         break;
     }
   }
@@ -242,8 +242,8 @@ public class SocketIOManager : MonoBehaviour
     if (gameData.spawnInterval > 0)
       SpawnEventInterval = gameData.spawnInterval / 1000f;
 
-    if (gameData.electricInterval > 0)
-      electricHitInterval = gameData.electricInterval / 1000f;
+    if (gameData.lazerInterval > 0)
+      electricHitInterval = gameData.lazerInterval / 1000f;
   }
 
   private void HandleSpawnResult(Root root)
@@ -317,48 +317,77 @@ public class SocketIOManager : MonoBehaviour
     SendDataWithNamespace("request", json);
   }
 
-  void HandleHitResult(Payload HitResult)
+  void HandleHitResult(Root root)
   {
-    if (GunManager.Instance.currentGun is TorpedoGun gun)
-    {
-      gun.awaitingHitResult = false;
-    }
-    else if (GunManager.Instance.currentGun is LazerGun lazerGun)
+    Payload hitResult = root.payload;
+
+    if (GunManager.Instance.currentGun is LazerGun lazerGun)
     {
       lazerGun.OnHitResult();
     }
 
-    // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
-    if (HitResult.fishKilled != null)
+    if (hitResult == null)
     {
-      Debug.Log("Fish Killed: " + HitResult.fishKilled.variant);
+      Debug.LogError("Null hit result");
+      return;
+    }
+
+    if (hitResult.isExpired && !string.IsNullOrEmpty(hitResult.fishId))
+    {
+      Debug.Log("Expired fish cleanup: " + hitResult.fishId);
+      BaseFish expiredFish = FishManager.Instance
+        .GetActiveFishes()
+        .FirstOrDefault(x => x.data.fishId == hitResult.fishId);
+
+      if (expiredFish != null)
+        expiredFish.Die();
+    }
+
+    // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
+    if (!root.success)
+    {
+      if (!string.IsNullOrEmpty(hitResult.message) &&
+          hitResult.message.IndexOf("amount refunded", StringComparison.OrdinalIgnoreCase) >= 0)
+      {
+        UIManager.Instance?.PlayRefundText(hitResult.totalBet);
+      }
+      return;
+    }
+
+    if (hitResult.fishKilled != null)
+    {
+      Debug.Log("Fish Killed: " + hitResult.fishKilled.variant);
       BaseFish fish = FishManager.Instance
         .GetActiveFishes()
-        .FirstOrDefault(x => x.data.fishId == HitResult.fishKilled.id);
+        .FirstOrDefault(x => x.data.fishId == hitResult.fishKilled.id);
 
       if (fish == null)
       {
-        Debug.LogError("No alive fish found to kill. " + HitResult.fishKilled.variant + " " + HitResult.fishKilled.id);
+        Debug.LogError("No alive fish found to kill. " + hitResult.fishKilled.variant + " " + hitResult.fishKilled.id);
         return;
       }
 
       // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
-      fish.OnFishDespawned = () => PlayCoinBlastAnimation(fish.ColliderMidPoint);
+      fish.OnFishDespawned = () => UIManager.Instance?.PlayCoinBlastForFish(fish);
+
+      TorpedoGun torpedoGun = null;
+      if (GunManager.Instance?.Guns != null)
+        torpedoGun = GunManager.Instance.Guns.OfType<TorpedoGun>().FirstOrDefault();
 
       bool isLocalTorpedoKill = false;
-      if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo &&
-          GunManager.Instance.currentGun is TorpedoGun torpedoGun)
+      if (torpedoGun != null && hitResult.weaponType == "torpedo")
       {
         isLocalTorpedoKill = torpedoGun.GetLockedFish() == fish;
       }
 
       bool isVisibleForTorpedo = IsFishVisibleForTorpedo(fish);
 
-      GunManager.Instance?.ForceStopTorpedoFire(fish);
+      if (hitResult.weaponType == "torpedo")
+        torpedoGun?.OnFishKilled(fish);
       fish.MarkPendingDeath();
 
       // Weapon-aware death handling
-      if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
+      if (hitResult.weaponType == "torpedo")
       {
         fish.deathCause = BaseFish.DeathCause.Torpedo;
         if (isLocalTorpedoKill && isVisibleForTorpedo)
@@ -369,27 +398,20 @@ public class SocketIOManager : MonoBehaviour
         }
         else
         {
-          fish.Die(true);
+          fish.Die();
         }
       }
       else
       {
         fish.deathCause =
-          UIManager.Instance.activeGun == UIManager.GunType.Laser
+          hitResult.weaponType == "electric"
             ? BaseFish.DeathCause.Laser
             : BaseFish.DeathCause.Bullet;
 
         // Instant despawn for non-torpedo weapons
-        fish.Die(true);
+        fish.Die();
       }
-
     }
-  }
-
-  void PlayCoinBlastAnimation(Vector3 pos)
-  {
-    var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
-    coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
   }
 
   private bool IsFishVisibleForTorpedo(BaseFish fish)
@@ -566,7 +588,7 @@ public class GameData
   public long sessionStartTime;
   public Weapons weapons;
   public int spawnInterval;
-  public int electricInterval;
+  public int lazerInterval;
 }
 
 [Serializable]
@@ -626,9 +648,15 @@ public class Payload
 
 
   //HitResult
+  public string message;
+  public bool isExpired;
+  public string weaponType;
+  public float totalBet;
   public int winAmount;
   public object electricCharge;
+  public Fish hitFish;
   public FishKilled fishKilled;
+  public string fishId;
 }
 
 [Serializable]

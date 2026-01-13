@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8534352481167415838}
   - component: {fileID: 6193601671072513495}
   - component: {fileID: 7705246575126661702}
-  - component: {fileID: 7820005601838698923}
   - component: {fileID: 4151857413247425374}
   - component: {fileID: 4582792877135012806}
   - component: {fileID: 5933832088717963670}
+  - component: {fileID: 7820005601838698923}
   m_Layer: 5
   m_Name: JackpotFish
   m_TagString: Fish
@@ -80,31 +80,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7820005601838698923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1568230748283576281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aedc9c8c94a94461d9f035a174eabacd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data:
-    variant: 
-    fishId: 
-    animationFrames: []
-    animationSpeed: 5
-    loop: 1
-    spriteSize: {x: 0, y: 0}
-    colliderSize: {x: 0, y: 0}
-    colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
-    duration: 10000
-    fishType: 0
-  torpedoViewportPadding: 0.005
 --- !u!114 &4151857413247425374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +199,31 @@ MonoBehaviour:
   m_OnSwitch:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7820005601838698923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568230748283576281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aedc9c8c94a94461d9f035a174eabacd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    variant: 
+    fishId: 
+    animationFrames: []
+    animationSpeed: 5
+    loop: 1
+    spriteSize: {x: 0, y: 0}
+    colliderSize: {x: 0, y: 0}
+    colliderOffset: {x: 0, y: 0}
+    laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+  torpedoViewportPadding: 0.0005
 --- !u!1 &8702441360588482117
 GameObject:
   m_ObjectHideFlags: 0

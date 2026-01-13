@@ -39,10 +39,12 @@ internal class BaseFish : MonoBehaviour
   [SerializeField] private float torpedoViewportPadding = 0.05f;
   private Coroutine lifeTimeoutRoutine;
   private Coroutine despawnFinalizeRoutine;
+  private Coroutine torpedoVisibilityRoutine;
   internal bool isDespawning;
   internal bool PendingVisualDeath;
   private bool finalized;
-  internal bool TorpedoTargetVisible;
+  internal bool TorpedoTargetVisible = false;
+  private bool torpedoVisibilityReady;
 
   internal enum DeathCause
   {
@@ -57,6 +59,10 @@ internal class BaseFish : MonoBehaviour
   internal bool WaitingForKillingTorpedo;
   private Coroutine killFailSafeRoutine;
 
+  void OnEnable()
+  {
+    TorpedoTargetVisible = false;
+  }
 
   internal virtual void Initialize(FishData data)
   {
@@ -65,6 +71,7 @@ internal class BaseFish : MonoBehaviour
 
     finalized = false;
     TorpedoTargetVisible = false;
+    torpedoVisibilityReady = false;
     isDespawning = false;
     PendingVisualDeath = false;
     KillOnTorpedoArrival = false;
@@ -101,12 +108,16 @@ internal class BaseFish : MonoBehaviour
       fishImage.DOFade(1f, 0.2f).SetUpdate(true);
     }
 
+    BeginTorpedoVisibilityWarmup();
   }
 
   private void Update()
   {
     UpdateTorpedoVisibility();
+    OnCustomUpdate();
   }
+
+  protected virtual void OnCustomUpdate() { }
 
   private void OnTriggerEnter2D(Collider2D other)
   {
@@ -205,18 +216,18 @@ internal class BaseFish : MonoBehaviour
         .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
   }
 
-  internal virtual void Die(bool despawnAtEnd = true)
+  protected bool BeginDeath()
   {
     if (isDespawning)
-      return;
+      return false;
 
     if (KillOnTorpedoArrival)
-      return;
+      return false;
 
     PendingVisualDeath = false;
 
     if (WaitingForKillingTorpedo)
-      return;
+      return false;
 
     boxCollider.enabled = false;
     if (splineController != null)
@@ -225,8 +236,15 @@ internal class BaseFish : MonoBehaviour
       splineController.Pause();
     }
 
-    if (despawnAtEnd)
-      DespawnFish();
+    return true;
+  }
+
+  internal virtual void Die()
+  {
+    if (!BeginDeath())
+      return;
+
+    DespawnFish();
   }
 
   // --------------------------------------------------------
@@ -318,6 +336,12 @@ internal class BaseFish : MonoBehaviour
     WaitingForKillingTorpedo = false;
     deathCause = DeathCause.None;
     TorpedoTargetVisible = false;
+    torpedoVisibilityReady = false;
+    if (torpedoVisibilityRoutine != null)
+    {
+      StopCoroutine(torpedoVisibilityRoutine);
+      torpedoVisibilityRoutine = null;
+    }
     if (killFailSafeRoutine != null)
     {
       StopCoroutine(killFailSafeRoutine);
@@ -347,6 +371,12 @@ internal class BaseFish : MonoBehaviour
 
   private void UpdateTorpedoVisibility()
   {
+    if (!torpedoVisibilityReady)
+    {
+      TorpedoTargetVisible = false;
+      return;
+    }
+
     if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
     {
       TorpedoTargetVisible = false;
@@ -385,6 +415,23 @@ internal class BaseFish : MonoBehaviour
       min.y > torpedoViewportPadding &&
       max.y < 1f - torpedoViewportPadding;
   }
+
+  private void BeginTorpedoVisibilityWarmup()
+  {
+    if (torpedoVisibilityRoutine != null)
+      StopCoroutine(torpedoVisibilityRoutine);
+
+    torpedoVisibilityRoutine = StartCoroutine(TorpedoVisibilityWarmup());
+  }
+
+  private IEnumerator TorpedoVisibilityWarmup()
+  {
+    torpedoVisibilityReady = false;
+    yield return null;
+    yield return null;
+    torpedoVisibilityReady = true;
+    torpedoVisibilityRoutine = null;
+  }
   internal void SetAlpha(float alpha)
   {
     if (fishImage == null)
@@ -420,7 +467,7 @@ internal class BaseFish : MonoBehaviour
 
       WaitingForKillingTorpedo = false;
       KillOnTorpedoArrival = false;
-      Die(true);
+      Die();
     }
   }
 
@@ -439,7 +486,7 @@ internal class BaseFish : MonoBehaviour
       killFailSafeRoutine = null;
     }
     KillOnTorpedoArrival = false;
-    Die(true);
+    Die();
   }
 
   private IEnumerator DespawnFinalizeFallback(float t)

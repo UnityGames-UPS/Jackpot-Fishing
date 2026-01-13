@@ -254,7 +254,7 @@ public class LazerGun : BaseGun
 
     SocketIOManager.Instance.SendHitEvent(
       lockedFish.data.fishId,
-      "electric",
+      "lazer",
       lockedFish.data.variant
     );
   }

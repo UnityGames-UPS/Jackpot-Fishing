@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 3094875922638566168}
   - component: {fileID: -2460441940274482521}
   - component: {fileID: 1897645829412585457}
-  - component: {fileID: 2685932790664071423}
   - component: {fileID: 1274565845795068339}
+  - component: {fileID: 2685932790664071423}
   m_Layer: 5
   m_Name: GoldenFish
   m_TagString: Fish
@@ -145,31 +145,6 @@ MonoBehaviour:
   AnimationSpeed: 5
   delayBetweenLoop: 0
   PlayOnAwake: 0
---- !u!114 &2685932790664071423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2170773242253955616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 109e908d8b42a4e8e92de56aef7bbfb7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data:
-    variant: 
-    fishId: 
-    animationFrames: []
-    animationSpeed: 5
-    loop: 1
-    spriteSize: {x: 0, y: 0}
-    colliderSize: {x: 0, y: 0}
-    colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
-    duration: 10000
-    fishType: 0
-  torpedoViewportPadding: 0.005
 --- !u!114 &1274565845795068339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +199,31 @@ MonoBehaviour:
   m_OnSwitch:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2685932790664071423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2170773242253955616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 109e908d8b42a4e8e92de56aef7bbfb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    variant: 
+    fishId: 
+    animationFrames: []
+    animationSpeed: 5
+    loop: 1
+    spriteSize: {x: 0, y: 0}
+    colliderSize: {x: 0, y: 0}
+    colliderOffset: {x: 0, y: 0}
+    laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+  torpedoViewportPadding: 0.0005
 --- !u!1 &5852206723132477086
 GameObject:
   m_ObjectHideFlags: 0

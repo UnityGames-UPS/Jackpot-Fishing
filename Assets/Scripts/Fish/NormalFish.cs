@@ -92,25 +92,48 @@ internal class NormalFish : BaseFish
     // Safety: wait until spline is ready
     yield return null;
 
-    while (splineController != null &&
-           splineController.Spline != null &&
-           splineController.Position < splineController.Length)
+    if (splineController == null || splineController.Spline == null)
+      yield break;
+
+    float pathLength = splineController.Length;
+    if (pathLength <= 0f)
+      yield break;
+
+    const float minSegmentDistance = 5f;
+    const float maxSegmentDistance = 20f;
+    const float minSpeedMultiplier = 0.85f;
+    const float maxSpeedMultiplier = 1.15f;
+
+    List<float> segmentDistances = new List<float>();
+    List<float> segmentMultipliers = new List<float>();
+
+    float remainingDistance = pathLength;
+    while (remainingDistance > 0f)
     {
-      // 1️⃣ choose a small distance chunk (tweak)
-      float segmentDistance = Random.Range(5f, 20f);
+      float segmentDistance = Random.Range(minSegmentDistance, maxSegmentDistance);
+      if (segmentDistance > remainingDistance)
+        segmentDistance = remainingDistance;
 
-      float startPos = splineController.Position;
-      float targetPos = Mathf.Min(
-        startPos + segmentDistance,
-        splineController.Length
-      );
+      segmentDistances.Add(segmentDistance);
+      segmentMultipliers.Add(Random.Range(minSpeedMultiplier, maxSpeedMultiplier));
+      remainingDistance -= segmentDistance;
+    }
 
-      // 2️⃣ choose a temporary speed multiplier
-      float tempSpeed = Random.Range(0.85f, 1f);
+    float weightedTimeSum = 0f;
+    for (int i = 0; i < segmentDistances.Count; i++)
+      weightedTimeSum += segmentDistances[i] / segmentMultipliers[i];
 
-      SetSpeedMultiplier(tempSpeed);
+    float scaleFactor = weightedTimeSum > 0f ? weightedTimeSum / pathLength : 1f;
 
-      // 3️⃣ wait until that distance is covered
+    float targetPos = splineController.Position;
+    for (int i = 0; i < segmentDistances.Count; i++)
+    {
+      if (splineController == null)
+        break;
+
+      targetPos = Mathf.Min(targetPos + segmentDistances[i], splineController.Length);
+      SetSpeedMultiplier(segmentMultipliers[i] * scaleFactor);
+
       yield return new WaitUntil(() =>
         splineController == null ||
         splineController.Position >= targetPos ||
@@ -122,11 +145,10 @@ internal class NormalFish : BaseFish
     SetSpeedMultiplier(1f);
   }
 
-  internal override void Die(bool despawnAtEnd)
+  internal override void Die()
   {
-    if (WaitingForKillingTorpedo)
+    if (!BeginDeath())
       return;
-    base.Die(despawnAtEnd);
 
     Sequence dieSeq = DOTween.Sequence();
     dieSeq.AppendInterval(0.1f);

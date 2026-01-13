@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 5370114972110936558}
   - component: {fileID: 1686613775904917473}
   - component: {fileID: 7916748539037940800}
-  - component: {fileID: -1651895487331998687}
   - component: {fileID: 6136788624347969651}
+  - component: {fileID: -1651895487331998687}
   m_Layer: 5
   m_Name: SpecialFish
   m_TagString: Fish
@@ -145,31 +145,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 173, y: 157}
   m_EdgeRadius: 0
---- !u!114 &-1651895487331998687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 71806784151791984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f927b322673cd48dda685fbdddbb64dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data:
-    variant: 
-    fishId: 
-    animationFrames: []
-    animationSpeed: 5
-    loop: 1
-    spriteSize: {x: 0, y: 0}
-    colliderSize: {x: 0, y: 0}
-    colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
-    duration: 10000
-    fishType: 0
-  torpedoViewportPadding: 0.005
 --- !u!114 &6136788624347969651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +199,31 @@ MonoBehaviour:
   m_OnSwitch:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-1651895487331998687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71806784151791984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f927b322673cd48dda685fbdddbb64dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    variant: 
+    fishId: 
+    animationFrames: []
+    animationSpeed: 5
+    loop: 1
+    spriteSize: {x: 0, y: 0}
+    colliderSize: {x: 0, y: 0}
+    colliderOffset: {x: 0, y: 0}
+    laserImpactScaleFactor: 0.7
+    duration: 10000
+    fishType: 0
+  torpedoViewportPadding: 0.0005
 --- !u!1 &6510293441300479024
 GameObject:
   m_ObjectHideFlags: 0

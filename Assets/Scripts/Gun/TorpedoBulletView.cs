@@ -8,14 +8,14 @@ public class TorpedoBulletView : MonoBehaviour
 
   [Header("Phase 1")]
   [SerializeField] float phase1Duration = 0.18f;
+  [SerializeField, Range(0f, 1f)] float phase1DistanceFactor = 0.2f;
   [SerializeField] float pulseAmount = 0.8f;
 
   [Header("Phase 2")]
-  [SerializeField] float minSpeed = 6f;
-  [SerializeField] float maxSpeed = 18f;
-  [SerializeField] float accel = 25f;
+  [SerializeField] float phase2Speed = 12f;
   [SerializeField] float maxLifetime = 0.6f;
   [SerializeField] float hitDistance = 0.1f;
+  [SerializeField, Range(0f, 1f)] float phase2ScaleDownDistanceFactor = 0.2f;
 
   [Header("Visuals")]
   [SerializeField] Sprite[] sideAnim;
@@ -31,10 +31,12 @@ public class TorpedoBulletView : MonoBehaviour
   private Vector3 lastKnownTargetPos;
   private Vector3 startPos;
   private Vector3 phase1End;
+  private Vector3 phase2StartPos;
   private Vector3 fireDir;
 
   private float phase1Speed;
-  private float phase2Speed;
+  private float phase1Distance;
+  private float phase2TotalDistance;
   private float timer;
   private Phase phase;
   private bool finished;
@@ -44,6 +46,7 @@ public class TorpedoBulletView : MonoBehaviour
   internal void Init(BaseFish fish)
   {
     anim = GetComponent<ImageAnimation>();
+    anim.OnAnimationComplete = null;
 
     target = fish;
     startPos = transform.position;
@@ -52,13 +55,14 @@ public class TorpedoBulletView : MonoBehaviour
     fireDir = (lastKnownTargetPos - startPos).normalized;
 
     float dist = Vector3.Distance(startPos, lastKnownTargetPos);
-    phase1Speed = dist / phase1Duration;
-    phase1End = startPos + fireDir * dist * 0.5f;
+    phase1Distance = dist * phase1DistanceFactor;
+    phase1Speed = phase1Distance / phase1Duration;
+    phase1End = startPos + fireDir * phase1Distance;
 
-    anim.SetAnimationData(sideAnim, animSpeed, true);
+    float backAnimSpeed = GetBackAnimSpeedForPhase1();
+    anim.SetAnimationData(backAnim, backAnimSpeed, false);
     anim.StartAnimation();
 
-    phase2Speed = minSpeed;
     timer = 0f;
     phase = Phase.Phase1;
     finished = false;
@@ -97,8 +101,15 @@ public class TorpedoBulletView : MonoBehaviour
 
   void UpdatePulse()
   {
-    float t = Mathf.PingPong(Time.time * 4f, 1f);
-    float scale = Mathf.Lerp(1f, 1f + pulseAmount, t);
+    if (phase1Distance <= Mathf.Epsilon)
+    {
+      transform.localScale = Vector3.one;
+      return;
+    }
+
+    float traveled = Vector3.Distance(startPos, transform.position);
+    float progress = Mathf.Clamp01(traveled / phase1Distance);
+    float scale = Mathf.Lerp(1f, 1f + pulseAmount, progress);
     transform.localScale = Vector3.one * scale;
   }
 
@@ -106,10 +117,8 @@ public class TorpedoBulletView : MonoBehaviour
 
   void BeginPhase2()
   {
-    transform.localScale = Vector3.one;
-
-    anim.SetAnimationData(backAnim, animSpeed, true);
-    anim.StartAnimation();
+    phase2StartPos = transform.position;
+    phase2TotalDistance = Vector3.Distance(phase2StartPos, lastKnownTargetPos);
 
     phase = Phase.Phase2;
     timer = 0f;
@@ -118,6 +127,7 @@ public class TorpedoBulletView : MonoBehaviour
   void UpdatePhase2()
   {
     timer += Time.deltaTime;
+    UpdatePhase2Scale();
 
     if (timer >= maxLifetime)
     {
@@ -153,13 +163,6 @@ public class TorpedoBulletView : MonoBehaviour
 
     Vector3 dir = toTarget.normalized;
 
-    float desiredSpeed = Mathf.Clamp(dist * 2.5f, minSpeed, maxSpeed);
-    phase2Speed = Mathf.MoveTowards(
-      phase2Speed,
-      desiredSpeed,
-      accel * Time.deltaTime
-    );
-
     transform.position += dir * phase2Speed * Time.deltaTime;
 
     Quaternion rot = Quaternion.LookRotation(Vector3.forward, dir);
@@ -168,6 +171,37 @@ public class TorpedoBulletView : MonoBehaviour
       rot,
       rotationSpeed * Time.deltaTime
     );
+  }
+
+  void UpdatePhase2Scale()
+  {
+    if (phase2ScaleDownDistanceFactor <= Mathf.Epsilon)
+    {
+      transform.localScale = Vector3.one;
+      return;
+    }
+
+    float traveled = Vector3.Distance(phase2StartPos, transform.position);
+    float scaleDownDistance = Mathf.Max(
+      phase2TotalDistance * phase2ScaleDownDistanceFactor,
+      0.001f
+    );
+    float progress = Mathf.Clamp01(traveled / scaleDownDistance);
+    float scale = Mathf.Lerp(1f + pulseAmount, 1f, progress);
+    transform.localScale = Vector3.one * scale;
+  }
+
+  float GetBackAnimSpeedForPhase1()
+  {
+    if (backAnim == null || backAnim.Length == 0)
+      return animSpeed;
+
+    if (phase1Duration <= Mathf.Epsilon)
+      return animSpeed;
+
+    const float idealFrameRate = 0.0416666679f;
+    float frameCount = backAnim.Length;
+    return (idealFrameRate * frameCount * frameCount) / phase1Duration;
   }
 
   // ---------------- HELPERS ----------------
@@ -195,6 +229,7 @@ public class TorpedoBulletView : MonoBehaviour
     if (finished) return;
     finished = true;
 
+    anim.OnAnimationComplete = null;
     anim.StopAnimation();
     target = null;
 

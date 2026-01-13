@@ -10,7 +10,6 @@ public class TorpedoGun : BaseGun
   [SerializeField] private Ease recoilEase = Ease.OutQuad;
 
   private bool isFiring;
-  internal bool awaitingHitResult;
 
   // 🔑 Variant-level lock (gameplay)
   private string lockedVariant;
@@ -101,9 +100,6 @@ public class TorpedoGun : BaseGun
     if (!isFiring)
       return;
 
-    if (awaitingHitResult)
-      return;
-
     // 🆕 local cooldown (prevents machine gun)
     if (Time.time < nextAllowedFireTime)
       return;
@@ -136,8 +132,6 @@ public class TorpedoGun : BaseGun
     PlayRecoil();
 
     BaseFish fish = currentTarget;
-
-    awaitingHitResult = true;
 
     TorpedoBulletView torpedo =
       TorpedoPool.Instance.GetFromPool();
@@ -246,7 +240,6 @@ public class TorpedoGun : BaseGun
   private void StopAndClear()
   {
     isFiring = false;
-    awaitingHitResult = false;
     currentTarget = null;
     lockedVariant = null;
     ClearTorpedoLockVisual();
