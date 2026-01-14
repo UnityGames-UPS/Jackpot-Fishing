@@ -4405,10 +4405,10 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 906ecdac8fc0438a9379e6fe8ae4b8f4
+  testToken: c09bc18e39c840edab6595e6699d7051
   SpawnEventInterval: 4
   electricHitInterval: 1.5
-  bets: 
+  bets: []
   GunCosts:
   - 1
   - 1
@@ -35065,36 +35065,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 3fb44233b8c3e49d38060ad1308376ca, type: 3}
     - {fileID: 21300000, guid: b10aa8aee330b47d6a75239af2dbd53e, type: 3}
     - {fileID: 21300000, guid: e98920d850d494b1bae86a86c5d70473, type: 3}
-    - {fileID: 21300000, guid: 7d34ee819a5fc421b97e1b31264ec3e0, type: 3}
-    - {fileID: 21300000, guid: 217ddc8f6f6bb49b69919207cb0bcba2, type: 3}
-    - {fileID: 21300000, guid: 1eff24265de224e9ebdc823cd257022e, type: 3}
-    - {fileID: 21300000, guid: 9e76c67abe3fe4aa7b5a9873f220af83, type: 3}
-    - {fileID: 21300000, guid: 449d6b019dadd48f9b2dbc89a1df3068, type: 3}
-    - {fileID: 21300000, guid: ddf1c451fb1ed426f96f6b5657618a53, type: 3}
-    - {fileID: 21300000, guid: 98b14bd87ecd54ccaa673e339855b384, type: 3}
-    - {fileID: 21300000, guid: dbd75391f803c4b7b9da8146daab28b9, type: 3}
-    - {fileID: 21300000, guid: 9e259298df1614c71913bdff9b555c47, type: 3}
-    - {fileID: 21300000, guid: c1426b86ed6954ca5b92f55a7a85a117, type: 3}
-    - {fileID: 21300000, guid: 44855e585803c48fc9bba837c1daa6c0, type: 3}
-    - {fileID: 21300000, guid: 0977fe5ca54e343a3991bb2480bd9060, type: 3}
-    - {fileID: 21300000, guid: 576099b3d99c44fc9ad11339318ffc90, type: 3}
-    - {fileID: 21300000, guid: d5445e5f331734ee6b941d55e561169d, type: 3}
-    - {fileID: 21300000, guid: 47ed15b72230d45298f0bfcf344904ff, type: 3}
-    - {fileID: 21300000, guid: 0caeddbdcc9174eccb85f50f5e859198, type: 3}
-    - {fileID: 21300000, guid: 9cb6ae45fab2c412ab50c6f9c0a6db5e, type: 3}
-    - {fileID: 21300000, guid: 93716751c6d3d4816ba6cd52187add9e, type: 3}
-    - {fileID: 21300000, guid: 1ea9d2c2c03164136ae7259e584c7d4b, type: 3}
-    - {fileID: 21300000, guid: 91396794c531b4fddb6654603d24cd45, type: 3}
-    - {fileID: 21300000, guid: 9adbd530f1261483ebeef25c15a3bb99, type: 3}
-    - {fileID: 21300000, guid: 55009a62ba7374911be2e4846ebd49c1, type: 3}
-    - {fileID: 21300000, guid: fcb25e16924f2436a9e3e160ac3db849, type: 3}
-    - {fileID: 21300000, guid: adbfe15d04f0e4b84bf943edfd6c18bd, type: 3}
-    - {fileID: 21300000, guid: e486affaa33ec4eb7854bf0cf4b22dc6, type: 3}
-    - {fileID: 21300000, guid: 53b965a0dd27d4c7a808e8e3fa8292ca, type: 3}
-    - {fileID: 21300000, guid: fe567a8ed7a3d47a48e33922eecfae14, type: 3}
-    - {fileID: 21300000, guid: 45c0da072c009446b9acf643e9e828f6, type: 3}
-    - {fileID: 21300000, guid: 8835e6c61f94946089c246149c50ab75, type: 3}
-    animationSpeed: 49
+    animationSpeed: 21
     loop: 1
     spriteSize: {x: 600, y: 650}
     colliderSize: {x: 150, y: 245}
@@ -48215,7 +48186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &945862000
 RectTransform:
   m_ObjectHideFlags: 0
@@ -48229,6 +48200,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1044661657}
+  - {fileID: 1090220303}
   m_Father: {fileID: 2060023601}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -48290,12 +48262,16 @@ MonoBehaviour:
   recoilDuration: 0.08
   returnDuration: 0.12
   recoilEase: 6
+  muzzleFadeIn: 0.03
+  muzzleFadeOut: 0.08
+  muzzleFadeInterval: 1
   minFireCooldown: 0.5
   variantSwitchCooldown: 0.5
   torpedoLockRect: {fileID: 144515462}
-  torpedoLockScaleMultiplier: 2
+  torpedoLockScaleMultiplier: 3
   torpedoLockScaleDuration: 0.5
   torpedoLockRotateDuration: 1.25
+  torpedoSpawnPoint: {fileID: 1090220303}
 --- !u!1 &946015108
 GameObject:
   m_ObjectHideFlags: 0
@@ -52935,6 +52911,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1044661657}
+  - component: {fileID: 1044661659}
+  - component: {fileID: 1044661658}
   m_Layer: 5
   m_Name: Muzzle
   m_TagString: Untagged
@@ -52958,9 +52936,47 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 83.3}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 80.2}
+  m_SizeDelta: {x: 220, y: 220}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1044661658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044661656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d715652895238416199a8d8414831c48, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1044661659
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044661656}
+  m_CullTransparentMesh: 1
 --- !u!1 &1045304030
 GameObject:
   m_ObjectHideFlags: 0
@@ -55174,6 +55190,41 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 41.539032}
   m_SizeDelta: {x: 0, y: -83.078}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1090220302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1090220303}
+  m_Layer: 5
+  m_Name: TorpedoSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1090220303
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1090220302}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 945862000}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 31.199997}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1092720665
 GameObject:
@@ -98630,7 +98681,7 @@ MonoBehaviour:
   laserImpactBGAnimation: {fileID: 211605844}
   impactScaleFactor: 0.7
   fishDamageColor: {r: 1, g: 0.35, b: 0.35, a: 1}
-  viewportPadding: 0.1
+  minDamageAnimationInterval: 0.2
 --- !u!114 &1966824574
 MonoBehaviour:
   m_ObjectHideFlags: 0

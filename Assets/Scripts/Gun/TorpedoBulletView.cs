@@ -9,6 +9,7 @@ public class TorpedoBulletView : MonoBehaviour
   [Header("Phase 1")]
   [SerializeField] float phase1Duration = 0.18f;
   [SerializeField, Range(0f, 1f)] float phase1DistanceFactor = 0.2f;
+  [SerializeField, Range(0f, 1f)] float phase1HeightRestoreDistanceFactor = 0.3f;
   [SerializeField] float pulseAmount = 0.8f;
 
   [Header("Phase 2")]
@@ -27,6 +28,8 @@ public class TorpedoBulletView : MonoBehaviour
   [SerializeField] private Color fishDamageColor = new Color(1f, 0.35f, 0.35f, 1f);
 
   private ImageAnimation anim;
+  private RectTransform rectTransform;
+  private float initialHeight;
   private BaseFish target;
   private Vector3 lastKnownTargetPos;
   private Vector3 startPos;
@@ -43,12 +46,20 @@ public class TorpedoBulletView : MonoBehaviour
 
   // ---------------- INIT ----------------
 
+  private void Awake()
+  {
+    rectTransform = GetComponent<RectTransform>();
+    if (rectTransform != null)
+      initialHeight = rectTransform.sizeDelta.y;
+  }
+
   internal void Init(BaseFish fish)
   {
     anim = GetComponent<ImageAnimation>();
     anim.OnAnimationComplete = null;
 
     target = fish;
+    target?.RegisterIncomingTorpedo();
     startPos = transform.position;
 
     lastKnownTargetPos = fish.HitPoint.position;
@@ -62,6 +73,8 @@ public class TorpedoBulletView : MonoBehaviour
     float backAnimSpeed = GetBackAnimSpeedForPhase1();
     anim.SetAnimationData(backAnim, backAnimSpeed, false);
     anim.StartAnimation();
+
+    SetHeight(0f);
 
     timer = 0f;
     phase = Phase.Phase1;
@@ -93,6 +106,7 @@ public class TorpedoBulletView : MonoBehaviour
     );
 
     transform.up = fireDir;
+    UpdateHeightRestore();
     UpdatePulse();
 
     if (Vector3.Distance(transform.position, phase1End) <= 0.01f)
@@ -111,6 +125,26 @@ public class TorpedoBulletView : MonoBehaviour
     float progress = Mathf.Clamp01(traveled / phase1Distance);
     float scale = Mathf.Lerp(1f, 1f + pulseAmount, progress);
     transform.localScale = Vector3.one * scale;
+  }
+
+  void UpdateHeightRestore()
+  {
+    if (rectTransform == null)
+      return;
+
+    if (phase1Distance <= Mathf.Epsilon)
+    {
+      SetHeight(initialHeight);
+      return;
+    }
+
+    float traveled = Vector3.Distance(startPos, transform.position);
+    float progress = Mathf.Clamp01(traveled / phase1Distance);
+    float restoreProgress = phase1HeightRestoreDistanceFactor <= Mathf.Epsilon
+      ? 1f
+      : Mathf.Clamp01(progress / phase1HeightRestoreDistanceFactor);
+    float height = Mathf.Lerp(0f, initialHeight, restoreProgress);
+    SetHeight(height);
   }
 
   // ---------------- PHASE 2 ----------------
@@ -147,6 +181,7 @@ public class TorpedoBulletView : MonoBehaviour
     {
       if (target != null)
       {
+        target.OnTorpedoImpact();
         StartCoroutine(target.DamageAnimation(fishDamageColor));
       }
 
@@ -222,6 +257,10 @@ public class TorpedoBulletView : MonoBehaviour
     var blast = BlastAnimationPool.Instance.GetFromPool();
     blast.transform.SetPositionAndRotation(pos, Quaternion.identity);
     blast.StartAnimation();
+    blast.OnAnimationComplete = () =>
+    {
+      BlastAnimationPool.Instance.ReturnToPool(blast);
+    };
   }
 
   void Finish()
@@ -231,7 +270,9 @@ public class TorpedoBulletView : MonoBehaviour
 
     anim.OnAnimationComplete = null;
     anim.StopAnimation();
+    target?.UnregisterIncomingTorpedo();
     target = null;
+    SetHeight(0f);
 
     StartCoroutine(ReturnNextFrame());
   }
@@ -240,5 +281,15 @@ public class TorpedoBulletView : MonoBehaviour
   {
     yield return null;
     TorpedoPool.Instance.ReturnToPool(this);
+  }
+
+  private void SetHeight(float height)
+  {
+    if (rectTransform == null)
+      return;
+
+    Vector2 size = rectTransform.sizeDelta;
+    size.y = height;
+    rectTransform.sizeDelta = size;
   }
 }

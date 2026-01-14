@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 using FluffyUnderware.Curvy;
 using FluffyUnderware.Curvy.Controllers;
 using System.Collections;
@@ -34,24 +35,30 @@ internal class BaseFish : MonoBehaviour
   protected Image fishImage;
   protected BoxCollider2D boxCollider;
   protected SplineController splineController;
+  internal Transform tempAnimParent;
+  internal int tempAnimParentIndex = -1;
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
-  [SerializeField] private float torpedoViewportPadding = 0.05f;
+  [FormerlySerializedAs("torpedoViewportPadding")]
+  [SerializeField] private float viewportPadding = 0.0005f;
   private Coroutine lifeTimeoutRoutine;
   private Coroutine despawnFinalizeRoutine;
-  private Coroutine torpedoVisibilityRoutine;
+  private Coroutine visibilityRoutine;
   internal bool isDespawning;
   internal bool PendingVisualDeath;
-  private bool finalized;
-  internal bool TorpedoTargetVisible = false;
-  private bool torpedoVisibilityReady;
+  internal bool finalized;
+  internal bool IsVisibleInViewport = false;
+  private bool visibilityReady;
+  internal int ActiveTorpedoCount { get; private set; }
+  private System.Action onLastTorpedoCleared;
+  private Coroutine lastTorpedoTimeoutRoutine;
 
   internal enum DeathCause
   {
     None,
     Torpedo,
     Bullet,
-    Laser,
+    Lazer,
     ServerCleanup
   }
 
@@ -61,7 +68,7 @@ internal class BaseFish : MonoBehaviour
 
   void OnEnable()
   {
-    TorpedoTargetVisible = false;
+    IsVisibleInViewport = false;
   }
 
   internal virtual void Initialize(FishData data)
@@ -70,11 +77,18 @@ internal class BaseFish : MonoBehaviour
     OnFishDespawned = null;
 
     finalized = false;
-    TorpedoTargetVisible = false;
-    torpedoVisibilityReady = false;
+    IsVisibleInViewport = false;
+    visibilityReady = false;
     isDespawning = false;
     PendingVisualDeath = false;
     KillOnTorpedoArrival = false;
+    ActiveTorpedoCount = 0;
+    onLastTorpedoCleared = null;
+    if (lastTorpedoTimeoutRoutine != null)
+    {
+      StopCoroutine(lastTorpedoTimeoutRoutine);
+      lastTorpedoTimeoutRoutine = null;
+    }
 
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
@@ -108,12 +122,12 @@ internal class BaseFish : MonoBehaviour
       fishImage.DOFade(1f, 0.2f).SetUpdate(true);
     }
 
-    BeginTorpedoVisibilityWarmup();
+    BeginViewportVisibilityWarmup();
   }
 
   private void Update()
   {
-    UpdateTorpedoVisibility();
+    UpdateViewportVisibility();
     OnCustomUpdate();
   }
 
@@ -229,7 +243,10 @@ internal class BaseFish : MonoBehaviour
     if (WaitingForKillingTorpedo)
       return false;
 
-    boxCollider.enabled = false;
+    if (boxCollider == null)
+      boxCollider = GetComponent<BoxCollider2D>();
+    if (boxCollider != null)
+      boxCollider.enabled = false;
     if (splineController != null)
     {
       splineController.PlayAutomatically = false;
@@ -237,6 +254,88 @@ internal class BaseFish : MonoBehaviour
     }
 
     return true;
+  }
+
+  internal void StopPathMovement()
+  {
+    if (boxCollider == null)
+      boxCollider = GetComponent<BoxCollider2D>();
+    if (boxCollider != null)
+      boxCollider.enabled = false;
+
+    movementTween?.Kill();
+
+    if (splineController != null)
+    {
+      splineController.PlayAutomatically = false;
+      splineController.Pause();
+      splineController.enabled = false;
+      splineController.Speed = 0f;
+    }
+  }
+
+  internal void ForceDespawn()
+  {
+    DespawnFish();
+  }
+
+  internal virtual void OnTorpedoImpact() { }
+
+  internal void RegisterIncomingTorpedo()
+  {
+    ActiveTorpedoCount++;
+  }
+
+  internal void UnregisterIncomingTorpedo()
+  {
+    if (ActiveTorpedoCount > 0)
+      ActiveTorpedoCount--;
+
+    if (ActiveTorpedoCount == 0 && onLastTorpedoCleared != null)
+    {
+      var callback = onLastTorpedoCleared;
+      onLastTorpedoCleared = null;
+      if (lastTorpedoTimeoutRoutine != null)
+      {
+        StopCoroutine(lastTorpedoTimeoutRoutine);
+        lastTorpedoTimeoutRoutine = null;
+      }
+      callback.Invoke();
+    }
+  }
+
+  internal void WaitForLastTorpedo(System.Action onReady, float timeout)
+  {
+    if (onReady == null)
+      return;
+
+    if (ActiveTorpedoCount <= 0)
+    {
+      onReady.Invoke();
+      return;
+    }
+
+    onLastTorpedoCleared = onReady;
+
+    if (timeout > 0f)
+    {
+      if (lastTorpedoTimeoutRoutine != null)
+        StopCoroutine(lastTorpedoTimeoutRoutine);
+      lastTorpedoTimeoutRoutine = StartCoroutine(LastTorpedoTimeout(timeout));
+    }
+  }
+
+  private IEnumerator LastTorpedoTimeout(float timeout)
+  {
+    yield return new WaitForSecondsRealtime(timeout);
+    lastTorpedoTimeoutRoutine = null;
+
+    if (onLastTorpedoCleared == null)
+      yield break;
+
+    var callback = onLastTorpedoCleared;
+    onLastTorpedoCleared = null;
+    callback.Invoke();
   }
 
   internal virtual void Die()
@@ -335,12 +434,12 @@ internal class BaseFish : MonoBehaviour
 
     WaitingForKillingTorpedo = false;
     deathCause = DeathCause.None;
-    TorpedoTargetVisible = false;
-    torpedoVisibilityReady = false;
-    if (torpedoVisibilityRoutine != null)
+    IsVisibleInViewport = false;
+    visibilityReady = false;
+    if (visibilityRoutine != null)
     {
-      StopCoroutine(torpedoVisibilityRoutine);
-      torpedoVisibilityRoutine = null;
+      StopCoroutine(visibilityRoutine);
+      visibilityRoutine = null;
     }
     if (killFailSafeRoutine != null)
     {
@@ -358,9 +457,18 @@ internal class BaseFish : MonoBehaviour
 
     transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
     transform.localScale = Vector3.one;
+    if (tempAnimParent != null)
+    {
+      transform.SetParent(tempAnimParent, false);
+      if (tempAnimParentIndex >= 0)
+        transform.SetSiblingIndex(tempAnimParentIndex);
+      tempAnimParent = null;
+      tempAnimParentIndex = -1;
+    }
 
     if (splineController != null)
     {
+      splineController.enabled = true;
       splineController.Stop();
       splineController.Position = 0;
       splineController.Speed = 0;
@@ -369,24 +477,24 @@ internal class BaseFish : MonoBehaviour
     speedMultiplier = 1f;
   }
 
-  private void UpdateTorpedoVisibility()
+  private void UpdateViewportVisibility()
   {
-    if (!torpedoVisibilityReady)
+    if (!visibilityReady)
     {
-      TorpedoTargetVisible = false;
+      IsVisibleInViewport = false;
       return;
     }
 
     if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
     {
-      TorpedoTargetVisible = false;
+      IsVisibleInViewport = false;
       return;
     }
 
     var cam = Camera.main;
     if (cam == null)
     {
-      TorpedoTargetVisible = false;
+      IsVisibleInViewport = false;
       return;
     }
 
@@ -395,7 +503,7 @@ internal class BaseFish : MonoBehaviour
 
     if (boxCollider == null)
     {
-      TorpedoTargetVisible = false;
+      IsVisibleInViewport = false;
       return;
     }
 
@@ -405,32 +513,32 @@ internal class BaseFish : MonoBehaviour
 
     if (max.z <= 0)
     {
-      TorpedoTargetVisible = false;
+      IsVisibleInViewport = false;
       return;
     }
 
-    TorpedoTargetVisible =
-      min.x > torpedoViewportPadding &&
-      max.x < 1f - torpedoViewportPadding &&
-      min.y > torpedoViewportPadding &&
-      max.y < 1f - torpedoViewportPadding;
+    IsVisibleInViewport =
+      min.x > viewportPadding &&
+      max.x < 1f - viewportPadding &&
+      min.y > viewportPadding &&
+      max.y < 1f - viewportPadding;
   }
 
-  private void BeginTorpedoVisibilityWarmup()
+  private void BeginViewportVisibilityWarmup()
   {
-    if (torpedoVisibilityRoutine != null)
-      StopCoroutine(torpedoVisibilityRoutine);
+    if (visibilityRoutine != null)
+      StopCoroutine(visibilityRoutine);
 
-    torpedoVisibilityRoutine = StartCoroutine(TorpedoVisibilityWarmup());
+    visibilityRoutine = StartCoroutine(ViewportVisibilityWarmup());
   }
 
-  private IEnumerator TorpedoVisibilityWarmup()
+  private IEnumerator ViewportVisibilityWarmup()
   {
-    torpedoVisibilityReady = false;
+    visibilityReady = false;
     yield return null;
     yield return null;
-    torpedoVisibilityReady = true;
-    torpedoVisibilityRoutine = null;
+    visibilityReady = true;
+    visibilityRoutine = null;
   }
   internal void SetAlpha(float alpha)
   {
@@ -444,6 +552,8 @@ internal class BaseFish : MonoBehaviour
   internal void MarkPendingDeath()
   {
     PendingVisualDeath = true;
+    if (boxCollider == null)
+      boxCollider = GetComponent<BoxCollider2D>();
     if (boxCollider != null)
       boxCollider.enabled = false;
   }

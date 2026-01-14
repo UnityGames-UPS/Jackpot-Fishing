@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class TorpedoGun : BaseGun
@@ -9,6 +10,11 @@ public class TorpedoGun : BaseGun
   [SerializeField] private float returnDuration = 0.12f;
   [SerializeField] private Ease recoilEase = Ease.OutQuad;
 
+  [Header("Muzzle Flash")]
+  [SerializeField] private float muzzleFadeIn = 0.03f;
+  [SerializeField] private float muzzleFadeOut = 0.08f;
+  [SerializeField] private float muzzleFadeInterval = 0.05f;
+
   private bool isFiring;
 
   // 🔑 Variant-level lock (gameplay)
@@ -16,23 +22,30 @@ public class TorpedoGun : BaseGun
 
   // 🔑 Instance-level lock (per shot)
   private BaseFish currentTarget;
+  [Header("Torpedo Fire Intervals")]
   [SerializeField] private float minFireCooldown = 0.25f; // tweak feel
   [SerializeField] private float variantSwitchCooldown = 0.35f;
   private float nextAllowedFireTime;
   private float nextAllowedVariantSwitchTime;
   private Tween recoilTween;
+  private Tween muzzleTween;
+  private Image muzzleImage;
   private Vector3 initialLocalPos;
   [Header("Torpedo Lock Visual")]
   [SerializeField] private RectTransform torpedoLockRect;
   [SerializeField] private float torpedoLockScaleMultiplier = 1.2f;
   [SerializeField] private float torpedoLockScaleDuration = 0.2f;
   [SerializeField] private float torpedoLockRotateDuration = 1.25f;
+  [Header("Torpedo Spawn Point")]
+  [SerializeField] private Transform torpedoSpawnPoint;
   private Canvas torpedoLockCanvas;
   private Vector3 torpedoLockInitScale;
   private Tween torpedoLockScaleTween;
   private Tween torpedoLockRotateTween;
   private bool torpedoLockScaleCached;
   private BaseFish torpedoLockTarget;
+  private Vector3 lastLockedPosition;
+  private bool hasLastLockedPosition;
 
 
   // ---------------- INPUT ----------------
@@ -59,6 +72,8 @@ public class TorpedoGun : BaseGun
 
     lockedVariant = nextVariant;
     currentTarget = hitFish;
+    lastLockedPosition = hitFish.ColliderMidPoint;
+    hasLastLockedPosition = true;
     nextAllowedVariantSwitchTime = Time.time + variantSwitchCooldown;
     UpdateTorpedoLockTarget(currentTarget);
 
@@ -76,6 +91,8 @@ public class TorpedoGun : BaseGun
     // unlocked = no variant lock
     lockedVariant = null;
     currentTarget = hitFish;
+    lastLockedPosition = hitFish.ColliderMidPoint;
+    hasLastLockedPosition = true;
     ClearTorpedoLockVisual();
 
     StartFiring();
@@ -129,6 +146,7 @@ public class TorpedoGun : BaseGun
     if (!UIManager.Instance.OnGunFired())
       return;
 
+    PlayMuzzleFlash();
     PlayRecoil();
 
     BaseFish fish = currentTarget;
@@ -137,7 +155,7 @@ public class TorpedoGun : BaseGun
       TorpedoPool.Instance.GetFromPool();
 
     torpedo.transform.SetPositionAndRotation(
-      muzzle.position,
+      torpedoSpawnPoint.position,
       Quaternion.identity
     );
 
@@ -170,6 +188,19 @@ public class TorpedoGun : BaseGun
       });
   }
 
+  private void PlayMuzzleFlash()
+  {
+    if (muzzleImage == null)
+      return;
+
+    muzzleTween?.Kill();
+
+    muzzleTween = DOTween.Sequence()
+      .Append(muzzleImage.DOFade(1f, muzzleFadeIn))
+      .AppendInterval(muzzleFadeInterval)
+      .Append(muzzleImage.DOFade(0f, muzzleFadeOut));
+  }
+
 
   // ---------------- TARGET RESOLUTION ----------------
 
@@ -178,30 +209,42 @@ public class TorpedoGun : BaseGun
     if (lockedVariant == null)
       return null;
 
+    BaseFish closestFish = null;
+    float closestSqrDistance = float.MaxValue;
+
     foreach (var fish in FishManager.Instance.GetActiveFishes())
     {
-      if (IsFishValidForShot(fish) &&
-          fish.data.variant == lockedVariant)
-      {
+      if (!IsFishValidForShot(fish))
+        continue;
+      if (fish.data.variant != lockedVariant)
+        continue;
+
+      if (!hasLastLockedPosition)
         return fish;
+
+      float sqrDistance = (fish.ColliderMidPoint - lastLockedPosition).sqrMagnitude;
+      if (sqrDistance < closestSqrDistance)
+      {
+        closestSqrDistance = sqrDistance;
+        closestFish = fish;
       }
     }
 
-    return null;
+    return closestFish;
   }
 
   private bool IsFishValidForShot(BaseFish fish)
   {
-    if (fish == null)
+    if (fish == null || fish.data == null)
       return false;
 
-    if (fish.isDespawning || fish.PendingVisualDeath)
+    if (fish.isDespawning || fish.PendingVisualDeath || fish.finalized)
       return false;
 
     if (!fish.gameObject.activeInHierarchy)
       return false;
 
-    return fish.TorpedoTargetVisible;
+    return fish.IsVisibleInViewport;
   }
 
   // ---------------- BACKEND CALLBACK ----------------
@@ -210,6 +253,8 @@ public class TorpedoGun : BaseGun
   {
     if (currentTarget == fish)
     {
+      lastLockedPosition = fish.ColliderMidPoint;
+      hasLastLockedPosition = true;
       currentTarget = null;
       if (Time.time < nextAllowedVariantSwitchTime)
       {
@@ -242,6 +287,7 @@ public class TorpedoGun : BaseGun
     isFiring = false;
     currentTarget = null;
     lockedVariant = null;
+    hasLastLockedPosition = false;
     ClearTorpedoLockVisual();
   }
 
@@ -249,17 +295,26 @@ public class TorpedoGun : BaseGun
   {
     currentTarget = null;
     lockedVariant = null;
+    hasLastLockedPosition = false;
     ClearTorpedoLockVisual();
   }
 
   internal void Awake()
   {
     initialLocalPos = transform.localPosition;
+    muzzleImage = muzzle.GetComponent<Image>();
+    if (muzzleImage != null)
+      muzzleImage.color = new Color(1f, 1f, 1f, 0f);
     if (torpedoLockRect != null)
     {
       torpedoLockCanvas = torpedoLockRect.GetComponentInParent<Canvas>();
       torpedoLockRect.gameObject.SetActive(false);
     }
+  }
+
+  private void OnDisable()
+  {
+    StopAndClear();
   }
 
   internal override void Fire() { }
@@ -274,10 +329,17 @@ public class TorpedoGun : BaseGun
 
     if (IsFishValidForShot(currentTarget))
     {
+      lastLockedPosition = currentTarget.ColliderMidPoint;
+      hasLastLockedPosition = true;
       UpdateTorpedoLockTarget(currentTarget);
       return;
     }
 
+    if (currentTarget != null)
+    {
+      lastLockedPosition = currentTarget.ColliderMidPoint;
+      hasLastLockedPosition = true;
+    }
     UpdateTorpedoLockTarget(null);
 
     if (Time.time < nextAllowedVariantSwitchTime)

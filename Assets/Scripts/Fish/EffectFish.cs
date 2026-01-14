@@ -1,32 +1,68 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 internal class EffectFish : BaseFish
 {
   [SerializeField, Range(0f, 0.49f)] private float crabEdgePercentMin = 0.15f;
   [SerializeField, Range(0f, 0.49f)] private float crabEdgePercentMax = 0.25f;
+  [SerializeField] private BubbleWhirlpoolController bubbleWhirlpool;
+  [Header("Bubble Crab Death")]
+  [SerializeField] private float bubbleCrabShakeRadius = 12f;
+  [SerializeField] private float bubbleCrabShakeSpeed = 45f;
+  [SerializeField] private float bubbleCrabSpawnRadiusMultiplier = 1.6f;
+  [SerializeField] private float affectedFishTravelDuration = 1.2f;
+  [SerializeField] private float affectedFishArriveDistance = 10f;
+  [SerializeField] private float affectedFishAngularSpeed = 720f;
+  [SerializeField] private float affectedFishSelfSpinSpeed = 360f;
+  [SerializeField] private float bubbleCrabTorpedoImpactTimeout = 2f;
+  [SerializeField] private Transform tempAnimParent;
   private const float MinSpeedMultiplier = 0.6f;
   private const float MaxSpeedMultiplier = 1.6f;
   private Coroutine segmentedSpeedRoutine;
+  private Coroutine bubbleCrabShakeRoutine;
+  private Coroutine bubbleCrabEffectRoutine;
+  private Vector3 bubbleCrabBaseLocalPos;
+  private bool bubbleCrabDeathActive;
+  private bool bubbleCrabAwaitingTorpedoImpact;
+  private bool bubbleCrabTorpedoImpactReceived;
+  private const string BubbleCrabVariant = "effect_bubblecrab_fish";
 
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
     SetupFallbackMovement();
-    StartCrabSpeedVariation();
+    StartRockCrabSpeedVariation();
+    StartBubbleCrabWhirlpool();
   }
 
   internal override void ResetFish()
   {
-    base.ResetFish();
+    bubbleCrabDeathActive = false;
+    bubbleCrabAwaitingTorpedoImpact = false;
+    bubbleCrabTorpedoImpactReceived = false;
+    if (bubbleCrabShakeRoutine != null)
+    {
+      StopCoroutine(bubbleCrabShakeRoutine);
+      bubbleCrabShakeRoutine = null;
+    }
+    if (bubbleCrabEffectRoutine != null)
+    {
+      StopCoroutine(bubbleCrabEffectRoutine);
+      bubbleCrabEffectRoutine = null;
+    }
+    if (bubbleWhirlpool != null)
+      bubbleWhirlpool.SetSpawnRadiusMultiplier(1f);
+    bubbleWhirlpool?.StopAndClear();
     if (segmentedSpeedRoutine != null)
     {
       StopCoroutine(segmentedSpeedRoutine);
       segmentedSpeedRoutine = null;
     }
+    base.ResetFish();
   }
 
-  private void StartCrabSpeedVariation()
+  private void StartRockCrabSpeedVariation()
   {
     if (data == null || data.variant != "effect_rockcrab_fish")
       return;
@@ -35,6 +71,217 @@ internal class EffectFish : BaseFish
       StopCoroutine(segmentedSpeedRoutine);
 
     segmentedSpeedRoutine = StartCoroutine(CrabSegmentedSpeedRoutine());
+  }
+
+  private void StartBubbleCrabWhirlpool()
+  {
+    if (data == null || data.variant != BubbleCrabVariant)
+      return;
+
+    if (bubbleWhirlpool == null)
+      bubbleWhirlpool = GetComponent<BubbleWhirlpoolController>();
+
+    if (bubbleWhirlpool == null)
+      return;
+
+    bubbleWhirlpool.Begin();
+  }
+
+  internal void TriggerBubbleCrabDeath(List<BaseFish> affectedFishes)
+  {
+    if (data == null || data.variant != BubbleCrabVariant)
+      return;
+
+    if (bubbleCrabDeathActive)
+      return;
+
+    bubbleCrabDeathActive = true;
+    bubbleCrabAwaitingTorpedoImpact = false;
+    bubbleCrabTorpedoImpactReceived = false;
+    MarkPendingDeath();
+    StopPathMovement();
+
+    if (bubbleWhirlpool == null)
+      bubbleWhirlpool = GetComponent<BubbleWhirlpoolController>();
+
+    if (bubbleWhirlpool != null)
+    {
+      bubbleWhirlpool.SetSpawnRadiusMultiplier(bubbleCrabSpawnRadiusMultiplier);
+      bubbleWhirlpool.Begin();
+    }
+
+    bubbleCrabBaseLocalPos = transform.localPosition;
+    if (bubbleCrabShakeRoutine != null)
+      StopCoroutine(bubbleCrabShakeRoutine);
+    bubbleCrabShakeRoutine = StartCoroutine(BubbleCrabShakeRoutine());
+
+    if (bubbleCrabEffectRoutine != null)
+      StopCoroutine(bubbleCrabEffectRoutine);
+    bubbleCrabEffectRoutine = StartCoroutine(BubbleCrabEffectRoutine(affectedFishes));
+  }
+
+  internal override void OnTorpedoImpact() { }
+
+  private IEnumerator BubbleCrabShakeRoutine()
+  {
+    while (bubbleCrabDeathActive)
+    {
+      float x = Mathf.PerlinNoise(Time.time * bubbleCrabShakeSpeed, 0f) * 2f - 1f;
+      float y = Mathf.PerlinNoise(0f, Time.time * bubbleCrabShakeSpeed) * 2f - 1f;
+      Vector3 offset = new Vector3(x, y, 0f) * bubbleCrabShakeRadius;
+      transform.localPosition = bubbleCrabBaseLocalPos + offset;
+      yield return null;
+    }
+
+    transform.localPosition = bubbleCrabBaseLocalPos;
+  }
+
+  private IEnumerator BubbleCrabEffectRoutine(List<BaseFish> affectedFishes)
+  {
+    List<BaseFish> validTargets = new List<BaseFish>();
+    if (affectedFishes != null)
+    {
+      foreach (var fish in affectedFishes)
+      {
+        if (fish == null || fish == this)
+          continue;
+
+        fish.MarkPendingDeath();
+        fish.SetAlpha(1f);
+        fish.StopPathMovement();
+        CacheAndReparentAffectedFish(fish);
+        validTargets.Add(fish);
+      }
+    }
+
+    yield return new WaitForSeconds(1f);
+
+    int remaining = validTargets.Count;
+    if (remaining > 0)
+    {
+      foreach (var fish in validTargets)
+        StartCoroutine(MoveAffectedFishToCrab(fish, () => remaining--));
+
+      yield return new WaitUntil(() => remaining <= 0);
+    }
+
+    foreach (var fish in validTargets)
+    {
+      PlayCoinBlast(fish);
+      fish.PendingVisualDeath = false;
+      fish.ForceDespawn();
+      RestoreAffectedFishParent(fish);
+    }
+
+    if (bubbleCrabAwaitingTorpedoImpact)
+    {
+      float timer = 0f;
+      float timeout = Mathf.Max(0f, bubbleCrabTorpedoImpactTimeout);
+      while (!bubbleCrabTorpedoImpactReceived && timer < timeout)
+      {
+        timer += Time.deltaTime;
+        yield return null;
+      }
+    }
+
+    PlayCoinBlast(this);
+    bubbleCrabDeathActive = false;
+    PendingVisualDeath = false;
+    ForceDespawn();
+  }
+
+  private void CacheAndReparentAffectedFish(BaseFish fish)
+  {
+    if (fish == null)
+      return;
+
+    if (fish.tempAnimParent == null)
+    {
+      fish.tempAnimParent = fish.transform.parent;
+      fish.tempAnimParentIndex = fish.transform.GetSiblingIndex();
+    }
+
+    Transform targetParent = tempAnimParent != null ? tempAnimParent : transform.parent;
+    if (targetParent == null)
+      return;
+
+    if (tempAnimParent != null)
+      tempAnimParent.SetAsLastSibling();
+
+    fish.transform.SetParent(targetParent, true);
+    fish.transform.SetAsLastSibling();
+  }
+
+  private void RestoreAffectedFishParent(BaseFish fish)
+  {
+    if (fish == null || fish.tempAnimParent == null)
+      return;
+
+    fish.transform.SetParent(fish.tempAnimParent, true);
+    if (fish.tempAnimParentIndex >= 0)
+      fish.transform.SetSiblingIndex(fish.tempAnimParentIndex);
+
+    fish.tempAnimParent = null;
+    fish.tempAnimParentIndex = -1;
+  }
+
+  private IEnumerator MoveAffectedFishToCrab(BaseFish fish, System.Action onComplete)
+  {
+    if (fish == null)
+    {
+      onComplete?.Invoke();
+      yield break;
+    }
+
+    Vector3 crabPos = transform.position;
+    Vector3 startPos = fish.transform.position;
+    Vector3 offset = startPos - crabPos;
+    float startRadius = offset.magnitude;
+    if (startRadius <= affectedFishArriveDistance)
+    {
+      onComplete?.Invoke();
+      yield break;
+    }
+
+    float angle = Mathf.Atan2(offset.y, offset.x);
+    float angularSpeedRad = affectedFishAngularSpeed * Mathf.Deg2Rad;
+    float timer = 0f;
+    float duration = Mathf.Max(0.01f, affectedFishTravelDuration);
+
+    while (timer < duration && fish != null)
+    {
+      timer += Time.deltaTime;
+      float t = Mathf.Clamp01(timer / duration);
+      float ease = t * t;
+
+      crabPos = transform.position;
+      float radius = Mathf.Lerp(startRadius, affectedFishArriveDistance, ease);
+      angle += angularSpeedRad * Time.deltaTime * Mathf.Lerp(0.6f, 1.4f, ease);
+
+      Vector3 pos = crabPos + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius;
+      fish.transform.position = pos;
+      fish.transform.Rotate(0f, 0f, affectedFishSelfSpinSpeed * Time.deltaTime);
+
+      yield return null;
+    }
+
+    if (fish != null)
+      fish.transform.position = transform.position;
+
+    onComplete?.Invoke();
+  }
+
+  private void PlayCoinBlast(BaseFish fish)
+  {
+    if (fish == null || fish.data == null)
+      return;
+
+    var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
+    if (coinAnimation == null)
+      return;
+
+    Vector3 pos = fish.ColliderMidPoint;
+    coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
   }
 
   private IEnumerator CrabSegmentedSpeedRoutine()

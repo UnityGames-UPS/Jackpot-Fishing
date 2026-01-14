@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private TMP_Text TotalBetText;
   [SerializeField] private Button PlusBetButton;
   [SerializeField] private Button MinusBetButton;
-  internal int currentBet;
+  internal float currentBet;
   internal float currentBalance;
 
   [Header("Refund Text")]
@@ -271,7 +271,7 @@ public class UIManager : MonoBehaviour
   void SetBetText()
   {
     currentBet = SocketIOManager.Instance?.bets[BetCounter] ?? 0;
-    if (TotalBetText) TotalBetText.text = currentBet.ToString();
+    if (TotalBetText) TotalBetText.text = currentBet.ToString("N2");
   }
 
   void SetTorpedoBulletValue()
@@ -335,6 +335,10 @@ public class UIManager : MonoBehaviour
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo
   {
+    GunType previousGun = activeGun;
+    bool wasTargetLock = isTargetLock;
+    bool clearedLock = false;
+
     switch (index)
     {
       case 0:
@@ -343,7 +347,11 @@ public class UIManager : MonoBehaviour
           TargetLockFGAnim.SetActive(true);
         else
           TargetLockFGAnim.SetActive(false);
-        if (!isTargetLock && GunManager.Instance != null && GunManager.Instance.currentGun is TorpedoGun torpedoGun) torpedoGun.DisableTargetLock();
+        if (wasTargetLock && !isTargetLock)
+        {
+          ClearCurrentGunLock();
+          clearedLock = true;
+        }
         UpdateActiveGun();
         break;
       case 1:
@@ -364,6 +372,9 @@ public class UIManager : MonoBehaviour
         break;
     }
 
+    if (previousGun != activeGun && !clearedLock)
+      ClearCurrentGunLock();
+
     if (!isTargetLock && !isTorpedoGun)
     {
       GunManager.Instance.SwitchGun<SimpleGun>();
@@ -380,6 +391,17 @@ public class UIManager : MonoBehaviour
     {
       GunManager.Instance.SwitchGun<TorpedoGun>();
     }
+  }
+
+  private void ClearCurrentGunLock()
+  {
+    if (GunManager.Instance == null || GunManager.Instance.currentGun == null)
+      return;
+
+    if (GunManager.Instance.currentGun is TorpedoGun torpedoGun)
+      torpedoGun.DisableTargetLock();
+    else if (GunManager.Instance.currentGun is LazerGun lazerGun)
+      lazerGun.DisableTargetLock();
   }
 
   internal bool OnGunFired()

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 664486131906535265}
   - component: {fileID: 7750850535439090357}
   - component: {fileID: 1912547416451926941}
+  - component: {fileID: -2121867848832435175}
   m_Layer: 5
   m_Name: EffectFish
   m_TagString: Fish
@@ -223,9 +224,39 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  torpedoViewportPadding: 0.0005
+  viewportPadding: 0.0005
   crabEdgePercentMin: 0.25
   crabEdgePercentMax: 0.4
+  bubbleWhirlpool: {fileID: -2121867848832435175}
+  bubbleCrabShakeRadius: 12
+  bubbleCrabShakeSpeed: 45
+  bubbleCrabSpawnRadiusMultiplier: 2.5
+  affectedFishTravelDuration: 2
+  affectedFishArriveDistance: 0.1
+  affectedFishAngularSpeed: 120
+  affectedFishSelfSpinSpeed: 720
+  bubbleCrabTorpedoImpactTimeout: 2
+  tempAnimParent: {fileID: 0}
+--- !u!114 &-2121867848832435175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6220881146848465911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216cf133b119a44a2a592b9bafa97a9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bubblePrefab: {fileID: 4470991053211229912, guid: 7a052d10773a64d2da1d0900ea13b0bd, type: 3}
+  initialPoolSize: 12
+  spawnInterval: 0.2
+  spawnRadius: 250
+  radialSpeed: 100
+  angularSpeed: 50
+  randomizeAngularDirection: 0
+  returnDistance: 50
 --- !u!1 &8940523912092782683
 GameObject:
   m_ObjectHideFlags: 0

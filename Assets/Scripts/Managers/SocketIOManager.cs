@@ -21,7 +21,7 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] private string testToken;
   [SerializeField] private float SpawnEventInterval = 5f;
   [SerializeField] private float electricHitInterval = 1.5f;
-  [SerializeField] internal List<int> bets = new();
+  [SerializeField] internal List<float> bets = new();
   [SerializeField] internal List<float> GunCosts = new() { 1, 1, 6 }; //1: normal 2: torpedo 3: electric
   protected string gameNamespace = "playground";
   private bool hasEverConnected = false;
@@ -367,8 +367,15 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
-      // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
-      fish.OnFishDespawned = () => UIManager.Instance?.PlayCoinBlastForFish(fish);
+      EffectFish effectFish = fish as EffectFish;
+      bool isBubbleCrab = effectFish != null &&
+        fish.data != null &&
+        fish.data.variant == "effect_bubblecrab_fish";
+      if (!isBubbleCrab)
+      {
+        // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
+        fish.OnFishDespawned = () => UIManager.Instance?.PlayCoinBlastForFish(fish);
+      }
 
       TorpedoGun torpedoGun = null;
       if (GunManager.Instance?.Guns != null)
@@ -386,26 +393,37 @@ public class SocketIOManager : MonoBehaviour
         torpedoGun?.OnFishKilled(fish);
       fish.MarkPendingDeath();
 
+      if (isBubbleCrab)
+      {
+        List<BaseFish> affectedFishes = ResolveAffectedFishes(hitResult.effectTriggered);
+        if (hitResult.weaponType == "torpedo")
+        {
+          effectFish.WaitForLastTorpedo(
+            () => effectFish.TriggerBubbleCrabDeath(affectedFishes),
+            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+          );
+        }
+        else
+        {
+          effectFish.TriggerBubbleCrabDeath(affectedFishes);
+        }
+        return;
+      }
+
       // Weapon-aware death handling
       if (hitResult.weaponType == "torpedo")
       {
         fish.deathCause = BaseFish.DeathCause.Torpedo;
-        if (isLocalTorpedoKill && isVisibleForTorpedo)
-        {
-          fish.KillOnTorpedoArrival = true;
-          // Wait for torpedo (with short fail-safe)
-          fish.WaitForTorpedoKill(2f);
-        }
-        else
-        {
-          fish.Die();
-        }
+        fish.WaitForLastTorpedo(
+          () => fish.Die(),
+          fish.ActiveTorpedoCount > 0 ? 2f : 0f
+        );
       }
       else
       {
         fish.deathCause =
-          hitResult.weaponType == "electric"
-            ? BaseFish.DeathCause.Laser
+          hitResult.weaponType == "lazer"
+            ? BaseFish.DeathCause.Lazer
             : BaseFish.DeathCause.Bullet;
 
         // Instant despawn for non-torpedo weapons
@@ -419,7 +437,29 @@ public class SocketIOManager : MonoBehaviour
     if (fish == null)
       return false;
 
-    return fish.TorpedoTargetVisible;
+    return fish.IsVisibleInViewport;
+  }
+
+  private List<BaseFish> ResolveAffectedFishes(EffectTriggered effectTriggered)
+  {
+    List<BaseFish> affected = new List<BaseFish>();
+    if (effectTriggered?.affectedFish == null)
+      return affected;
+
+    foreach (var entry in effectTriggered.affectedFish)
+    {
+      if (string.IsNullOrEmpty(entry.id))
+        continue;
+
+      BaseFish fish = FishManager.Instance
+        .GetActiveFishes()
+        .FirstOrDefault(x => x.data != null && x.data.fishId == entry.id);
+
+      if (fish != null)
+        affected.Add(fish);
+    }
+
+    return affected;
   }
 
   // Connected event handler implementation
@@ -582,7 +622,7 @@ public class RequestFishEvent
 [Serializable]
 public class GameData
 {
-  public List<int> bets;
+  public List<float> bets;
   public int historyLimit;
   public JackpotValues jackpotValues;
   public long sessionStartTime;
@@ -657,6 +697,24 @@ public class Payload
   public Fish hitFish;
   public FishKilled fishKilled;
   public string fishId;
+  public EffectTriggered effectTriggered;
+}
+
+[Serializable]
+public class EffectTriggered
+{
+  public string type;
+  public List<AffectedFish> affectedFish;
+  public List<int> bonusWins;
+}
+
+[Serializable]
+public class AffectedFish
+{
+  public string id;
+  public string type;
+  public string variant;
+  public int multiplier;
 }
 
 [Serializable]

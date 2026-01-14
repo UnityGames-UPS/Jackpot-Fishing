@@ -14,7 +14,7 @@ public class LazerGun : BaseGun
   [SerializeField] private float impactScaleFactor = 0.8f;
   [Header("Hit")]
   [SerializeField] private Color fishDamageColor = new Color(1f, 0.35f, 0.35f, 1f);
-  [SerializeField] private float viewportPadding = 0.1f;
+  [SerializeField] private float minDamageAnimationInterval = 0.2f;
 
   private BaseFish lockedFish;
   private RectTransform lockedFishRect;
@@ -23,6 +23,9 @@ public class LazerGun : BaseGun
   private string lockedVariant;
   private bool awaitingHitResult;
   private float nextAllowedHitTime;
+  private float nextAllowedDamageAnimationTime;
+  private Vector3 lastLockedPosition;
+  private bool hasLastLockedPosition;
 
   internal void Awake()
   {
@@ -46,6 +49,12 @@ public class LazerGun : BaseGun
 
     if (!IsFishValidForBeam(lockedFish))
     {
+      if (lockedFish != null)
+      {
+        lastLockedPosition = lockedFish.ColliderMidPoint;
+        hasLastLockedPosition = true;
+      }
+
       lockedFish = ResolveVariantTarget();
 
       if (lockedFish == null)
@@ -84,6 +93,8 @@ public class LazerGun : BaseGun
 
     lockedVariant = hitFish.data.variant;
     lockedFish = hitFish;
+    lastLockedPosition = hitFish.ColliderMidPoint;
+    hasLastLockedPosition = true;
     StartFiring();
   }
 
@@ -97,6 +108,8 @@ public class LazerGun : BaseGun
 
     lockedVariant = null;
     lockedFish = hitFish;
+    lastLockedPosition = hitFish.ColliderMidPoint;
+    hasLastLockedPosition = true;
     StartFiring();
   }
 
@@ -104,6 +117,11 @@ public class LazerGun : BaseGun
   {
     isFiring = false;
     StopLaser();
+  }
+
+  internal void DisableTargetLock()
+  {
+    StopAndClear();
   }
 
   internal void StopLaser()
@@ -168,36 +186,22 @@ public class LazerGun : BaseGun
     laserImpactAnimation.gameObject.SetActive(enable);
   }
 
-  private const float margin = 0.05f;
-  private bool IsFishVisible(BaseFish fish)
-  {
-    var cam = Camera.main;
-    var bounds = fish.GetComponent<BoxCollider2D>().bounds;
-
-    Vector3 min = cam.WorldToViewportPoint(bounds.min);
-    Vector3 max = cam.WorldToViewportPoint(bounds.max);
-
-    if (max.z <= 0)
-      return false;
-
-    return max.x > viewportPadding &&
-           min.x < 1f - viewportPadding &&
-           max.y > viewportPadding &&
-           min.y < 1f - viewportPadding;
-  }
-
   private bool IsFishValidForBeam(BaseFish fish)
   {
     if (fish == null || fish.data == null)
       return false;
 
-    if (fish.isDespawning || fish.PendingVisualDeath)
+    if (fish.isDespawning || fish.PendingVisualDeath || fish.finalized)
       return false;
 
     if (!fish.gameObject.activeInHierarchy)
       return false;
 
-    return IsFishVisible(fish);
+    var fishCollider = fish.GetComponent<Collider2D>();
+    if (fishCollider != null && !fishCollider.enabled)
+      return false;
+
+    return fish.IsVisibleInViewport;
   }
 
   private BaseFish ResolveVariantTarget()
@@ -205,16 +209,28 @@ public class LazerGun : BaseGun
     if (lockedVariant == null)
       return null;
 
+    BaseFish closestFish = null;
+    float closestSqrDistance = float.MaxValue;
+
     foreach (var fish in FishManager.Instance.GetActiveFishes())
     {
-      if (IsFishValidForBeam(fish) &&
-          fish.data.variant == lockedVariant)
-      {
+      if (!IsFishValidForBeam(fish))
+        continue;
+      if (fish.data.variant != lockedVariant)
+        continue;
+
+      if (!hasLastLockedPosition)
         return fish;
+
+      float sqrDistance = (fish.ColliderMidPoint - lastLockedPosition).sqrMagnitude;
+      if (sqrDistance < closestSqrDistance)
+      {
+        closestSqrDistance = sqrDistance;
+        closestFish = fish;
       }
     }
 
-    return null;
+    return closestFish;
   }
 
   private void EnsureLaserActive(BaseFish fish)
@@ -225,6 +241,8 @@ public class LazerGun : BaseGun
 
       lockedFish = fish;
       lockedFishRect = lockedFish.GetComponent<RectTransform>();
+      lastLockedPosition = lockedFish.ColliderMidPoint;
+      hasLastLockedPosition = true;
 
       lockedFish.PlayLaserImpact();
 
@@ -239,6 +257,12 @@ public class LazerGun : BaseGun
     if (lockedFish == null)
       return;
 
+    if (Time.time >= nextAllowedDamageAnimationTime)
+    {
+      StartCoroutine(lockedFish.DamageAnimation(fishDamageColor));
+      nextAllowedDamageAnimationTime = Time.time + minDamageAnimationInterval;
+    }
+
     if (awaitingHitResult)
       return;
 
@@ -250,7 +274,6 @@ public class LazerGun : BaseGun
 
     awaitingHitResult = true;
 
-    StartCoroutine(lockedFish.DamageAnimation(fishDamageColor));
 
     SocketIOManager.Instance.SendHitEvent(
       lockedFish.data.fishId,
@@ -271,6 +294,7 @@ public class LazerGun : BaseGun
     lockedFish = null;
     lockedFishRect = null;
     lockedVariant = null;
+    hasLastLockedPosition = false;
   }
 
   private void ClearLock()
@@ -278,6 +302,7 @@ public class LazerGun : BaseGun
     lockedFish = null;
     lockedFishRect = null;
     lockedVariant = null;
+    hasLastLockedPosition = false;
   }
 
   internal void OnHitResult()

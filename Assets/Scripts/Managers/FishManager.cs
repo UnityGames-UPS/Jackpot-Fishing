@@ -23,67 +23,67 @@ internal class FishManager : MonoBehaviour
 
   private void Awake() => Instance = this;
 
-  // private void Update()
-  // {
-  //   if (!enableMockSpawning)
-  //     return;
+  private void Update()
+  {
+    if (!enableMockSpawning)
+      return;
 
-  //   if (Input.GetKeyDown(KeyCode.Space))
-  //   {
-  //     SpawnMockFish();
-  //   }
-  // }
-  // internal void SpawnMockFish()
-  // {
-  //   if (fishesData == null || fishesData.Count == 0)
-  //   {
-  //     Debug.LogWarning("[FishManager] No fish data for mock spawn");
-  //     return;
-  //   }
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+      SpawnMockFish();
+    }
+  }
+  internal void SpawnMockFish()
+  {
+    if (fishesData == null || fishesData.Count == 0)
+    {
+      Debug.LogWarning("[FishManager] No fish data for mock spawn");
+      return;
+    }
 
-  //   // FishData baseData =
-  //   // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
+    // FishData baseData =
+    // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
 
-  //   FishData baseData =
-  //     fishesData[21];
+    FishData baseData =
+      fishesData[20];
 
-  //   BaseFish fish = GetFishFromType(baseData.fishType);
+    BaseFish fish = GetFishFromType(baseData.fishType);
 
-  //   if (fish == null)
-  //   {
-  //     Debug.LogError("Fish Not Found! " + baseData.variant);
-  //     return;
-  //   }
+    if (fish == null)
+    {
+      Debug.LogError("Fish Not Found! " + baseData.variant);
+      return;
+    }
 
-  //   // ✅ Clone data (no backend id)
-  //   FishData runtimeData = new FishData
-  //   {
-  //     variant = baseData.variant,
-  //     animationFrames = baseData.animationFrames,
-  //     animationSpeed = baseData.animationSpeed,
-  //     loop = baseData.loop,
-  //     spriteSize = baseData.spriteSize,
-  //     colliderSize = baseData.colliderSize,
-  //     colliderOffset = baseData.colliderOffset,
-  //     laserImpactScaleFactor = baseData.laserImpactScaleFactor,
-  //     fishType = baseData.fishType,
+    // ✅ Clone data (no backend id)
+    FishData runtimeData = new FishData
+    {
+      variant = baseData.variant,
+      animationFrames = baseData.animationFrames,
+      animationSpeed = baseData.animationSpeed,
+      loop = baseData.loop,
+      spriteSize = baseData.spriteSize,
+      colliderSize = baseData.colliderSize,
+      colliderOffset = baseData.colliderOffset,
+      laserImpactScaleFactor = baseData.laserImpactScaleFactor,
+      fishType = baseData.fishType,
 
-  //     fishId = null,                 // 🚫 no backend
-  //     duration = baseData.duration
-  //   };
+      fishId = null,                 // 🚫 no backend
+      duration = baseData.duration
+    };
 
-  //   if (fish is NormalFish nf)
-  //   {
-  //     // ✅ NULL CONTEXT → fallback path
-  //     nf.Initialize(runtimeData, null);
-  //   }
-  //   else
-  //   {
-  //     fish.Initialize(runtimeData);
-  //   }
+    if (fish is NormalFish nf)
+    {
+      // ✅ NULL CONTEXT → fallback path
+      nf.Initialize(runtimeData, null);
+    }
+    else
+    {
+      fish.Initialize(runtimeData);
+    }
 
-  //   activeFishes.Add(fish);
-  // }
+    activeFishes.Add(fish);
+  }
 
 
   internal void DespawnFish(BaseFish fish)

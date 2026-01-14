@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   phase1Duration: 0.5
   phase1DistanceFactor: 0.4
+  phase1HeightRestoreDistanceFactor: 0.5
   pulseAmount: 0.4
   phase2Speed: 12
   maxLifetime: 1
