@@ -32,11 +32,11 @@ internal class BaseFish : MonoBehaviour
   protected Tween movementTween;
   protected Tween damageTween;
   protected ImageAnimation imageAnimation;
+  private float baseAnimationSpeed;
   protected Image fishImage;
   protected BoxCollider2D boxCollider;
   protected SplineController splineController;
-  internal Transform tempAnimParent;
-  internal int tempAnimParentIndex = -1;
+  private CurvySpline reservedSpline;
   protected float baseSpeed;
   protected float speedMultiplier = 1f;
   [FormerlySerializedAs("torpedoViewportPadding")]
@@ -105,6 +105,7 @@ internal class BaseFish : MonoBehaviour
     // Animation
     imageAnimation.SetAnimationData(data.animationFrames, data.animationSpeed, data.loop);
     imageAnimation.StartAnimation();
+    baseAnimationSpeed = data.animationSpeed;
 
     Rect.sizeDelta = data.spriteSize;
 
@@ -145,7 +146,6 @@ internal class BaseFish : MonoBehaviour
     if (data == null || string.IsNullOrEmpty(data.fishId))
     {
       Debug.LogWarning($"[Fish] Bullet hit missing fishId | variant={data?.variant}");
-      return;
     }
 
     SocketIOManager.Instance.SendHitEvent(data.fishId, "normal", variant: data.variant);
@@ -156,16 +156,30 @@ internal class BaseFish : MonoBehaviour
     bool rtl = UnityEngine.Random.value > 0.5f;
     FlipSprite(faceRight: !rtl);
 
-    var splines =
-      CurvyPathProvider.Instance.GetFallbackSplines(rtl);
+    var provider = CurvyPathProvider.Instance;
+    var splines = provider.GetFallbackSplines(rtl);
+    if (splines == null || splines.Count == 0)
+      return;
 
-    CurvySpline spline = splines[UnityEngine.Random.Range(0, splines.Count)];
+    CurvySpline spline = provider.ReserveUniqueSpline(splines);
 
     ApplySpline(spline, rtl);
   }
 
   protected void ApplySpline(CurvySpline spline, bool rtl)
   {
+    if (spline == null)
+    {
+      Debug.LogWarning("[Fish] ApplySpline called with null spline");
+      return;
+    }
+
+    if (reservedSpline != null && reservedSpline != spline)
+      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
+
+    reservedSpline = spline;
+    CurvyPathProvider.Instance?.ReserveSpline(spline);
+
     splineController.Stop();
     splineController.Spline = spline;
     splineController.Position = 0;
@@ -351,14 +365,10 @@ internal class BaseFish : MonoBehaviour
   // --------------------------------------------------------
   protected void DespawnFish()
   {
-    if (isDespawning)
+    if (isDespawning || finalized)
       return;
 
-    if (!gameObject.activeInHierarchy)
-    {
-      FinalizeDespawn();
-      return;
-    }
+    FishManager.Instance?.MoveToAnimParent(this);
 
     if (PendingVisualDeath)
     {
@@ -455,16 +465,19 @@ internal class BaseFish : MonoBehaviour
     if (fishImage != null)
       fishImage.color = Color.white;
 
+    if (imageAnimation != null && baseAnimationSpeed > 0f)
+      imageAnimation.SetAnimationSpeed(baseAnimationSpeed);
+
+    if (reservedSpline != null)
+    {
+      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
+      reservedSpline = null;
+    }
+
+    FishManager.Instance?.RestoreFromAnimParent(this);
+
     transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
     transform.localScale = Vector3.one;
-    if (tempAnimParent != null)
-    {
-      transform.SetParent(tempAnimParent, false);
-      if (tempAnimParentIndex >= 0)
-        transform.SetSiblingIndex(tempAnimParentIndex);
-      tempAnimParent = null;
-      tempAnimParentIndex = -1;
-    }
 
     if (splineController != null)
     {
@@ -475,6 +488,15 @@ internal class BaseFish : MonoBehaviour
     }
 
     speedMultiplier = 1f;
+  }
+
+  internal void SetAnimationSpeedMultiplier(float multiplier)
+  {
+    if (imageAnimation == null)
+      return;
+
+    float speed = baseAnimationSpeed > 0f ? baseAnimationSpeed : imageAnimation.AnimationSpeed;
+    imageAnimation.SetAnimationSpeed(speed * Mathf.Max(0.01f, multiplier));
   }
 
   private void UpdateViewportVisibility()

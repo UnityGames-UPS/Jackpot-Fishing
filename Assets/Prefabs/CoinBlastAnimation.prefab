@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4eba046000ec248fd8eba2bac8631bc0, type: 3}
+  m_Sprite: {fileID: 2807300841782472311, guid: 818d17752374a45238b0ab1a1d48b820, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -89,41 +89,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textureArray:
-  - {fileID: 21300000, guid: 4eba046000ec248fd8eba2bac8631bc0, type: 3}
-  - {fileID: 21300000, guid: 26043d42b57714c70bbfcd6bd25ffe12, type: 3}
-  - {fileID: 21300000, guid: 6465bb28a45364b27b625b86fc32030e, type: 3}
-  - {fileID: 21300000, guid: 9fb21887bf444460caae477b57905abc, type: 3}
-  - {fileID: 21300000, guid: a1ad6cb1ce84b47d881fc268510fd588, type: 3}
-  - {fileID: 21300000, guid: f87861501e7e9433d9e624faaa15237e, type: 3}
-  - {fileID: 21300000, guid: 9c3488d89574c49d88e7c85a94765b70, type: 3}
-  - {fileID: 21300000, guid: a11c778ce600a42e290eec86ac261323, type: 3}
-  - {fileID: 21300000, guid: 5aa78717705f54e2eb1bd0b856ba1fb4, type: 3}
-  - {fileID: 21300000, guid: 0eef8e36c82b244f8937eb2b55a49a81, type: 3}
-  - {fileID: 21300000, guid: 468e0a2f884294e90b1f74524fef1f95, type: 3}
-  - {fileID: 21300000, guid: d99e3eb84249340e7b3a2d298b6ff528, type: 3}
-  - {fileID: 21300000, guid: 9e1e8e74f3e5b4618befe421d85062f9, type: 3}
-  - {fileID: 21300000, guid: 72a01ca0611b541628521f0237bbaf68, type: 3}
-  - {fileID: 21300000, guid: 4f4cafa271a774266b264c92cbeb78e6, type: 3}
-  - {fileID: 21300000, guid: 053730945f7a04e379d0b4ef809504ee, type: 3}
-  - {fileID: 21300000, guid: 71733b8c08a6742179ab8a9aee355779, type: 3}
-  - {fileID: 21300000, guid: 543d2eb63fdb1456880bfa2d199d13a4, type: 3}
-  - {fileID: 21300000, guid: bcf4c4649c5c548bb900b3f4017bee33, type: 3}
-  - {fileID: 21300000, guid: f26a04ab323034dfa9c811c0d8bb656c, type: 3}
-  - {fileID: 21300000, guid: 80bca12c06ed74620a05994b81be1b64, type: 3}
-  - {fileID: 21300000, guid: a102a08b6bbdb49f28a729fa6800c600, type: 3}
-  - {fileID: 21300000, guid: 23cae4b36ab404dc9836c1d01eb6809f, type: 3}
-  - {fileID: 21300000, guid: c8ba4f23b80934e84bcd180de4dd10c9, type: 3}
-  - {fileID: 21300000, guid: 056631131e7234fb8a0c78d3dbd2d004, type: 3}
-  - {fileID: 21300000, guid: cfab1d5c8669a4c7689ac016c9d3d394, type: 3}
-  - {fileID: 21300000, guid: 3f976a8a2e2de43488bd4667fe4f7d56, type: 3}
-  - {fileID: 21300000, guid: d782c7e8588ee4c869dee1615b56614c, type: 3}
-  - {fileID: 21300000, guid: db807564683534e9bb08d99a0cd650b1, type: 3}
-  - {fileID: 21300000, guid: e889d0a506792444dbe2961a6f72c6e1, type: 3}
-  - {fileID: 21300000, guid: 941f222da5355490c958236a25c9b402, type: 3}
-  - {fileID: 21300000, guid: 3c928a3ba61874712b252a5c11b74b68, type: 3}
+  - {fileID: 21300000, guid: 818d17752374a45238b0ab1a1d48b820, type: 3}
+  - {fileID: 21300000, guid: d2566b252fd364e01865fa433f976a4e, type: 3}
+  - {fileID: 21300000, guid: 99cbf8bdbe8df4c309a2d45ad4619fe7, type: 3}
+  - {fileID: 21300000, guid: bbf1e21e64ab741a4a09979f2ce1e921, type: 3}
+  - {fileID: 21300000, guid: c04003103c1ef4691b5ac79baab16b53, type: 3}
+  - {fileID: 21300000, guid: 230014066e4bb4bd8bf998a77b98a60e, type: 3}
+  - {fileID: 21300000, guid: ed843d5039a564bb18dc2f9b1ec08a68, type: 3}
+  - {fileID: 21300000, guid: 77b9c6fad76ae4396a6a743c38c38947, type: 3}
+  - {fileID: 21300000, guid: c2cb9bb63ee3848998d9353735855490, type: 3}
+  - {fileID: 21300000, guid: f7da343f1e873481c9c53d72f81e75ee, type: 3}
+  - {fileID: 21300000, guid: aa4d1496d5c0f4cd698dcaed7dde4abf, type: 3}
+  - {fileID: 21300000, guid: 5f01194a5ab744c9d99ab45adb4c70a9, type: 3}
+  - {fileID: 21300000, guid: 442e5829d7bde470c9948ea1315147a1, type: 3}
+  - {fileID: 21300000, guid: 08b4285f270424c3f86cc8b307f6b490, type: 3}
+  - {fileID: 21300000, guid: 44b970dcb8536462ca7c86d41aef78c8, type: 3}
+  - {fileID: 21300000, guid: 52f6516d635ed4f90947ec567fa69c97, type: 3}
+  - {fileID: 21300000, guid: 112b167fccec34e30b08e5fb02e29e9b, type: 3}
   rendererDelegate: {fileID: 4801054864984273054}
   useSharedMaterial: 1
   doLoopAnimation: 0
-  AnimationSpeed: 30
+  AnimationSpeed: 14
   delayBetweenLoop: 0
   PlayOnAwake: 1

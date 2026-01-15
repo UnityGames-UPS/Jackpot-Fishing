@@ -8,7 +8,6 @@ public class RefundTextPopup : MonoBehaviour
   [SerializeField] private float riseDistance = 0.6f;
   [SerializeField] private float riseDuration = 0.45f;
   [SerializeField] private float fadeDuration = 0.2f;
-  [SerializeField] private float scaleDuration = 0.1f;
   [SerializeField] private float fadeOutDealy = 1f;
 
   private Tween tween;
@@ -29,19 +28,20 @@ public class RefundTextPopup : MonoBehaviour
     tween?.Kill();
 
     transform.position = worldPos;
-    transform.localScale = Vector3.one * 0.85f;
+    transform.localScale = Vector3.one;
 
     if (label != null)
-      label.text = $"+{amount:0.##} Refunded";
+      label.text = $"{amount:0.##}";
 
-    canvasGroup.alpha = 1f;
+    canvasGroup.alpha = 0f;
     gameObject.SetActive(true);
 
     Vector3 endPos = worldPos + Vector3.up * riseDistance;
     tween = DOTween.Sequence()
+      .Append(canvasGroup.DOFade(1f, fadeDuration))
+      .AppendInterval(fadeOutDealy)
       .Append(transform.DOMove(endPos, riseDuration).SetEase(Ease.OutQuad))
-      .Join(transform.DOScale(1f, scaleDuration).SetEase(Ease.OutBack))
-      .Append(canvasGroup.DOFade(0f, fadeDuration)).SetDelay(fadeOutDealy)
+      .Join(canvasGroup.DOFade(0f, fadeDuration))
       .OnComplete(ReturnToPool);
   }
 

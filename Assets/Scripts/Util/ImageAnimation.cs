@@ -113,6 +113,18 @@ public class ImageAnimation : MonoBehaviour
     doLoopAnimation = loop;
   }
 
+  internal void SetAnimationSpeed(float speed)
+  {
+    AnimationSpeed = Mathf.Max(0.01f, speed);
+    delayBetweenAnimation = idealFrameRate * (float)textureArray.Count / AnimationSpeed;
+
+    if (currentAnimationState == ImageState.PLAYING)
+    {
+      CancelInvoke("AnimationProcess");
+      Invoke("AnimationProcess", delayBetweenAnimation);
+    }
+  }
+
   public void StopAnimation()
   {
     if (currentAnimationState != 0)

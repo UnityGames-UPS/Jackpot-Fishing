@@ -18,8 +18,12 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
+  [Header("Fish Anim Parent")]
+  [SerializeField] private Transform animParent;
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private List<BaseFish> activeFishes = new();
+  private readonly Dictionary<BaseFish, Transform> cachedParents = new();
+  private readonly Dictionary<BaseFish, int> cachedSiblingIndices = new();
 
   private void Awake() => Instance = this;
 
@@ -45,7 +49,7 @@ internal class FishManager : MonoBehaviour
     // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
 
     FishData baseData =
-      fishesData[20];
+      fishesData[25];
 
     BaseFish fish = GetFishFromType(baseData.fishType);
 
@@ -66,6 +70,7 @@ internal class FishManager : MonoBehaviour
       colliderSize = baseData.colliderSize,
       colliderOffset = baseData.colliderOffset,
       laserImpactScaleFactor = baseData.laserImpactScaleFactor,
+      coinBlastScaleMult = baseData.coinBlastScaleMult,
       fishType = baseData.fishType,
 
       fishId = null,                 // 🚫 no backend
@@ -103,6 +108,37 @@ internal class FishManager : MonoBehaviour
     }
   }
 
+  internal void MoveToAnimParent(BaseFish fish)
+  {
+    if (fish == null || animParent == null)
+      return;
+
+    if (!cachedParents.ContainsKey(fish))
+    {
+      cachedParents[fish] = fish.transform.parent;
+      cachedSiblingIndices[fish] = fish.transform.GetSiblingIndex();
+    }
+
+    fish.transform.SetParent(animParent, true);
+    fish.transform.SetAsLastSibling();
+  }
+
+  internal void RestoreFromAnimParent(BaseFish fish)
+  {
+    if (fish == null)
+      return;
+
+    if (!cachedParents.TryGetValue(fish, out var parent))
+      return;
+
+    fish.transform.SetParent(parent, true);
+    if (cachedSiblingIndices.TryGetValue(fish, out var index) && index >= 0)
+      fish.transform.SetSiblingIndex(index);
+
+    cachedParents.Remove(fish);
+    cachedSiblingIndices.Remove(fish);
+  }
+
   private BaseFish GetFishFromType(FishType type)
   {
     return type switch
@@ -134,6 +170,7 @@ internal class FishManager : MonoBehaviour
       colliderSize = baseData.colliderSize,
       colliderOffset = baseData.colliderOffset,
       laserImpactScaleFactor = baseData.laserImpactScaleFactor,
+      coinBlastScaleMult = baseData.coinBlastScaleMult,
       fishType = baseData.fishType,
 
       // backend-specific
@@ -202,6 +239,7 @@ public class FishData
   public Vector2 colliderSize;
   public Vector2 colliderOffset;
   public float laserImpactScaleFactor = 0.7f;
+  public float coinBlastScaleMult = 1.8f;
   public int duration = 10000;
   public FishType fishType = FishType.Normal;
 }

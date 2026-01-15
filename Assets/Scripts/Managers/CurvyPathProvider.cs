@@ -13,6 +13,8 @@ public class CurvyPathProvider : MonoBehaviour
   [SerializeField] private List<CurvySpline> fallbackLeftToRight = new();
   [SerializeField] private List<CurvySpline> fallbackRightToLeft = new();
 
+  private readonly HashSet<CurvySpline> reservedSplines = new();
+
   private void Awake()
   {
     Instance = this;
@@ -21,25 +23,6 @@ public class CurvyPathProvider : MonoBehaviour
   public List<PathSet> GetPathSetsForType(FishType type)
   {
     return pathSets.FindAll(p => p.allowedType == type);
-  }
-
-  public PathSet GetRandomPathSet(FishType type)
-  {
-    var sets = GetPathSetsForType(type);
-    if (sets == null || sets.Count == 0)
-      return null;
-
-    return sets[Random.Range(0, sets.Count)];
-  }
-
-  public List<CurvySpline> GetSplinesFromSet(PathSet set, bool moveRightToLeft)
-  {
-    if (set == null)
-      return null;
-
-    return moveRightToLeft
-      ? set.rightToLeft
-      : set.leftToRight;
   }
 
   public List<CurvySpline> GetFallbackSplines(bool moveRightToLeft)
@@ -57,6 +40,54 @@ public class CurvyPathProvider : MonoBehaviour
     }
 
     return list;
+  }
+
+  internal CurvySpline ReserveUniqueSpline(List<CurvySpline> splines)
+  {
+    if (splines == null || splines.Count == 0)
+      return null;
+
+    List<CurvySpline> available = null;
+    for (int i = 0; i < splines.Count; i++)
+    {
+      var spline = splines[i];
+      if (reservedSplines.Contains(spline))
+        continue;
+
+      available ??= new List<CurvySpline>();
+      available.Add(spline);
+    }
+
+    var chosen = (available != null && available.Count > 0)
+      ? available[Random.Range(0, available.Count)]
+      : splines[Random.Range(0, splines.Count)];
+
+    ReserveSpline(chosen);
+    return chosen;
+  }
+
+  internal void ReserveSpline(CurvySpline spline)
+  {
+    if (spline == null)
+      return;
+
+    reservedSplines.Add(spline);
+  }
+
+  internal void ReleaseSpline(CurvySpline spline)
+  {
+    if (spline == null)
+      return;
+
+    reservedSplines.Remove(spline);
+  }
+
+  internal bool IsSplineReserved(CurvySpline spline)
+  {
+    if (spline == null)
+      return false;
+
+    return reservedSplines.Contains(spline);
   }
 }
 

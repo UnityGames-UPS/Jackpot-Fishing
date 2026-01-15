@@ -4,10 +4,14 @@ using DG.Tweening;
 
 public class BubbleWhirlpoolBubble : MonoBehaviour
 {
+  [SerializeField] private float peakScaleMultiplier = 2f;
+  [SerializeField, Range(0.01f, 0.99f)] private float peakScaleAtPercent = 0.5f;
   private RectTransform rectTransform;
   private Image bubbleImage;
   private Tween fadeTween;
+  private Tween scaleTween;
   private BubbleWhirlpoolPool pool;
+  private Vector3 initialScale;
   private float angleRad;
   private float radius;
   private float radialSpeed;
@@ -19,12 +23,16 @@ public class BubbleWhirlpoolBubble : MonoBehaviour
   {
     rectTransform = GetComponent<RectTransform>();
     bubbleImage = GetComponent<Image>();
+    initialScale = transform.localScale;
   }
 
   private void OnDisable()
   {
     fadeTween?.Kill();
     fadeTween = null;
+    scaleTween?.Kill();
+    scaleTween = null;
+    transform.localScale = initialScale;
   }
 
   internal void Init(
@@ -96,5 +104,19 @@ public class BubbleWhirlpoolBubble : MonoBehaviour
       .Append(bubbleImage.DOFade(1f, fadeSegment).SetEase(Ease.Linear))
       .AppendInterval(middleTime)
       .Append(bubbleImage.DOFade(0f, fadeSegment).SetEase(Ease.Linear));
+
+    scaleTween?.Kill();
+    Vector3 baseScale = initialScale;
+    float upTime = travelTime * peakScaleAtPercent;
+    float downTime = Mathf.Max(0f, travelTime - upTime);
+    if (upTime <= Mathf.Epsilon)
+    {
+      transform.localScale = baseScale;
+      return;
+    }
+
+    scaleTween = DOTween.Sequence()
+      .Append(transform.DOScale(baseScale * peakScaleMultiplier, upTime).SetEase(Ease.OutQuad))
+      .Append(transform.DOScale(baseScale, downTime).SetEase(Ease.InQuad));
   }
 }

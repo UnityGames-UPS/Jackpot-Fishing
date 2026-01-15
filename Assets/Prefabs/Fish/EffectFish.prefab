@@ -222,6 +222,7 @@ MonoBehaviour:
     colliderSize: {x: 0, y: 0}
     colliderOffset: {x: 0, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   viewportPadding: 0.0005
@@ -230,13 +231,23 @@ MonoBehaviour:
   bubbleWhirlpool: {fileID: -2121867848832435175}
   bubbleCrabShakeRadius: 12
   bubbleCrabShakeSpeed: 45
-  bubbleCrabSpawnRadiusMultiplier: 2.5
-  affectedFishTravelDuration: 2
-  affectedFishArriveDistance: 0.1
-  affectedFishAngularSpeed: 120
-  affectedFishSelfSpinSpeed: 720
-  bubbleCrabTorpedoImpactTimeout: 2
-  tempAnimParent: {fileID: 0}
+  bubbleCrabSpawnRadiusMultiplier: 2.2
+  bubbleCrabRadialSpeedLerpDuration: 0.2
+  bubbleCraAngularSpeedLerpDuration: 0.4
+  bubbleCrabSpawnIntervalMultiplier: 0.1
+  bubbleCrabRadialSpeedMultiplier: 5
+  bubbleCrabAngularSpeedMultiplier: 7
+  affectedFishTravelDuration: 4
+  affectedFishRadiusOffset: 6
+  affectedFishPulseDuration: 4
+  affectedFishPulseScale: 1.7
+  affectedFishPulseScaleSpeed: 8
+  affectedFishAnimationSpeedMultiplier: 2
+  affectedFishAngularSpeed: 540
+  affectedFishAngularSpeedMinMultiplier: 0.1
+  affectedFishAngularSpeedMaxMultiplier: 1.2
+  affectedFishSelfSpinSpeed: 200
+  bubbleCrabTorpedoImpactTimeout: 3
 --- !u!114 &-2121867848832435175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,7 +261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bubblePrefab: {fileID: 4470991053211229912, guid: 7a052d10773a64d2da1d0900ea13b0bd, type: 3}
-  initialPoolSize: 12
+  initialPoolSize: 50
   spawnInterval: 0.2
   spawnRadius: 250
   radialSpeed: 100

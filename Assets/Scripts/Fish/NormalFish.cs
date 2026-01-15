@@ -35,13 +35,14 @@ internal class NormalFish : BaseFish
     FlipSprite(faceRight: !moveRightToLeft);
 
     PathSet chosenSet = null;
+    var provider = CurvyPathProvider.Instance;
 
     if (batch.usePathSet)
     {
       if (batch.chosenPathSet == null)
       {
         var pathSets =
-          CurvyPathProvider.Instance.GetPathSetsForType(data.fishType);
+          provider.GetPathSetsForType(data.fishType);
 
         if (pathSets != null && pathSets.Count > 0)
           batch.chosenPathSet =
@@ -55,17 +56,30 @@ internal class NormalFish : BaseFish
       ? (moveRightToLeft
           ? chosenSet.rightToLeft
           : chosenSet.leftToRight)
-      : CurvyPathProvider.Instance.GetFallbackSplines(moveRightToLeft);
+      : provider.GetFallbackSplines(moveRightToLeft);
 
     CurvySpline chosenSpline = null;
 
     foreach (var s in splines)
     {
-      if (!batch.IsSplineUsed(s))
+      if (!batch.IsSplineUsed(s) && !provider.IsSplineReserved(s))
       {
         chosenSpline = s;
         batch.MarkSplineUsed(s);
         break;
+      }
+    }
+
+    if (chosenSpline == null)
+    {
+      foreach (var s in splines)
+      {
+        if (!provider.IsSplineReserved(s))
+        {
+          chosenSpline = s;
+          batch.MarkSplineUsed(s);
+          break;
+        }
       }
     }
 

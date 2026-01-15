@@ -2269,7 +2269,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -4405,7 +4405,7 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: c09bc18e39c840edab6595e6699d7051
+  testToken: c017fa13a40540fe9337be9206cba969
   SpawnEventInterval: 4
   electricHitInterval: 1.5
   bets: []
@@ -7055,7 +7055,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b2216687ef81f420480a438e42b9641c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 95ad154759e6f4e3a84957b39e486362, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -13085,6 +13085,41 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &259187805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 259187806}
+  m_Layer: 5
+  m_Name: FishAnimParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &259187806
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259187805}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 469943435}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &261594627
 GameObject:
   m_ObjectHideFlags: 0
@@ -20339,7 +20374,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -20382,12 +20417,12 @@ GameObject:
   - component: {fileID: 399253189}
   - component: {fileID: 399253188}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: AnalyticsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &399253187
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20404,7 +20439,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10, y: -38}
+  m_AnchoredPosition: {x: -10, y: -104.00001}
   m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &399253188
@@ -23124,6 +23159,7 @@ RectTransform:
   - {fileID: 1009898494}
   - {fileID: 211605844}
   - {fileID: 702116650}
+  - {fileID: 259187806}
   - {fileID: 1334794351}
   - {fileID: 476027353}
   - {fileID: 2060023601}
@@ -35391,6 +35427,7 @@ MonoBehaviour:
   immortalFishPool: {fileID: 1784850969}
   jackpotFishPool: {fileID: 2097831409}
   jackpotDragonPool: {fileID: 990261847}
+  animParent: {fileID: 259187806}
   enableMockSpawning: 1
   activeFishes: []
 --- !u!4 &690078718
@@ -40672,7 +40709,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -42275,8 +42312,8 @@ MonoBehaviour:
   PlusBetButton: {fileID: 38715356}
   MinusBetButton: {fileID: 1854779944}
   refundTextAnchor: {fileID: 1778599369}
-  refundTextOffsetX: 2
-  refundTextOffsetY: 2
+  refundTextOffsetX: 0.5
+  refundTextOffsetY: 0.5
   LeftPanelopenbtn: {fileID: 2039057564}
   Leftpanel: {fileID: 63764806}
   InfoBtn: {fileID: 1586778284}
@@ -45099,7 +45136,7 @@ GameObject:
   - component: {fileID: 887898409}
   - component: {fileID: 887898408}
   m_Layer: 5
-  m_Name: Image
+  m_Name: SettingImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45746,7 +45783,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &903480983
 RectTransform:
   m_ObjectHideFlags: 0
@@ -47743,7 +47780,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10, y: 140}
+  m_AnchoredPosition: {x: -10, y: 73.99999}
   m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &940322726
@@ -48186,7 +48223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &945862000
 RectTransform:
   m_ObjectHideFlags: 0
@@ -48262,9 +48299,9 @@ MonoBehaviour:
   recoilDuration: 0.08
   returnDuration: 0.12
   recoilEase: 6
-  muzzleFadeIn: 0.03
-  muzzleFadeOut: 0.08
-  muzzleFadeInterval: 1
+  muzzleFadeIn: 0.1
+  muzzleFadeOut: 0.1
+  muzzleFadeInterval: 0.1
   minFireCooldown: 0.5
   variantSwitchCooldown: 0.5
   torpedoLockRect: {fileID: 144515462}
@@ -53502,7 +53539,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -57210,7 +57247,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -57567,7 +57604,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -57704,7 +57741,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -58734,7 +58771,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -79777,7 +79814,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10, y: 322}
+  m_AnchoredPosition: {x: -10, y: 256}
   m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1586778284
@@ -90858,7 +90895,7 @@ GameObject:
   - component: {fileID: 1836566002}
   - component: {fileID: 1836566001}
   m_Layer: 5
-  m_Name: Image
+  m_Name: StaticSettingsImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91028,7 +91065,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -94987,7 +95024,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10, y: 140}
+  m_AnchoredPosition: {x: -10, y: 73.99999}
   m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1895936754
@@ -100160,7 +100197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InitialCount: 10
-  PrefabToPool: {fileID: 6759545961351271091, guid: bcdf2bcddddf44e2285443bbf06868d3, type: 3}
+  PrefabToPool: {fileID: -9103202110985112223, guid: 46187ce883ca24a14ba508e24611b7fb, type: 3}
   ParentTransform: {fileID: 1778599369}
   ItemsInUse: []
 --- !u!1 &1992565992
@@ -102548,7 +102585,7 @@ GameObject:
   - component: {fileID: 2039057565}
   - component: {fileID: 2039057564}
   m_Layer: 5
-  m_Name: Button
+  m_Name: LeftSettingToggleButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107835,7 +107872,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

@@ -331,6 +331,10 @@ public class UIManager : MonoBehaviour
       fish.ColliderMidPoint,
       Quaternion.identity
     );
+    float scale = fish.data.coinBlastScaleMult <= 0f
+      ? 1f
+      : fish.data.coinBlastScaleMult;
+    coinAnimation.transform.localScale = Vector3.one * scale;
   }
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo
@@ -675,6 +679,12 @@ public class UIManager : MonoBehaviour
     {
       if (fish == null || fish.data == null)
         continue;
+
+      if (fish.PendingVisualDeath)
+      {
+        fish.SetAlpha(1f);
+        continue;
+      }
 
       bool valid = IsValidTorpedoTarget(fish);
 

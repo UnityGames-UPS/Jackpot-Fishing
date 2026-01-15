@@ -30,7 +30,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568230748283576281}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9720}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 360, y: 420}
+  m_SizeDelta: {x: 1920, y: 673}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6193601671072513495
 CanvasRenderer:
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1cf0579e26bd1432dbe42e4c55ba38aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b701513f6e607408892d747e61068f05, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -133,7 +133,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -58, y: 0}
+  m_Offset: {x: -54.81, y: 20}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -143,7 +143,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 163, y: 56}
+  m_Size: {x: 1518, y: 125}
   m_EdgeRadius: 0
 --- !u!114 &5933832088717963670
 MonoBehaviour:
@@ -223,7 +223,7 @@ MonoBehaviour:
     laserImpactScaleFactor: 0.7
     duration: 10000
     fishType: 0
-  torpedoViewportPadding: 0.0005
+  viewportPadding: 0.0005
 --- !u!1 &8702441360588482117
 GameObject:
   m_ObjectHideFlags: 0
