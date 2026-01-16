@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 357ad7e3b88cd4f52aa2036170eafa84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 10
+  InitialCount: 20
   PrefabToPool: {fileID: 5141788302540648655, guid: beafed5593b8a4522acfc2556b393083, type: 3}
   ParentTransform: {fileID: 891788671}
   ItemsInUse: []
@@ -938,6 +938,54 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &18780011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 18780012}
+  - component: {fileID: 18780013}
+  m_Layer: 0
+  m_Name: ElectricLinkPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &18780012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18780011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 819296387}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &18780013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18780011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51172093a039b4cc5be51bcea77bea34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitialCount: 10
+  PrefabToPool: {fileID: 3449882538719050289, guid: cd2b4d81e26c84a8abb82ff17a1263e6, type: 3}
+  ParentTransform: {fileID: 568694153}
+  ItemsInUse: []
 --- !u!1 &18859360
 GameObject:
   m_ObjectHideFlags: 0
@@ -4405,7 +4453,7 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: c017fa13a40540fe9337be9206cba969
+  testToken: 2cc09fda9a4c49ab8fb168bd84201b36
   SpawnEventInterval: 4
   electricHitInterval: 1.5
   bets: []
@@ -23160,6 +23208,9 @@ RectTransform:
   - {fileID: 211605844}
   - {fileID: 702116650}
   - {fileID: 259187806}
+  - {fileID: 1849505252}
+  - {fileID: 568694153}
+  - {fileID: 1656726108}
   - {fileID: 1334794351}
   - {fileID: 476027353}
   - {fileID: 2060023601}
@@ -28082,6 +28133,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567874932}
   m_CullTransparentMesh: 1
+--- !u!1 &568694152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 568694153}
+  m_Layer: 5
+  m_Name: ElectricLinkParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &568694153
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568694152}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 469943435}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &571223645
 GameObject:
   m_ObjectHideFlags: 0
@@ -34202,6 +34288,7 @@ MonoBehaviour:
     colliderSize: {x: 63, y: 22}
     colliderOffset: {x: -30, y: -5}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: orange_fish
@@ -34237,6 +34324,7 @@ MonoBehaviour:
     colliderSize: {x: 80, y: 18}
     colliderOffset: {x: -15, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: angel_fish
@@ -34270,6 +34358,7 @@ MonoBehaviour:
     colliderSize: {x: 70, y: 20}
     colliderOffset: {x: 0, y: -2}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: pinecone_fish
@@ -34299,6 +34388,7 @@ MonoBehaviour:
     colliderSize: {x: 50, y: 50}
     colliderOffset: {x: 0, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: puffer_fish
@@ -34328,6 +34418,7 @@ MonoBehaviour:
     colliderSize: {x: 50, y: 50}
     colliderOffset: {x: 0, y: -5}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: turtle_fish
@@ -34361,6 +34452,7 @@ MonoBehaviour:
     colliderSize: {x: 138, y: 40}
     colliderOffset: {x: 0, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: jelly_fish
@@ -34411,6 +34503,7 @@ MonoBehaviour:
     colliderSize: {x: 125, y: 48}
     colliderOffset: {x: -30, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: lobster_fish
@@ -34468,6 +34561,7 @@ MonoBehaviour:
     colliderSize: {x: 90, y: 30}
     colliderOffset: {x: 21, y: 5}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: lion_fish
@@ -34497,6 +34591,7 @@ MonoBehaviour:
     colliderSize: {x: 80, y: 25}
     colliderOffset: {x: 0, y: 7}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: babyocto_fish
@@ -34526,6 +34621,7 @@ MonoBehaviour:
     colliderSize: {x: 93, y: 44}
     colliderOffset: {x: -22, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: saw_fish
@@ -34567,6 +34663,7 @@ MonoBehaviour:
     colliderSize: {x: 218, y: 32}
     colliderOffset: {x: -30, y: 20}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: bluewing_fish
@@ -34608,6 +34705,7 @@ MonoBehaviour:
     colliderSize: {x: 157, y: 81}
     colliderOffset: {x: -53, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: hammer_head
@@ -34649,6 +34747,7 @@ MonoBehaviour:
     colliderSize: {x: 349, y: 44}
     colliderOffset: {x: -34, y: 20}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
   - variant: golden_clownfish
@@ -34683,6 +34782,7 @@ MonoBehaviour:
     colliderSize: {x: 170, y: 36}
     colliderOffset: {x: -24, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
   - variant: golden_angelfish
@@ -34710,6 +34810,7 @@ MonoBehaviour:
     colliderSize: {x: 170, y: 36}
     colliderOffset: {x: -24, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
   - variant: golden_wing
@@ -34751,6 +34852,7 @@ MonoBehaviour:
     colliderSize: {x: 150, y: 77}
     colliderOffset: {x: -67, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
   - variant: special_armored_fish
@@ -34839,6 +34941,7 @@ MonoBehaviour:
     colliderSize: {x: 175, y: 98}
     colliderOffset: {x: -62, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
   - variant: special_angler_fish
@@ -34925,6 +35028,7 @@ MonoBehaviour:
     colliderSize: {x: 115, y: 115}
     colliderOffset: {x: 10, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
   - variant: special_diamond_turtle
@@ -35019,6 +35123,7 @@ MonoBehaviour:
     colliderSize: {x: 173, y: 157}
     colliderOffset: {x: 21, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
   - variant: effect_blue_fish
@@ -35067,6 +35172,7 @@ MonoBehaviour:
     colliderSize: {x: 210, y: 41}
     colliderOffset: {x: -37, y: -10}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
   - variant: effect_bubblecrab_fish
@@ -35107,6 +35213,7 @@ MonoBehaviour:
     colliderSize: {x: 150, y: 245}
     colliderOffset: {x: 0, y: -42}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
   - variant: effect_rockcrab_fish
@@ -35138,6 +35245,7 @@ MonoBehaviour:
     colliderSize: {x: 100, y: 70}
     colliderOffset: {x: 0, y: -20}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
   - variant: immo_squid_fish
@@ -35173,6 +35281,7 @@ MonoBehaviour:
     colliderSize: {x: 433, y: 155}
     colliderOffset: {x: -50, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 15000
     fishType: 4
   - variant: immo_shark_fish
@@ -35230,6 +35339,7 @@ MonoBehaviour:
     colliderSize: {x: 350, y: 75}
     colliderOffset: {x: -50, y: -7}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 4
   - variant: immo_turtle_fish
@@ -35313,6 +35423,7 @@ MonoBehaviour:
     colliderSize: {x: 300, y: 300}
     colliderOffset: {x: 50, y: 22}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 4
   - variant: jackpot_dragon_fish
@@ -35347,6 +35458,7 @@ MonoBehaviour:
     colliderSize: {x: 1518, y: 82}
     colliderOffset: {x: -46, y: 60}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 6
   - variant: jackpot_rainbow_fish
@@ -35418,6 +35530,7 @@ MonoBehaviour:
     colliderSize: {x: 163, y: 56}
     colliderOffset: {x: -58, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 5
   normalFishPool: {fileID: 231023209}
@@ -42387,6 +42500,9 @@ Transform:
   m_Children:
   - {fileID: 5805138}
   - {fileID: 1992078440}
+  - {fileID: 976510379}
+  - {fileID: 18780012}
+  - {fileID: 964296494}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &820508034
@@ -48913,6 +49029,54 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &964296493
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964296494}
+  - component: {fileID: 964296495}
+  m_Layer: 0
+  m_Name: BlueBlastPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &964296494
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964296493}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 819296387}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &964296495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964296493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2814f9dcdd7fb418494543a8036f8b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitialCount: 10
+  PrefabToPool: {fileID: 3249407928266929876, guid: ebe6cd7016bdc4e109ee782c0f99e0f6, type: 3}
+  ParentTransform: {fileID: 1656726108}
+  ItemsInUse: []
 --- !u!1 &967108534
 GameObject:
   m_ObjectHideFlags: 0
@@ -49306,6 +49470,54 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &976510378
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 976510379}
+  - component: {fileID: 976510380}
+  m_Layer: 0
+  m_Name: ElectricBallPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &976510379
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976510378}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 819296387}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &976510380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976510378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb40313494d143b9a7b8ab69d68014e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitialCount: 10
+  PrefabToPool: {fileID: 5571194169662512566, guid: 1add713cf64474dc5a989d5c7fe6d428, type: 3}
+  ParentTransform: {fileID: 1849505252}
+  ItemsInUse: []
 --- !u!1 &979495264
 GameObject:
   m_ObjectHideFlags: 0
@@ -82496,6 +82708,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653191321}
   m_CullTransparentMesh: 1
+--- !u!1 &1656726107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1656726108}
+  m_Layer: 5
+  m_Name: BlueBlastParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1656726108
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656726107}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 469943435}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1658136254
 GameObject:
   m_ObjectHideFlags: 0
@@ -92015,6 +92262,41 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &1849505251
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1849505252}
+  m_Layer: 5
+  m_Name: ElectricBallParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1849505252
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849505251}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 469943435}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1851409030
 GameObject:
   m_ObjectHideFlags: 0
@@ -100196,7 +100478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd2b130f4cc9540b290c8a4b119f5834, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCount: 10
+  InitialCount: 20
   PrefabToPool: {fileID: -9103202110985112223, guid: 46187ce883ca24a14ba508e24611b7fb, type: 3}
   ParentTransform: {fileID: 1778599369}
   ItemsInUse: []

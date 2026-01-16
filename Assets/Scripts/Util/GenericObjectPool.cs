@@ -52,6 +52,11 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
       return;
     }
 
+    if (ParentTransform != null)
+      item.transform.SetParent(ParentTransform, false);
+    item.transform.localPosition = Vector3.zero;
+    item.transform.localRotation = Quaternion.identity;
+    item.transform.localScale = Vector3.one;
     item.gameObject.SetActive(false);
     PoolQueue.Enqueue(item);
     ItemsInUse.Remove(item);
@@ -61,6 +66,11 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
   {
     foreach (T item in ItemsInUse)
     {
+      if (ParentTransform != null)
+        item.transform.SetParent(ParentTransform, false);
+      item.transform.localPosition = Vector3.zero;
+      item.transform.localRotation = Quaternion.identity;
+      item.transform.localScale = Vector3.one;
       item.gameObject.SetActive(false);
       PoolQueue.Enqueue(item);
     }

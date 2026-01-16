@@ -371,7 +371,10 @@ public class SocketIOManager : MonoBehaviour
       bool isBubbleCrab = effectFish != null &&
         fish.data != null &&
         fish.data.variant == "effect_bubblecrab_fish";
-      if (!isBubbleCrab)
+      bool isBlueFish = effectFish != null &&
+        fish.data != null &&
+        fish.data.variant == "effect_blue_fish";
+      if (!isBubbleCrab && !isBlueFish)
       {
         // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
         fish.OnFishDespawned = () => UIManager.Instance?.PlayCoinBlastForFish(fish);
@@ -406,6 +409,23 @@ public class SocketIOManager : MonoBehaviour
         else
         {
           effectFish.TriggerBubbleCrabDeath(affectedFishes);
+        }
+        return;
+      }
+
+      if (isBlueFish)
+      {
+        List<BaseFish> affectedFishes = ResolveAffectedFishes(hitResult.effectTriggered);
+        if (hitResult.weaponType == "torpedo")
+        {
+          effectFish.WaitForLastTorpedo(
+            () => effectFish.TriggerBlueFishDeath(affectedFishes),
+            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+          );
+        }
+        else
+        {
+          effectFish.TriggerBlueFishDeath(affectedFishes);
         }
         return;
       }

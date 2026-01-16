@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2702317858995040897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 860950542673890282}
+  - component: {fileID: 2350468595195410387}
+  - component: {fileID: 8509034940082925954}
+  - component: {fileID: 3249407928266929876}
+  m_Layer: 5
+  m_Name: BlueBlast
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &860950542673890282
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702317858995040897}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 500, y: 500}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2350468595195410387
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702317858995040897}
+  m_CullTransparentMesh: 1
+--- !u!114 &8509034940082925954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702317858995040897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d0c42f757993b4aa989a7713c4740197, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3249407928266929876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2702317858995040897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df924dfe59f94e2cb1e3ce9c145b279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textureArray:
+  - {fileID: 21300000, guid: d0c42f757993b4aa989a7713c4740197, type: 3}
+  - {fileID: 21300000, guid: e570dcbab0cff44fe99225e89449362e, type: 3}
+  - {fileID: 21300000, guid: 2ee7060ffcce5482ab6bedb103ffe232, type: 3}
+  - {fileID: 21300000, guid: 16f7eae98bf7145ec8ab1cb8caa144c4, type: 3}
+  - {fileID: 21300000, guid: 5d7872c0898634b5eba7baff672dc4cf, type: 3}
+  - {fileID: 21300000, guid: fd4ba301aed914979af6258051f0249c, type: 3}
+  - {fileID: 21300000, guid: 6c6c3cab9cabe47c39f26515e2d960dd, type: 3}
+  - {fileID: 21300000, guid: 7b29869298d9d48d6951d0ab043d1bf2, type: 3}
+  - {fileID: 21300000, guid: 0851fd632fdd84e77b629e198ff986cf, type: 3}
+  - {fileID: 21300000, guid: 5c2802764ab214d979566361a1be2280, type: 3}
+  - {fileID: 21300000, guid: cd5108fd969b2416d9e9bd587e30b1dd, type: 3}
+  - {fileID: 21300000, guid: 75e7dff8e21854d51b449e4a6ada2f60, type: 3}
+  - {fileID: 21300000, guid: 8b66c2734d0354265b50a3b7290f4cd1, type: 3}
+  - {fileID: 21300000, guid: 5671b48cc43d74e959d2de98964c0bad, type: 3}
+  - {fileID: 21300000, guid: 48ef949c247e346ea957da39e08bb606, type: 3}
+  - {fileID: 21300000, guid: 38d63d6ffc33e4dc4a6b127dec404783, type: 3}
+  - {fileID: 21300000, guid: 2bb7d0d5a9eb743038adcc25c4e08bb2, type: 3}
+  - {fileID: 21300000, guid: c0a3827bafa174aada6a39abd3d05c5d, type: 3}
+  - {fileID: 21300000, guid: ed575af186bb54b999e9e784014f0920, type: 3}
+  - {fileID: 21300000, guid: 3214dd0e5b37f49d1a7b11bdc9672bdb, type: 3}
+  - {fileID: 21300000, guid: d8d1ab67730554f97bec4548a27a4c9d, type: 3}
+  - {fileID: 21300000, guid: e8de0232ec249445e87cead3aa82732f, type: 3}
+  - {fileID: 21300000, guid: e00d093ae69cf4f189d2f8c18db466d2, type: 3}
+  - {fileID: 21300000, guid: 9954c5745c8d74dd58aa6bac03252c16, type: 3}
+  rendererDelegate: {fileID: 8509034940082925954}
+  useSharedMaterial: 1
+  doLoopAnimation: 1
+  AnimationSpeed: 16
+  delayBetweenLoop: 0
+  PlayOnAwake: 1

@@ -20,6 +20,7 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
   [Header("Fish Anim Parent")]
   [SerializeField] private Transform animParent;
+  internal Transform AnimParent => animParent;
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private List<BaseFish> activeFishes = new();
   private readonly Dictionary<BaseFish, Transform> cachedParents = new();

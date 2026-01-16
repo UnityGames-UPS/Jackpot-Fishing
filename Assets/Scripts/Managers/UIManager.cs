@@ -334,7 +334,27 @@ public class UIManager : MonoBehaviour
     float scale = fish.data.coinBlastScaleMult <= 0f
       ? 1f
       : fish.data.coinBlastScaleMult;
+    scale *= GetColliderScaleFactor(fish);
     coinAnimation.transform.localScale = Vector3.one * scale;
+  }
+
+  private float GetColliderScaleFactor(BaseFish fish)
+  {
+    if (fish == null)
+      return 1f;
+
+    var collider = fish.GetComponent<BoxCollider2D>();
+    if (collider == null)
+      return 1f;
+
+    Vector2 worldSize = collider.bounds.size;
+    Vector2 localSize = collider.size;
+    float baseMag = localSize.magnitude;
+    float worldMag = worldSize.magnitude;
+    if (baseMag <= Mathf.Epsilon)
+      return 1f;
+
+    return Mathf.Max(0.1f, worldMag / baseMag);
   }
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo
