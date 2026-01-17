@@ -50,7 +50,7 @@ internal class FishManager : MonoBehaviour
     // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
 
     FishData baseData =
-      fishesData[25];
+      fishesData[21];
 
     BaseFish fish = GetFishFromType(baseData.fishType);
 

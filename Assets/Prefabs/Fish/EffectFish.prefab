@@ -1,5 +1,80 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &714690879260140359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8010632485267987772}
+  - component: {fileID: 5700579530225356126}
+  - component: {fileID: 879306516690903961}
+  m_Layer: 5
+  m_Name: WhirlPoolVisual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &8010632485267987772
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714690879260140359}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3188159885690790073}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 850, y: 850}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5700579530225356126
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714690879260140359}
+  m_CullTransparentMesh: 1
+--- !u!114 &879306516690903961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714690879260140359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: b00a9421d18d049399e2cfeb7034bd9e, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &6220881146848465911
 GameObject:
   m_ObjectHideFlags: 0
@@ -36,6 +111,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5123682117754788483}
+  - {fileID: 8010632485267987772}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -71,7 +147,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 576099b3d99c44fc9ad11339318ffc90, type: 3}
+  m_Sprite: {fileID: 21300000, guid: edcbbdfcd256d4eeca19b528b2240b40, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -93,13 +169,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4df924dfe59f94e2cb1e3ce9c145b279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textureArray: []
+  textureArray:
+  - {fileID: 21300000, guid: b62583f43d44a48b58addec50f37848e, type: 3}
+  - {fileID: 21300000, guid: 6024df32800bf419182dd301c4c8d387, type: 3}
+  - {fileID: 21300000, guid: db7e96da9a21544129da43e2e36b2c22, type: 3}
+  - {fileID: 21300000, guid: 69c79b5f3db1a4138af8ff0dca306483, type: 3}
+  - {fileID: 21300000, guid: 4e258c49a03c7414ba4323f1c86494ab, type: 3}
+  - {fileID: 21300000, guid: 4e37b30b9fa404afe85639af51a5a44e, type: 3}
+  - {fileID: 21300000, guid: 33e10acd3112e4801be6915e501b80fb, type: 3}
+  - {fileID: 21300000, guid: f0cbb14e671d246719935bb5a7707008, type: 3}
+  - {fileID: 21300000, guid: 0c08282ed455d4d34b3b769fb6dcbd39, type: 3}
+  - {fileID: 21300000, guid: ef15e724a6b8743d28f62c638eaf15db, type: 3}
+  - {fileID: 21300000, guid: 7ae6cb09a9b924204987967e388e65f0, type: 3}
+  - {fileID: 21300000, guid: 24b26185a68b14c2291a3db58d5e28dd, type: 3}
+  - {fileID: 21300000, guid: 7730348eb0bd148149a61fbdfcf49c50, type: 3}
+  - {fileID: 21300000, guid: 9fcb570ae1987446e95f64f50af3a1cd, type: 3}
   rendererDelegate: {fileID: 8810277185060403634}
   useSharedMaterial: 1
   doLoopAnimation: 1
-  AnimationSpeed: 5
+  AnimationSpeed: 10
   delayBetweenLoop: 0
-  PlayOnAwake: 0
+  PlayOnAwake: 1
 --- !u!61 &664486131906535265
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -134,7 +224,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -42}
+  m_Offset: {x: 0, y: -46}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -144,7 +234,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 150, y: 245}
+  m_Size: {x: 200, y: 145}
   m_EdgeRadius: 0
 --- !u!114 &7750850535439090357
 MonoBehaviour:
@@ -231,10 +321,13 @@ MonoBehaviour:
   bubbleWhirlpool: {fileID: -2121867848832435175}
   blueBlastLocalOffset: {x: 0, y: 0, z: 0}
   blueBlastScaleMultiplier: 1
-  blueBlastMaxDuration: 1.5
   effectScaleMultiplier: 1.3
+  effectFishTorpedoWaitTimeout: 2
   bubbleCrabShakeRadius: 15
   bubbleCrabShakeSpeed: 150
+  bubbleCrabWhirlpoolImage: {fileID: 879306516690903961}
+  bubbleCrabWhirlpoolFadeInDuration: 0.4
+  bubbleCrabWhirlpoolRotateDuration: 1.2
   bubbleCrabSpawnRadiusMultiplier: 2.2
   bubbleCrabRadialSpeedLerpDuration: 0.2
   bubbleCraAngularSpeedLerpDuration: 0.4
@@ -250,15 +343,27 @@ MonoBehaviour:
   affectedFishAngularSpeed: 540
   affectedFishAngularSpeedMinMultiplier: 0.1
   affectedFishAngularSpeedMaxMultiplier: 1.2
-  affectedFishSelfSpinSpeed: 200
+  affectedFishSelfSpinSpeed: 150
   bubbleCrabTorpedoImpactTimeout: 3
+  rockCrabTorpedoVisual: {fileID: 8940523912092782683}
+  rockCrabShakeRadius: 15
+  rockCrabShakeSpeed: 150
+  rockCrabPreFireDelay: 0.4
+  rockCrabTorpedoInterval: 0.5
+  rockCrabTorpedoHitTimeout: 2
+  rockCrabEscapeSpeedMultiplier: 10
+  rockCrabEscapeScaleMultiplier: 1.4
+  rockCrabEscapeScaleDuration: 0.4
+  rockCrabTorpedoRockAngle: 1
+  rockCrabTorpedoRockDuration: 0.15
   blueFishShakeRadius: 15
   blueFishShakeSpeed: 150
-  blueFishAnimationSpeedMultiplier: 5
-  blueFishAttractDuration: 1.2
+  blueFishAnimationSpeedMultiplier: 3
+  blueFishExplosionDistance: 3
+  blueFishAttractDuration: 0.5
   blueFishAffectedSpinSpeed: 360
-  electricLinkHeight: 200
-  electricLinkDuration: 1
+  electricLinkHeight: 150
+  electricLinkDuration: 0.5
   electricChainDelay: 0.5
   electricBallStartScaleMultiplier: 1.4
   electricBallTargetSizeMultiplier: 0.8
@@ -293,13 +398,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5123682117754788483}
+  - component: {fileID: 2953272179393055386}
+  - component: {fileID: 7903552299442616559}
   m_Layer: 5
-  m_Name: Centre
+  m_Name: TorpedoVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5123682117754788483
 RectTransform:
   m_ObjectHideFlags: 0
@@ -316,6 +423,44 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -44.49}
+  m_SizeDelta: {x: 186.61, y: 165.26}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2953272179393055386
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8940523912092782683}
+  m_CullTransparentMesh: 1
+--- !u!114 &7903552299442616559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8940523912092782683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 5321683168461231152, guid: ecc2b912da9e4433cae8e6bfe02282a1, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1

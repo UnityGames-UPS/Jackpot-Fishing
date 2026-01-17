@@ -143,6 +143,18 @@ public class TorpedoGun : BaseGun
 
   private void FireAtCurrentTarget()
   {
+    if (!IsFishValidForShot(currentTarget))
+    {
+      BaseFish invalidTarget = currentTarget;
+      currentTarget = null;
+      if (torpedoLockTarget == invalidTarget)
+        ClearTorpedoLockVisual();
+      if (lockedVariant != null)
+        return;
+      StopAndClear();
+      return;
+    }
+
     if (!UIManager.Instance.OnGunFired())
       return;
 
@@ -244,6 +256,9 @@ public class TorpedoGun : BaseGun
     if (!fish.gameObject.activeInHierarchy)
       return false;
 
+    if (fish is EffectFish effectFish && !effectFish.IsTorpedoTargetable)
+      return false;
+
     return fish.IsVisibleInViewport;
   }
 
@@ -340,6 +355,7 @@ public class TorpedoGun : BaseGun
       lastLockedPosition = currentTarget.ColliderMidPoint;
       hasLastLockedPosition = true;
     }
+    currentTarget = null;
     UpdateTorpedoLockTarget(null);
 
     if (Time.time < nextAllowedVariantSwitchTime)

@@ -38,6 +38,8 @@ public class SocketIOManager : MonoBehaviour
   internal bool ReceivedRecordAck = false;
   private Coroutine disconnectTimerCoroutine;
   private Coroutine spawnFlowRoutine;
+  [SerializeField] private float effectFishExpireWait = 2f;
+  private readonly Dictionary<string, Coroutine> effectFishExpireRoutines = new Dictionary<string, Coroutine>();
   [SerializeField] private float disconnectDelay = 180f;
   internal float ElectricHitInterval => electricHitInterval;
 
@@ -340,7 +342,14 @@ public class SocketIOManager : MonoBehaviour
         .FirstOrDefault(x => x.data.fishId == hitResult.fishId);
 
       if (expiredFish != null)
+      {
+        if (expiredFish is EffectFish effectFish)
+        {
+          StartEffectFishExpireWait(effectFish.data.fishId, effectFish);
+          return;
+        }
         expiredFish.Die();
+      }
     }
 
     // Debug.Log("HIT RESULT:" + JsonConvert.SerializeObject(HitResult));
@@ -357,6 +366,7 @@ public class SocketIOManager : MonoBehaviour
     if (hitResult.fishKilled != null)
     {
       Debug.Log("Fish Killed: " + hitResult.fishKilled.variant);
+      CancelEffectFishExpireWait(hitResult.fishKilled.id);
       BaseFish fish = FishManager.Instance
         .GetActiveFishes()
         .FirstOrDefault(x => x.data.fishId == hitResult.fishKilled.id);
@@ -374,7 +384,10 @@ public class SocketIOManager : MonoBehaviour
       bool isBlueFish = effectFish != null &&
         fish.data != null &&
         fish.data.variant == "effect_blue_fish";
-      if (!isBubbleCrab && !isBlueFish)
+      bool isRockCrab = effectFish != null &&
+        fish.data != null &&
+        fish.data.variant == "effect_rockcrab_fish";
+      if (!isBubbleCrab && !isBlueFish && !isRockCrab)
       {
         // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
         fish.OnFishDespawned = () => UIManager.Instance?.PlayCoinBlastForFish(fish);
@@ -430,6 +443,23 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
+      if (isRockCrab)
+      {
+        List<BaseFish> affectedFishes = ResolveAffectedFishes(hitResult.effectTriggered);
+        if (hitResult.weaponType == "torpedo")
+        {
+          effectFish.WaitForLastTorpedo(
+            () => effectFish.TriggerRockCrabDeath(affectedFishes),
+            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+          );
+        }
+        else
+        {
+          effectFish.TriggerRockCrabDeath(affectedFishes);
+        }
+        return;
+      }
+
       // Weapon-aware death handling
       if (hitResult.weaponType == "torpedo")
       {
@@ -458,6 +488,43 @@ public class SocketIOManager : MonoBehaviour
       return false;
 
     return fish.IsVisibleInViewport;
+  }
+
+  private void StartEffectFishExpireWait(string fishId, EffectFish fish)
+  {
+    if (string.IsNullOrEmpty(fishId) || fish == null)
+      return;
+    if (fish.isDespawning || fish.finalized)
+      return;
+    if (effectFishExpireRoutines.ContainsKey(fishId))
+      return;
+
+    effectFishExpireRoutines[fishId] = StartCoroutine(EffectFishExpireWaitRoutine(fishId, fish));
+  }
+
+  private void CancelEffectFishExpireWait(string fishId)
+  {
+    if (string.IsNullOrEmpty(fishId))
+      return;
+
+    if (effectFishExpireRoutines.TryGetValue(fishId, out var routine))
+    {
+      if (routine != null)
+        StopCoroutine(routine);
+      effectFishExpireRoutines.Remove(fishId);
+    }
+  }
+
+  private IEnumerator EffectFishExpireWaitRoutine(string fishId, EffectFish fish)
+  {
+    yield return new WaitForSeconds(effectFishExpireWait);
+
+    effectFishExpireRoutines.Remove(fishId);
+
+    if (fish == null || fish.finalized || fish.isDespawning)
+      yield break;
+
+    fish.Die();
   }
 
   private List<BaseFish> ResolveAffectedFishes(EffectTriggered effectTriggered)

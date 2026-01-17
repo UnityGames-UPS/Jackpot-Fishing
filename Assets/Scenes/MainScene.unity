@@ -4453,7 +4453,7 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 2cc09fda9a4c49ab8fb168bd84201b36
+  testToken: 6cad83e7c768472b8c1edfd5293cf4d8
   SpawnEventInterval: 4
   electricHitInterval: 1.5
   bets: []
@@ -4461,6 +4461,7 @@ MonoBehaviour:
   - 1
   - 1
   - 6
+  effectFishExpireWait: 2
   disconnectDelay: 180
 --- !u!4 &84247399
 Transform:
@@ -5499,6 +5500,54 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &110528982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 110528983}
+  - component: {fileID: 110528984}
+  m_Layer: 0
+  m_Name: CrabTorpedoPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &110528983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110528982}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1157570054}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &110528984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110528982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9b90da12cc2b40d39bd6a802644cdea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitialCount: 10
+  PrefabToPool: {fileID: 8140693115509680596, guid: adefcaf1132a54789a7b0937f9496e59, type: 3}
+  ParentTransform: {fileID: 1436336230}
+  ItemsInUse: []
 --- !u!1 &115751579
 GameObject:
   m_ObjectHideFlags: 0
@@ -7081,7 +7130,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 120, y: 120}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &144515463
 MonoBehaviour:
@@ -23208,11 +23257,12 @@ RectTransform:
   - {fileID: 211605844}
   - {fileID: 702116650}
   - {fileID: 259187806}
+  - {fileID: 1656726108}
+  - {fileID: 476027353}
   - {fileID: 1849505252}
   - {fileID: 568694153}
-  - {fileID: 1656726108}
+  - {fileID: 1436336230}
   - {fileID: 1334794351}
-  - {fileID: 476027353}
   - {fileID: 2060023601}
   - {fileID: 1367888927}
   - {fileID: 2080007030}
@@ -35219,31 +35269,25 @@ MonoBehaviour:
   - variant: effect_rockcrab_fish
     fishId: effect_rockcrab_fish
     animationFrames:
-    - {fileID: 21300000, guid: 1f9aa69b2d7d6490c93b5bd39aa52f58, type: 3}
-    - {fileID: 21300000, guid: 24c4d972a7850460d9c2fdb6e92efcda, type: 3}
-    - {fileID: 21300000, guid: 6661735265f934b22b76b777b7bb1d83, type: 3}
-    - {fileID: 21300000, guid: e60e78184f5c7424383c67810f6d1eeb, type: 3}
-    - {fileID: 21300000, guid: 11fef77696ee542ccba538fc207329c1, type: 3}
-    - {fileID: 21300000, guid: a901fc2388b1a49c3accd85f7475712c, type: 3}
-    - {fileID: 21300000, guid: 99f528c1aeb704ec385d291dab3fecce, type: 3}
-    - {fileID: 21300000, guid: 319f043d372b9440fa1bbde24880e422, type: 3}
-    - {fileID: 21300000, guid: 4d1f5b72a713f4a418dd14b71db61286, type: 3}
-    - {fileID: 21300000, guid: 5f7e6115f782242768cedc67bc049602, type: 3}
-    - {fileID: 21300000, guid: cc731feb87d8f4342bc09fec1d9255a7, type: 3}
-    - {fileID: 21300000, guid: 95edb3e53c8bf4137a1e0f31e108d448, type: 3}
-    - {fileID: 21300000, guid: 295afd70332ad42d3a84c01bfb575708, type: 3}
-    - {fileID: 21300000, guid: e00f6fe50ec564649a89e9010d891033, type: 3}
-    - {fileID: 21300000, guid: 82c29e34c7ce249eda91f8f9c2b0feb6, type: 3}
-    - {fileID: 21300000, guid: 9edba675df85542c880fbd96292215fe, type: 3}
-    - {fileID: 21300000, guid: ca6a803c1d14e4320bf290b090d3441a, type: 3}
-    - {fileID: 21300000, guid: 96df2a98944c0499196eece1d78c8703, type: 3}
-    - {fileID: 21300000, guid: 1352a1f3de826435d850d4e69aa650bb, type: 3}
-    - {fileID: 21300000, guid: 1a56873f17eeb4f71b38f627c773afa4, type: 3}
-    animationSpeed: 15
+    - {fileID: 21300000, guid: b62583f43d44a48b58addec50f37848e, type: 3}
+    - {fileID: 21300000, guid: 6024df32800bf419182dd301c4c8d387, type: 3}
+    - {fileID: 21300000, guid: db7e96da9a21544129da43e2e36b2c22, type: 3}
+    - {fileID: 21300000, guid: 69c79b5f3db1a4138af8ff0dca306483, type: 3}
+    - {fileID: 21300000, guid: 4e258c49a03c7414ba4323f1c86494ab, type: 3}
+    - {fileID: 21300000, guid: 4e37b30b9fa404afe85639af51a5a44e, type: 3}
+    - {fileID: 21300000, guid: 33e10acd3112e4801be6915e501b80fb, type: 3}
+    - {fileID: 21300000, guid: f0cbb14e671d246719935bb5a7707008, type: 3}
+    - {fileID: 21300000, guid: 0c08282ed455d4d34b3b769fb6dcbd39, type: 3}
+    - {fileID: 21300000, guid: ef15e724a6b8743d28f62c638eaf15db, type: 3}
+    - {fileID: 21300000, guid: 7ae6cb09a9b924204987967e388e65f0, type: 3}
+    - {fileID: 21300000, guid: 24b26185a68b14c2291a3db58d5e28dd, type: 3}
+    - {fileID: 21300000, guid: 7730348eb0bd148149a61fbdfcf49c50, type: 3}
+    - {fileID: 21300000, guid: 9fcb570ae1987446e95f64f50af3a1cd, type: 3}
+    animationSpeed: 13
     loop: 1
     spriteSize: {x: 450, y: 450}
-    colliderSize: {x: 100, y: 70}
-    colliderOffset: {x: 0, y: -20}
+    colliderSize: {x: 200, y: 145}
+    colliderOffset: {x: 0, y: -46}
     laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
@@ -57523,6 +57567,7 @@ Transform:
   - {fileID: 1376065111}
   - {fileID: 153988846}
   - {fileID: 1213546949}
+  - {fileID: 110528983}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1157570055
@@ -71548,6 +71593,41 @@ MonoBehaviour:
   m_ConnectionSyncPosition: 0
   m_ConnectionSyncRotation: 0
   m_Connection: {fileID: 0}
+--- !u!1 &1436336229
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1436336230}
+  m_Layer: 5
+  m_Name: CrabTorpedoParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1436336230
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436336229}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 469943435}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1437645438
 GameObject:
   m_ObjectHideFlags: 0

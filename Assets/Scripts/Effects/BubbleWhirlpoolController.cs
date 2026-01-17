@@ -47,7 +47,7 @@ public class BubbleWhirlpoolController : MonoBehaviour
     if (spawnRoutine != null)
       StopCoroutine(spawnRoutine);
 
-    angularDirectionSign = randomizeAngularDirection && Random.value < 0.5f ? -1 : 1;
+    angularDirectionSign = -1;
     spawnRoutine = StartCoroutine(SpawnLoop());
   }
 

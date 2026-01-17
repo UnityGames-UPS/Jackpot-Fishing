@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 internal class EffectFish : BaseFish
 {
@@ -10,11 +12,14 @@ internal class EffectFish : BaseFish
   [Header("Effect Fish Shared")]
   [SerializeField] private Vector3 blueBlastLocalOffset = Vector3.zero;
   [SerializeField] private float blueBlastScaleMultiplier = 1f;
-  [SerializeField] private float blueBlastMaxDuration = 1.5f;
   [SerializeField] private float effectScaleMultiplier = 1f;
+  [SerializeField] private float effectFishTorpedoWaitTimeout = 2f;
   [Header("Bubble Crab Death")]
   [SerializeField] private float bubbleCrabShakeRadius = 12f;
   [SerializeField] private float bubbleCrabShakeSpeed = 45f;
+  [SerializeField] private Image bubbleCrabWhirlpoolImage;
+  [SerializeField] private float bubbleCrabWhirlpoolFadeInDuration = 0.2f;
+  [SerializeField] private float bubbleCrabWhirlpoolRotateDuration = 1.2f;
   [SerializeField] private float bubbleCrabSpawnRadiusMultiplier = 2.2f;
   [SerializeField] private float bubbleCrabRadialSpeedLerpDuration = 0.2f;
   [SerializeField] private float bubbleCraAngularSpeedLerpDuration = 0.4f;
@@ -32,10 +37,24 @@ internal class EffectFish : BaseFish
   [SerializeField] private float affectedFishAngularSpeedMaxMultiplier = 1.2f;
   [SerializeField] private float affectedFishSelfSpinSpeed = 360f;
   [SerializeField] private float bubbleCrabTorpedoImpactTimeout = 2f;
+  [SerializeField] private GameObject rockCrabTorpedoVisual;
+  [Header("Rock Crab Death")]
+  [SerializeField] private float rockCrabShakeRadius = 10f;
+  [SerializeField] private float rockCrabShakeSpeed = 40f;
+  [SerializeField] private float rockCrabPreFireDelay = 0.4f;
+  [SerializeField] private float rockCrabTorpedoInterval = 0.08f;
+  [SerializeField] private float rockCrabTorpedoHitTimeout = 2f;
+  [SerializeField] private float rockCrabEscapeSpeedMultiplier = 8f;
+  [SerializeField] private float rockCrabEscapeScaleMultiplier = 1.15f;
+  [SerializeField] private float rockCrabEscapeScaleDuration = 0.2f;
+  [Header("Rock Crab Torpedo Visual")]
+  [SerializeField] private float rockCrabTorpedoRockAngle = 6f;
+  [SerializeField] private float rockCrabTorpedoRockDuration = 0.16f;
   [Header("Blue Fish Death")]
   [SerializeField] private float blueFishShakeRadius = 10f;
   [SerializeField] private float blueFishShakeSpeed = 45f;
   [SerializeField] private float blueFishAnimationSpeedMultiplier = 2f;
+  [SerializeField] private float blueFishExplosionDistance = 60f;
   [SerializeField] private float blueFishAttractDuration = 1.2f;
   [SerializeField] private float blueFishAffectedSpinSpeed = 360f;
   [SerializeField] private float electricLinkHeight = 200f;
@@ -53,13 +72,24 @@ internal class EffectFish : BaseFish
   private Coroutine blueFishShakeRoutine;
   private Coroutine blueFishEffectRoutine;
   private Coroutine blueBlastRoutine;
+  private Coroutine rockCrabShakeRoutine;
+  private Coroutine rockCrabEffectRoutine;
+  private Tween rockCrabTorpedoRockTween;
+  private Tween bubbleCrabWhirlpoolRotateTween;
+  private Tween bubbleCrabWhirlpoolFadeTween;
   private Vector3 bubbleCrabBaseLocalPos;
   private Vector3 blueFishBaseLocalPos;
+  private Vector3 rockCrabBaseLocalPos;
   private bool bubbleCrabDeathActive;
   private bool bubbleCrabAwaitingTorpedoImpact;
   private bool bubbleCrabTorpedoImpactReceived;
+  private bool rockCrabDeathActive;
+  private bool rockCrabEscaping;
+  private bool rockCrabFinishing;
+  private int rockCrabPendingTorpedos;
   private const string BubbleCrabVariant = "effect_bubblecrab_fish";
   private const string BlueFishVariant = "effect_blue_fish";
+  private const string RockCrabVariant = "effect_rockcrab_fish";
   private bool blueFishDeathActive;
   private enum EffectKind
   {
@@ -87,10 +117,15 @@ internal class EffectFish : BaseFish
   private float blueFishMoveStartTime;
   private bool blueFishMoveWindowStarted;
   private float blueFishMoveArrivalTime;
+  private bool blueFishFinishTriggered;
+  private bool blueFishCoinBlastPlayed;
+  private BaseFish blueFishLastTarget;
+  private List<BaseFish> blueFishEffectTargets = new List<BaseFish>();
 
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
+    UpdateRockCrabTorpedoVisual(data.variant == "effect_rockcrab_fish");
     SetupFallbackMovement();
     StartRockCrabSpeedVariation();
     StartBubbleCrabWhirlpool();
@@ -101,6 +136,12 @@ internal class EffectFish : BaseFish
     bubbleCrabDeathActive = false;
     bubbleCrabAwaitingTorpedoImpact = false;
     bubbleCrabTorpedoImpactReceived = false;
+    rockCrabDeathActive = false;
+    rockCrabEscaping = false;
+    rockCrabFinishing = false;
+    rockCrabPendingTorpedos = 0;
+    StopRockCrabTorpedoRocking();
+    StopBubbleCrabWhirlpoolImage();
     if (bubbleCrabShakeRoutine != null)
     {
       StopCoroutine(bubbleCrabShakeRoutine);
@@ -110,6 +151,16 @@ internal class EffectFish : BaseFish
     {
       StopCoroutine(bubbleCrabEffectRoutine);
       bubbleCrabEffectRoutine = null;
+    }
+    if (rockCrabShakeRoutine != null)
+    {
+      StopCoroutine(rockCrabShakeRoutine);
+      rockCrabShakeRoutine = null;
+    }
+    if (rockCrabEffectRoutine != null)
+    {
+      StopCoroutine(rockCrabEffectRoutine);
+      rockCrabEffectRoutine = null;
     }
     ResetBlueFishEffects();
     if (blueBlastRoutine != null)
@@ -130,18 +181,61 @@ internal class EffectFish : BaseFish
       StopCoroutine(segmentedSpeedRoutine);
       segmentedSpeedRoutine = null;
     }
+    UpdateRockCrabTorpedoVisual(false);
     base.ResetFish();
   }
 
   private void StartRockCrabSpeedVariation()
   {
-    if (data == null || data.variant != "effect_rockcrab_fish")
+    if (data == null || data.variant != RockCrabVariant)
       return;
 
     if (segmentedSpeedRoutine != null)
       StopCoroutine(segmentedSpeedRoutine);
 
     segmentedSpeedRoutine = StartCoroutine(CrabSegmentedSpeedRoutine());
+  }
+
+  private void UpdateRockCrabTorpedoVisual(bool setActive)
+  {
+    if (rockCrabTorpedoVisual == null)
+      return;
+
+    rockCrabTorpedoVisual.SetActive(setActive);
+    if (setActive)
+      StartRockCrabTorpedoRocking();
+    else
+      StopRockCrabTorpedoRocking();
+  }
+
+  private void StartRockCrabTorpedoRocking()
+  {
+    if (rockCrabTorpedoVisual == null)
+      return;
+    if (rockCrabDeathActive || isDespawning)
+      return;
+    if (!rockCrabTorpedoVisual.activeInHierarchy)
+      return;
+
+    StopRockCrabTorpedoRocking();
+
+    Transform visualTransform = rockCrabTorpedoVisual.transform;
+    visualTransform.localRotation = Quaternion.Euler(0f, 0f, -rockCrabTorpedoRockAngle);
+    rockCrabTorpedoRockTween = visualTransform
+      .DOLocalRotate(new Vector3(0f, 0f, rockCrabTorpedoRockAngle), rockCrabTorpedoRockDuration)
+      .SetEase(Ease.Linear)
+      .SetLoops(-1, LoopType.Yoyo);
+  }
+
+  private void StopRockCrabTorpedoRocking()
+  {
+    if (rockCrabTorpedoRockTween != null)
+    {
+      rockCrabTorpedoRockTween.Kill();
+      rockCrabTorpedoRockTween = null;
+    }
+    if (rockCrabTorpedoVisual != null)
+      rockCrabTorpedoVisual.transform.localRotation = Quaternion.identity;
   }
 
   private void StartBubbleCrabWhirlpool()
@@ -173,36 +267,35 @@ internal class EffectFish : BaseFish
     StopPathMovement();
     FishManager.Instance?.MoveToAnimParent(this);
 
-    if (bubbleWhirlpool == null)
-      bubbleWhirlpool = GetComponent<BubbleWhirlpoolController>();
-
-    if (bubbleWhirlpool != null)
-    {
-      bubbleWhirlpool.StopAndClear();
-      bubbleWhirlpool.SetSpawnRadiusMultiplier(bubbleCrabSpawnRadiusMultiplier);
-      bubbleWhirlpool.SetSpawnIntervalMultiplier(bubbleCrabSpawnIntervalMultiplier);
-      bubbleWhirlpool.LerpRadialSpeedMultiplier(
-        bubbleCrabRadialSpeedMultiplier,
-        bubbleCrabRadialSpeedLerpDuration
-      );
-      bubbleWhirlpool.LerpAngularSpeedMultiplier(
-        bubbleCrabAngularSpeedMultiplier,
-        bubbleCraAngularSpeedLerpDuration
-      );
-      bubbleWhirlpool.Begin();
-    }
-
-    bubbleCrabBaseLocalPos = transform.localPosition;
-    if (blueBlastRoutine != null)
-      StopCoroutine(blueBlastRoutine);
-    blueBlastRoutine = StartCoroutine(PlayBlueBlastEffectRoutine(null));
-    if (bubbleCrabShakeRoutine != null)
-      StopCoroutine(bubbleCrabShakeRoutine);
-    bubbleCrabShakeRoutine = StartCoroutine(BubbleCrabShakeRoutine());
 
     if (bubbleCrabEffectRoutine != null)
       StopCoroutine(bubbleCrabEffectRoutine);
     bubbleCrabEffectRoutine = StartCoroutine(BubbleCrabEffectRoutine(affectedFishes));
+  }
+
+  internal void TriggerRockCrabDeath(List<BaseFish> affectedFishes)
+  {
+    if (data == null || data.variant != RockCrabVariant)
+      return;
+
+    if (rockCrabDeathActive)
+      return;
+
+    rockCrabDeathActive = true;
+    MarkPendingDeath();
+    StopPathMovement();
+    FishManager.Instance?.MoveToAnimParent(this);
+    StopRockCrabTorpedoRocking();
+
+    if (segmentedSpeedRoutine != null)
+    {
+      StopCoroutine(segmentedSpeedRoutine);
+      segmentedSpeedRoutine = null;
+    }
+
+    if (rockCrabEffectRoutine != null)
+      StopCoroutine(rockCrabEffectRoutine);
+    rockCrabEffectRoutine = StartCoroutine(RockCrabEffectRoutine(affectedFishes));
   }
 
   internal override void OnTorpedoImpact() { }
@@ -223,6 +316,38 @@ internal class EffectFish : BaseFish
 
   private IEnumerator BubbleCrabEffectRoutine(List<BaseFish> affectedFishes)
   {
+    yield return StartCoroutine(WaitForIncomingTorpedos());
+    bubbleCrabBaseLocalPos = transform.localPosition;
+    if (blueBlastRoutine != null)
+      StopCoroutine(blueBlastRoutine);
+    blueBlastRoutine = StartCoroutine(PlayBlueBlastEffectRoutine());
+    yield return blueBlastRoutine;
+    yield return new WaitForSecondsRealtime(0.5f);
+
+    if (bubbleWhirlpool == null)
+      bubbleWhirlpool = GetComponent<BubbleWhirlpoolController>();
+
+    if (bubbleWhirlpool != null)
+    {
+      bubbleWhirlpool.StopAndClear();
+      bubbleWhirlpool.SetSpawnRadiusMultiplier(bubbleCrabSpawnRadiusMultiplier);
+      bubbleWhirlpool.SetSpawnIntervalMultiplier(bubbleCrabSpawnIntervalMultiplier);
+      bubbleWhirlpool.LerpRadialSpeedMultiplier(
+        bubbleCrabRadialSpeedMultiplier,
+        bubbleCrabRadialSpeedLerpDuration
+      );
+      bubbleWhirlpool.LerpAngularSpeedMultiplier(
+        bubbleCrabAngularSpeedMultiplier,
+        bubbleCraAngularSpeedLerpDuration
+      );
+      bubbleWhirlpool.Begin();
+    }
+    
+    StartBubbleCrabWhirlpoolImage();
+    if (bubbleCrabShakeRoutine != null)
+      StopCoroutine(bubbleCrabShakeRoutine);
+    bubbleCrabShakeRoutine = StartCoroutine(BubbleCrabShakeRoutine());
+
     if (bubbleCrabAwaitingTorpedoImpact)
     {
       float timer = 0f;
@@ -247,16 +372,194 @@ internal class EffectFish : BaseFish
     }
 
     PlayCoinBlast(this);
-    
+
     foreach (var fish in validTargets)
     {
       fish.PendingVisualDeath = false;
+      PlayCoinBlast(fish);
       fish.ForceDespawn();
     }
-    
+
     bubbleCrabDeathActive = false;
     PendingVisualDeath = false;
     ForceDespawn();
+  }
+
+  private IEnumerator RockCrabShakeRoutine()
+  {
+    while (rockCrabDeathActive)
+    {
+      float x = Mathf.PerlinNoise(Time.time * rockCrabShakeSpeed, 0f) * 2f - 1f;
+      float y = Mathf.PerlinNoise(0f, Time.time * rockCrabShakeSpeed) * 2f - 1f;
+      Vector3 offset = new Vector3(x, y, 0f) * rockCrabShakeRadius;
+      transform.localPosition = rockCrabBaseLocalPos + offset;
+      yield return null;
+    }
+
+    transform.localPosition = rockCrabBaseLocalPos;
+  }
+
+  private IEnumerator RockCrabEffectRoutine(List<BaseFish> affectedFishes)
+  {
+    yield return StartCoroutine(WaitForIncomingTorpedos());
+
+    rockCrabBaseLocalPos = transform.localPosition;
+    if (rockCrabShakeRoutine != null)
+      StopCoroutine(rockCrabShakeRoutine);
+    rockCrabShakeRoutine = StartCoroutine(RockCrabShakeRoutine());
+
+    List<BaseFish> validTargets = CollectAffectedTargets(affectedFishes);
+
+    if (rockCrabPreFireDelay > 0f)
+      yield return new WaitForSeconds(rockCrabPreFireDelay);
+
+    if (isDespawning || !rockCrabDeathActive)
+      yield break;
+
+    rockCrabPendingTorpedos = 0;
+    int targetCount = validTargets.Count;
+    for (int i = 0; i < targetCount; i++)
+    {
+      var fish = validTargets[i];
+      if (isDespawning || !rockCrabDeathActive)
+        break;
+      if (fish == null)
+        continue;
+
+      rockCrabPendingTorpedos++;
+      FireRockCrabTorpedo(fish);
+      if (rockCrabTorpedoInterval > 0f)
+        yield return new WaitForSeconds(rockCrabTorpedoInterval);
+    }
+
+    if (rockCrabPendingTorpedos > 0)
+    {
+      float timer = 0f;
+      float timeout = Mathf.Max(0f, rockCrabTorpedoHitTimeout);
+      while (rockCrabPendingTorpedos > 0 && timer < timeout)
+      {
+        if (isDespawning || !rockCrabDeathActive)
+          yield break;
+        timer += Time.deltaTime;
+        yield return null;
+      }
+    }
+
+    if (rockCrabTorpedoVisual != null)
+    {
+      rockCrabTorpedoVisual.SetActive(false);
+      StopRockCrabTorpedoRocking();
+    }
+
+    rockCrabFinishing = true;
+    rockCrabDeathActive = false;
+    PendingVisualDeath = false;
+    yield return new WaitForSecondsRealtime(1f);
+    yield return StartCoroutine(RockCrabEscapeScaleRoutine());
+    StartRockCrabEscape();
+  }
+
+  private void FireRockCrabTorpedo(BaseFish target)
+  {
+    if (CrabTorpedoPool.Instance == null)
+      return;
+
+    if (target == null)
+      return;
+    if (isDespawning || !rockCrabDeathActive)
+      return;
+
+    var torpedo = CrabTorpedoPool.Instance.GetFromPool();
+    Vector3 launchPos = rockCrabTorpedoVisual != null
+      ? rockCrabTorpedoVisual.transform.position
+      : transform.position;
+    torpedo.transform.SetPositionAndRotation(launchPos, Quaternion.identity);
+    torpedo.Init(target, OnRockCrabTorpedoHit);
+    PlayRockCrabLaunchBlast(launchPos);
+  }
+
+  private void OnRockCrabTorpedoHit(BaseFish target)
+  {
+    if (target == null)
+      return;
+
+    if (rockCrabPendingTorpedos > 0)
+      rockCrabPendingTorpedos--;
+
+    target.PendingVisualDeath = false;
+    target.ForceDespawn();
+  }
+
+
+  private IEnumerator RockCrabEscapeScaleRoutine()
+  {
+    float duration = Mathf.Max(0.01f, rockCrabEscapeScaleDuration);
+    float halfDuration = duration * 0.5f;
+    Vector3 baseScale = transform.localScale;
+    Vector3 targetScale = baseScale * Mathf.Max(0.01f, rockCrabEscapeScaleMultiplier);
+
+    Tween upTween = transform
+      .DOScale(targetScale, halfDuration)
+      .SetEase(Ease.OutBack);
+    yield return upTween.WaitForCompletion();
+
+    Tween downTween = transform
+      .DOScale(baseScale, halfDuration)
+      .SetEase(Ease.InBack);
+    yield return downTween.WaitForCompletion();
+  }
+
+  private void PlayRockCrabLaunchBlast(Vector3 pos)
+  {
+    if (BlastAnimationPool.Instance == null)
+      return;
+
+    var blast = BlastAnimationPool.Instance.GetFromPool();
+    blast.transform.SetPositionAndRotation(pos, Quaternion.identity);
+    blast.StartAnimation();
+    blast.OnAnimationComplete = () =>
+    {
+      BlastAnimationPool.Instance.ReturnToPool(blast);
+    };
+  }
+
+  private void StartRockCrabEscape()
+  {
+    if (splineController == null)
+      return;
+
+    rockCrabEscaping = true;
+    rockCrabFinishing = false;
+    splineController.enabled = true;
+    splineController.PlayAutomatically = true;
+    SetSpeedMultiplier(rockCrabEscapeSpeedMultiplier);
+    splineController.Play();
+  }
+
+  internal bool IsTorpedoTargetable =>
+    !rockCrabDeathActive && !rockCrabFinishing && !rockCrabEscaping;
+  internal bool IgnoreExpiredCleanup =>
+    PendingVisualDeath ||
+    bubbleCrabDeathActive ||
+    blueFishDeathActive ||
+    rockCrabDeathActive ||
+    rockCrabFinishing ||
+    rockCrabEscaping;
+
+  private IEnumerator WaitForIncomingTorpedos()
+  {
+    if (ActiveTorpedoCount <= 0)
+      yield break;
+
+    float timer = 0f;
+    float timeout = Mathf.Max(0f, effectFishTorpedoWaitTimeout);
+    while (ActiveTorpedoCount > 0 && timer < timeout)
+    {
+      if (isDespawning)
+        yield break;
+      timer += Time.deltaTime;
+      yield return null;
+    }
   }
 
   internal void TriggerBlueFishDeath(List<BaseFish> affectedFishes)
@@ -383,16 +686,19 @@ internal class EffectFish : BaseFish
 
   private IEnumerator BlueFishEffectRoutine(List<BaseFish> affectedFishes)
   {
+    yield return StartCoroutine(WaitForIncomingTorpedos());
+
     List<BaseFish> validTargets = CollectAffectedTargets(affectedFishes);
+    blueFishFinishTriggered = false;
+    blueFishCoinBlastPlayed = false;
+    blueFishLastTarget = validTargets.Count > 0 ? validTargets[validTargets.Count - 1] : null;
+    blueFishEffectTargets = validTargets;
 
     if (blueBlastRoutine != null)
       StopCoroutine(blueBlastRoutine);
-    blueBlastRoutine = StartCoroutine(PlayBlueBlastEffectRoutine(() =>
-    {
-      StopBlueFishShake();
-    }));
-    StartBlueFishShake();
+    blueBlastRoutine = StartCoroutine(PlayBlueBlastEffectRoutine());
     yield return blueBlastRoutine;
+    StartBlueFishShake();
     blueBlastRoutine = null;
 
     SetAnimationSpeedMultiplier(blueFishAnimationSpeedMultiplier);
@@ -400,7 +706,12 @@ internal class EffectFish : BaseFish
     if (validTargets.Count > 0)
       yield return StartCoroutine(ChainLightningRoutine(validTargets));
 
-    PlayCoinBlast(this);
+    if (!blueFishCoinBlastPlayed)
+    {
+      PlayCoinBlast(this);
+      foreach (var fish in validTargets)
+        PlayCoinBlast(fish);
+    }
 
     foreach (var fish in validTargets)
     {
@@ -413,6 +724,7 @@ internal class EffectFish : BaseFish
     blueFishDeathActive = false;
     PendingVisualDeath = false;
     ForceDespawn();
+    StopBlueFishShake();
   }
 
   private IEnumerator ChainLightningRoutine(List<BaseFish> targets)
@@ -429,6 +741,8 @@ internal class EffectFish : BaseFish
     BaseFish source = this;
     for (int i = 0; i < targets.Count; i++)
     {
+      if (blueFishFinishTriggered)
+        break;
       BaseFish target = targets[i];
       if (target == null)
         continue;
@@ -443,9 +757,10 @@ internal class EffectFish : BaseFish
         yield return new WaitForSeconds(electricChainDelay);
     }
 
-    StartMovingAffectedFish(source);
+    if (!blueFishFinishTriggered)
+      StartMovingAffectedFish(source);
 
-    if (blueFishMovingCount > 0)
+    if (!blueFishFinishTriggered && blueFishMovingCount > 0)
       yield return new WaitUntil(() => blueFishMovingCount <= 0);
   }
 
@@ -480,11 +795,10 @@ internal class EffectFish : BaseFish
     transform.localPosition = blueFishBaseLocalPos;
   }
 
-  private IEnumerator PlayBlueBlastEffectRoutine(System.Action onComplete)
+  private IEnumerator PlayBlueBlastEffectRoutine()
   {
     if (BlueBlastEffectPool.Instance == null)
     {
-      onComplete?.Invoke();
       yield break;
     }
 
@@ -492,7 +806,6 @@ internal class EffectFish : BaseFish
     ImageAnimation effect = GetBlueBlastEffect(out pooled);
     if (effect == null)
     {
-      onComplete?.Invoke();
       yield break;
     }
 
@@ -512,19 +825,11 @@ internal class EffectFish : BaseFish
     effect.OnAnimationComplete += handleComplete;
     effect.StartAnimation();
 
-    float timer = 0f;
-    float timeout = Mathf.Max(0.01f, blueBlastMaxDuration);
-    while (!finished && timer < timeout)
-    {
-      timer += Time.deltaTime;
-      yield return null;
-    }
+    yield return new WaitUntil(() => finished);
 
     effect.OnAnimationComplete -= handleComplete;
     ReturnBlueBlastEffect(effect, pooled);
     blueFishTransientEffects.RemoveAll(entry => entry.anim == effect);
-
-    onComplete?.Invoke();
   }
 
   private IEnumerator PlayElectricLinkRoutine(BaseFish from, BaseFish to)
@@ -774,6 +1079,13 @@ internal class EffectFish : BaseFish
       timer += Time.deltaTime;
       float t = Mathf.Clamp01(timer / duration);
       fish.transform.position = Vector3.Lerp(startPos, targetPos, t);
+      if (!blueFishFinishTriggered &&
+          fish == blueFishLastTarget &&
+          blueFishExplosionDistance > 0f &&
+          Vector3.Distance(fish.transform.position, targetPos) <= blueFishExplosionDistance)
+      {
+        TriggerBlueFishFinish();
+      }
       yield return null;
     }
 
@@ -784,6 +1096,37 @@ internal class EffectFish : BaseFish
 
     blueFishMoveRoutines.Remove(fish);
     blueFishMovingCount = Mathf.Max(0, blueFishMovingCount - 1);
+  }
+
+  private void TriggerBlueFishFinish()
+  {
+    if (blueFishCoinBlastPlayed)
+      return;
+
+    blueFishFinishTriggered = true;
+    blueFishCoinBlastPlayed = true;
+
+    foreach (var pair in blueFishMoveRoutines)
+    {
+      if (pair.Value != null)
+        StopCoroutine(pair.Value);
+    }
+    blueFishMoveRoutines.Clear();
+    blueFishMovingCount = 0;
+
+    foreach (var pair in blueFishSpinRoutines)
+    {
+      if (pair.Value != null)
+        StopCoroutine(pair.Value);
+    }
+    blueFishSpinRoutines.Clear();
+
+    if (blueFishEffectTargets != null)
+    {
+      PlayCoinBlast(this);
+      foreach (var fish in blueFishEffectTargets)
+        PlayCoinBlast(fish);
+    }
   }
 
   private void ResetBlueFishEffects()
@@ -852,13 +1195,53 @@ internal class EffectFish : BaseFish
     var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
     if (coinAnimation == null)
     {
-      Debug.LogError("coinAnimation not found"); 
+      Debug.LogError("coinAnimation not found");
       return;
     }
 
     Vector3 pos = fish.ColliderMidPoint;
     coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
     coinAnimation.transform.localScale = Vector3.one * effectScaleMultiplier;
+  }
+
+  private void StartBubbleCrabWhirlpoolImage()
+  {
+    if (bubbleCrabWhirlpoolImage == null)
+      return;
+
+    bubbleCrabWhirlpoolImage.gameObject.SetActive(true);
+    bubbleCrabWhirlpoolImage.color = new Color(
+      bubbleCrabWhirlpoolImage.color.r,
+      bubbleCrabWhirlpoolImage.color.g,
+      bubbleCrabWhirlpoolImage.color.b,
+      0f
+    );
+    bubbleCrabWhirlpoolImage.rectTransform.localRotation = Quaternion.identity;
+
+    bubbleCrabWhirlpoolFadeTween?.Kill();
+    bubbleCrabWhirlpoolRotateTween?.Kill();
+
+    bubbleCrabWhirlpoolFadeTween = bubbleCrabWhirlpoolImage
+      .DOFade(0.8f, bubbleCrabWhirlpoolFadeInDuration)
+      .SetEase(Ease.OutQuad);
+    bubbleCrabWhirlpoolRotateTween = bubbleCrabWhirlpoolImage.rectTransform
+      .DORotate(new Vector3(0f, 0f, -360f), bubbleCrabWhirlpoolRotateDuration, RotateMode.FastBeyond360)
+      .SetEase(Ease.Linear)
+      .SetLoops(-1);
+  }
+
+  private void StopBubbleCrabWhirlpoolImage()
+  {
+    bubbleCrabWhirlpoolFadeTween?.Kill();
+    bubbleCrabWhirlpoolRotateTween?.Kill();
+    bubbleCrabWhirlpoolFadeTween = null;
+    bubbleCrabWhirlpoolRotateTween = null;
+
+    if (bubbleCrabWhirlpoolImage == null)
+      return;
+
+    bubbleCrabWhirlpoolImage.rectTransform.localRotation = Quaternion.identity;
+    bubbleCrabWhirlpoolImage.gameObject.SetActive(false);
   }
 
   private IEnumerator CrabSegmentedSpeedRoutine()
