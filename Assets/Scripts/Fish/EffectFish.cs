@@ -47,6 +47,7 @@ internal class EffectFish : BaseFish
   [SerializeField] private float rockCrabEscapeSpeedMultiplier = 8f;
   [SerializeField] private float rockCrabEscapeScaleMultiplier = 1.15f;
   [SerializeField] private float rockCrabEscapeScaleDuration = 0.2f;
+  [SerializeField] private float rockCrabTorpedoCoinBlastScaleMultiplier = 1.2f;
   [Header("Rock Crab Torpedo Visual")]
   [SerializeField] private float rockCrabTorpedoRockAngle = 6f;
   [SerializeField] private float rockCrabTorpedoRockDuration = 0.16f;
@@ -418,16 +419,25 @@ internal class EffectFish : BaseFish
 
     rockCrabPendingTorpedos = 0;
     int targetCount = validTargets.Count;
-    for (int i = 0; i < targetCount; i++)
+    List<Vector3> torpedoTargets = null;
+    bool useGridTargets = TryGetRockCrabTorpedoTargets(out torpedoTargets);
+    int torpedoCount = useGridTargets ? torpedoTargets.Count : Mathf.Max(3, targetCount);
+    for (int i = 0; i < torpedoCount; i++)
     {
-      var fish = validTargets[i];
+      var fish = i < targetCount ? validTargets[i] : null;
       if (isDespawning || !rockCrabDeathActive)
         break;
-      if (fish == null)
-        continue;
 
       rockCrabPendingTorpedos++;
-      FireRockCrabTorpedo(fish);
+      Vector3? targetPos = (useGridTargets && i < torpedoTargets.Count) ? torpedoTargets[i] : (Vector3?)null;
+      if (!targetPos.HasValue && fish == null)
+        targetPos = transform.position;
+      FireRockCrabTorpedo(fish, targetPos);
+      if (i == torpedoCount - 1 && rockCrabTorpedoVisual != null)
+      {
+        rockCrabTorpedoVisual.SetActive(false);
+        StopRockCrabTorpedoRocking();
+      }
       if (rockCrabTorpedoInterval > 0f)
         yield return new WaitForSeconds(rockCrabTorpedoInterval);
     }
@@ -445,6 +455,18 @@ internal class EffectFish : BaseFish
       }
     }
 
+    if (targetCount > torpedoCount)
+    {
+      for (int i = torpedoCount; i < targetCount; i++)
+      {
+        var fish = validTargets[i];
+        if (fish == null)
+          continue;
+        fish.PendingVisualDeath = false;
+        fish.ForceDespawn();
+      }
+    }
+
     if (rockCrabTorpedoVisual != null)
     {
       rockCrabTorpedoVisual.SetActive(false);
@@ -459,35 +481,238 @@ internal class EffectFish : BaseFish
     StartRockCrabEscape();
   }
 
-  private void FireRockCrabTorpedo(BaseFish target)
+  private void FireRockCrabTorpedo(BaseFish target, Vector3? targetPos)
   {
     if (CrabTorpedoPool.Instance == null)
       return;
 
-    if (target == null)
-      return;
     if (isDespawning || !rockCrabDeathActive)
       return;
 
     var torpedo = CrabTorpedoPool.Instance.GetFromPool();
+    if (torpedo == null)
+      return;
+
     Vector3 launchPos = rockCrabTorpedoVisual != null
       ? rockCrabTorpedoVisual.transform.position
       : transform.position;
     torpedo.transform.SetPositionAndRotation(launchPos, Quaternion.identity);
-    torpedo.Init(target, OnRockCrabTorpedoHit);
+    torpedo.SetCoinBlastScaleMultiplier(rockCrabTorpedoCoinBlastScaleMultiplier);
+    if (targetPos.HasValue)
+      torpedo.Init(target, targetPos.Value, OnRockCrabTorpedoHit);
+    else
+      torpedo.Init(target, OnRockCrabTorpedoHit);
     PlayRockCrabLaunchBlast(launchPos);
   }
 
   private void OnRockCrabTorpedoHit(BaseFish target)
   {
-    if (target == null)
-      return;
-
     if (rockCrabPendingTorpedos > 0)
       rockCrabPendingTorpedos--;
 
+    if (target == null)
+      return;
+
+    PlayCoinBlast(target, rockCrabTorpedoCoinBlastScaleMultiplier);
     target.PendingVisualDeath = false;
     target.ForceDespawn();
+  }
+
+  private bool TryGetRockCrabTorpedoTargets(out List<Vector3> targets)
+  {
+    targets = null;
+    if (FishManager.Instance == null)
+      return false;
+
+    Transform[] gridTargets = FishManager.Instance.RockCrabTorpedoGridTargets;
+    if (gridTargets == null || gridTargets.Length == 0)
+      return false;
+
+    int columns = Mathf.Max(1, FishManager.Instance.RockCrabTorpedoGridColumns);
+    int rows = gridTargets.Length / columns;
+    if (rows <= 0)
+      return false;
+
+    Vector3 crabPos = transform.position;
+    Vector2 offsetMin = FishManager.Instance.RockCrabTorpedoOffsetMin;
+    Vector2 offsetMax = FishManager.Instance.RockCrabTorpedoOffsetMax;
+    float minX = Mathf.Min(offsetMin.x, offsetMax.x);
+    float maxX = Mathf.Max(offsetMin.x, offsetMax.x);
+    float minY = Mathf.Min(offsetMin.y, offsetMax.y);
+    float maxY = Mathf.Max(offsetMin.y, offsetMax.y);
+
+    int closestColumn = FindClosestRockCrabColumn(columns, rows, crabPos, gridTargets);
+    List<int> columnOrder = BuildRockCrabColumnOrder(columns, rows, crabPos, gridTargets);
+    targets = new List<Vector3>(columns);
+    for (int orderIndex = 0; orderIndex < columnOrder.Count; orderIndex++)
+    {
+      int col = columnOrder[orderIndex];
+      int chosenRow = col == closestColumn
+        ? FindFarthestRowForColumn(col, rows, columns, crabPos, gridTargets)
+        : Random.Range(0, rows);
+      if (chosenRow < 0)
+        continue;
+
+      int index = chosenRow * columns + col;
+      if (index < 0 || index >= gridTargets.Length)
+        continue;
+
+      Transform anchor = gridTargets[index];
+      if (anchor == null)
+        continue;
+
+      Vector3 pos = anchor.position;
+      float offsetX = Random.Range(minX, maxX);
+      float offsetY = Random.Range(minY, maxY);
+      if (offsetX != 0f)
+        offsetX *= Random.value < 0.5f ? -1f : 1f;
+      if (offsetY != 0f)
+        offsetY *= Random.value < 0.5f ? -1f : 1f;
+      pos += new Vector3(offsetX, offsetY, 0f);
+
+      targets.Add(pos);
+    }
+
+    return targets.Count > 0;
+  }
+
+  private int FindClosestRockCrabColumn(
+    int columns,
+    int rows,
+    Vector3 crabPos,
+    Transform[] gridTargets
+  )
+  {
+    float minDistance = float.MaxValue;
+    List<int> bestColumns = new List<int>();
+
+    for (int col = 0; col < columns; col++)
+    {
+      float sum = 0f;
+      int count = 0;
+      for (int row = 0; row < rows; row++)
+      {
+        int index = row * columns + col;
+        if (index < 0 || index >= gridTargets.Length)
+          continue;
+        Transform anchor = gridTargets[index];
+        if (anchor == null)
+          continue;
+        sum += Vector3.Distance(crabPos, anchor.position);
+        count++;
+      }
+
+      float avg = count > 0 ? sum / count : float.MaxValue;
+      if (avg < minDistance - 0.01f)
+      {
+        minDistance = avg;
+        bestColumns.Clear();
+        bestColumns.Add(col);
+      }
+      else if (Mathf.Abs(avg - minDistance) <= 0.01f)
+      {
+        bestColumns.Add(col);
+      }
+    }
+
+    if (bestColumns.Count == 0)
+      return -1;
+
+    return bestColumns[Random.Range(0, bestColumns.Count)];
+  }
+
+  private List<int> BuildRockCrabColumnOrder(
+    int columns,
+    int rows,
+    Vector3 crabPos,
+    Transform[] gridTargets
+  )
+  {
+    List<float> columnDistances = new List<float>(columns);
+    List<int> columnIndices = new List<int>(columns);
+
+    for (int col = 0; col < columns; col++)
+    {
+      float sum = 0f;
+      int count = 0;
+      for (int row = 0; row < rows; row++)
+      {
+        int index = row * columns + col;
+        if (index < 0 || index >= gridTargets.Length)
+          continue;
+        Transform anchor = gridTargets[index];
+        if (anchor == null)
+          continue;
+        sum += Vector3.Distance(crabPos, anchor.position);
+        count++;
+      }
+
+      float avg = count > 0 ? sum / count : 0f;
+      columnDistances.Add(avg);
+      columnIndices.Add(col);
+    }
+
+    float min = float.MaxValue;
+    float max = float.MinValue;
+    for (int i = 0; i < columnDistances.Count; i++)
+    {
+      min = Mathf.Min(min, columnDistances[i]);
+      max = Mathf.Max(max, columnDistances[i]);
+    }
+
+    const float nearEqualThreshold = 0.5f;
+    if (Mathf.Abs(max - min) <= nearEqualThreshold)
+    {
+      for (int i = columnIndices.Count - 1; i > 0; i--)
+      {
+        int swapIndex = Random.Range(0, i + 1);
+        int temp = columnIndices[i];
+        columnIndices[i] = columnIndices[swapIndex];
+        columnIndices[swapIndex] = temp;
+      }
+      return columnIndices;
+    }
+
+    columnIndices.Sort((a, b) => columnDistances[b].CompareTo(columnDistances[a]));
+    return columnIndices;
+  }
+
+  private int FindFarthestRowForColumn(
+    int col,
+    int rows,
+    int columns,
+    Vector3 crabPos,
+    Transform[] gridTargets
+  )
+  {
+    float maxDist = float.MinValue;
+    List<int> bestRows = new List<int>();
+    for (int row = 0; row < rows; row++)
+    {
+      int index = row * columns + col;
+      if (index < 0 || index >= gridTargets.Length)
+        continue;
+      Transform anchor = gridTargets[index];
+      if (anchor == null)
+        continue;
+
+      float dist = Vector3.Distance(crabPos, anchor.position);
+      if (dist > maxDist + 0.01f)
+      {
+        maxDist = dist;
+        bestRows.Clear();
+        bestRows.Add(row);
+      }
+      else if (Mathf.Abs(dist - maxDist) <= 0.01f)
+      {
+        bestRows.Add(row);
+      }
+    }
+
+    if (bestRows.Count == 0)
+      return -1;
+
+    return bestRows[Random.Range(0, bestRows.Count)];
   }
 
 
@@ -1202,6 +1427,26 @@ internal class EffectFish : BaseFish
     Vector3 pos = fish.ColliderMidPoint;
     coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
     coinAnimation.transform.localScale = Vector3.one * effectScaleMultiplier;
+  }
+
+  private void PlayCoinBlast(BaseFish fish, float scaleMultiplier)
+  {
+    if (fish == null || fish.data == null)
+    {
+      Debug.LogError("Fish Data not found");
+      return;
+    }
+
+    var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
+    if (coinAnimation == null)
+    {
+      Debug.LogError("coinAnimation not found");
+      return;
+    }
+
+    Vector3 pos = fish.ColliderMidPoint;
+    coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
+    coinAnimation.transform.localScale = Vector3.one * Mathf.Max(0.01f, scaleMultiplier);
   }
 
   private void StartBubbleCrabWhirlpoolImage()

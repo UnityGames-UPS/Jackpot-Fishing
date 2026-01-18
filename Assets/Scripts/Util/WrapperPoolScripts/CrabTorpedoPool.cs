@@ -4,9 +4,9 @@ public class CrabTorpedoPool : GenericObjectPool<CrabTorpedoBulletView>
 {
   public static CrabTorpedoPool Instance;
 
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this;
   }
 }

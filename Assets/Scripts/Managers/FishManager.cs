@@ -18,6 +18,11 @@ internal class FishManager : MonoBehaviour
   [SerializeField] internal GenericObjectPool<ImmortalFish> immortalFishPool;
   [SerializeField] internal GenericObjectPool<JackpotFish> jackpotFishPool;
   [SerializeField] internal GenericObjectPool<JackpotDragon> jackpotDragonPool;
+  [Header("Rock Crab Torpedo Targets")]
+  [SerializeField] private Transform[] rockCrabTorpedoGridTargets;
+  [SerializeField, Min(1)] private int rockCrabTorpedoGridColumns = 3;
+  [SerializeField] private Vector2 rockCrabTorpedoOffsetMin = Vector2.zero;
+  [SerializeField] private Vector2 rockCrabTorpedoOffsetMax = Vector2.zero;
   [Header("Fish Anim Parent")]
   [SerializeField] private Transform animParent;
   internal Transform AnimParent => animParent;
@@ -25,6 +30,11 @@ internal class FishManager : MonoBehaviour
   [SerializeField] private List<BaseFish> activeFishes = new();
   private readonly Dictionary<BaseFish, Transform> cachedParents = new();
   private readonly Dictionary<BaseFish, int> cachedSiblingIndices = new();
+
+  internal Transform[] RockCrabTorpedoGridTargets => rockCrabTorpedoGridTargets;
+  internal int RockCrabTorpedoGridColumns => rockCrabTorpedoGridColumns;
+  internal Vector2 RockCrabTorpedoOffsetMin => rockCrabTorpedoOffsetMin;
+  internal Vector2 RockCrabTorpedoOffsetMax => rockCrabTorpedoOffsetMax;
 
   private void Awake() => Instance = this;
 

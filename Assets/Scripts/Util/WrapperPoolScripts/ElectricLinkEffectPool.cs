@@ -4,9 +4,9 @@ internal class ElectricLinkEffectPool : GenericObjectPool<ElectricLinkEffectView
 {
   internal static ElectricLinkEffectPool Instance;
 
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this;
   }
 }

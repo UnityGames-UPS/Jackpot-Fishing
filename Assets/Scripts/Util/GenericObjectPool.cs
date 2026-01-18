@@ -10,7 +10,7 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
   protected Queue<T> PoolQueue = new Queue<T>();
   [SerializeField] protected List<T> ItemsInUse = new List<T>();
 
-  internal virtual void Awake() => InitializePool(InitialCount);
+  internal virtual void Start() => InitializePool(InitialCount);
 
   protected virtual void InitializePool(int count)
   {

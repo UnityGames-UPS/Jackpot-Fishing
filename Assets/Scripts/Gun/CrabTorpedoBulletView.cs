@@ -42,6 +42,8 @@ public class CrabTorpedoBulletView : MonoBehaviour
   private float timer;
   private Phase phase;
   private bool finished;
+  private bool useFixedTargetPos;
+  private Vector3 fixedTargetPos;
 
   private void Awake()
   {
@@ -52,16 +54,47 @@ public class CrabTorpedoBulletView : MonoBehaviour
 
   internal void Init(BaseFish fish, System.Action<BaseFish> onHitCallback)
   {
+    InitInternal(fish, onHitCallback, false, Vector3.zero);
+  }
+
+  internal void Init(BaseFish fish, Vector3 targetPos, System.Action<BaseFish> onHitCallback)
+  {
+    InitInternal(fish, onHitCallback, true, targetPos);
+  }
+
+  internal void InitToPosition(Vector3 targetPos, System.Action<BaseFish> onHitCallback)
+  {
+    InitInternal(null, onHitCallback, true, targetPos);
+  }
+
+  internal void SetCoinBlastScaleMultiplier(float multiplier)
+  {
+    coinBlastScaleMultiplier = Mathf.Max(0.01f, multiplier);
+  }
+
+  private void InitInternal(
+    BaseFish fish,
+    System.Action<BaseFish> onHitCallback,
+    bool useFixedTarget,
+    Vector3 targetPos
+  )
+  {
     anim = GetComponent<ImageAnimation>();
     anim.OnAnimationComplete = null;
 
     target = fish;
     onHit = onHitCallback;
+    useFixedTargetPos = useFixedTarget;
+    fixedTargetPos = useFixedTarget ? targetPos : Vector3.zero;
     target?.RegisterIncomingTorpedo();
     startPos = transform.position;
 
-    lastKnownTargetPos = fish != null ? fish.HitPoint.position : startPos;
+    lastKnownTargetPos = useFixedTargetPos
+      ? fixedTargetPos
+      : (fish != null ? fish.HitPoint.position : startPos);
     fireDir = (lastKnownTargetPos - startPos).normalized;
+    if (fireDir.sqrMagnitude <= 0.0001f)
+      fireDir = Vector3.up;
 
     float dist = Vector3.Distance(startPos, lastKnownTargetPos);
     phase1Distance = dist * phase1DistanceFactor;
@@ -166,7 +199,9 @@ public class CrabTorpedoBulletView : MonoBehaviour
       return;
     }
 
-    if (target != null && target.gameObject.activeInHierarchy)
+    if (useFixedTargetPos)
+      lastKnownTargetPos = fixedTargetPos;
+    else if (target != null && target.gameObject.activeInHierarchy)
       lastKnownTargetPos = GetEdgeClampedTargetPos(target);
 
     Vector3 toTarget = lastKnownTargetPos - transform.position;
@@ -233,6 +268,19 @@ public class CrabTorpedoBulletView : MonoBehaviour
     return cam.ViewportToWorldPoint(vp);
   }
 
+  private Vector3 GetEdgeClampedPosition(Vector3 pos)
+  {
+    Camera cam = Camera.main;
+    if (cam == null)
+      return pos;
+
+    Vector3 vp = cam.WorldToViewportPoint(pos);
+    vp.x = Mathf.Clamp(vp.x, 0.01f, 0.99f);
+    vp.y = Mathf.Clamp(vp.y, 0.01f, 0.99f);
+
+    return cam.ViewportToWorldPoint(vp);
+  }
+
   private void PlayLaunchBlast()
   {
     if (BlastAnimationPool.Instance == null)
@@ -249,8 +297,8 @@ public class CrabTorpedoBulletView : MonoBehaviour
 
   private void ResolveImpact(Vector3 pos)
   {
-    if (target != null)
-      onHit?.Invoke(target);
+    if (onHit != null)
+      onHit(target);
 
     PlayCoinBlast(pos);
     Finish();

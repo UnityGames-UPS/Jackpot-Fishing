@@ -5,9 +5,9 @@ internal class CoinBlastAnimPool : GenericObjectPool<ImageAnimation>
 {
   internal static CoinBlastAnimPool Instance;
 
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this;
   }
 

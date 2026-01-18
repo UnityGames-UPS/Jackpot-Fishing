@@ -59,6 +59,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
+    Debug.Log("Build Test");
     Instance = this;
     Application.runInBackground = true;
     DOTween.Init();

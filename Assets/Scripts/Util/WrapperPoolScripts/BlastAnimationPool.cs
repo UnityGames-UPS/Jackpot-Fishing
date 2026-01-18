@@ -6,9 +6,9 @@ public class BlastAnimationPool : GenericObjectPool<ImageAnimation>
 {
   internal static BlastAnimationPool Instance;
 
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this; 
   }
 }

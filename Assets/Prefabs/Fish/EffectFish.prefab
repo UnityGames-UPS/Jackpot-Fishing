@@ -321,7 +321,7 @@ MonoBehaviour:
   bubbleWhirlpool: {fileID: -2121867848832435175}
   blueBlastLocalOffset: {x: 0, y: 0, z: 0}
   blueBlastScaleMultiplier: 1
-  effectScaleMultiplier: 1.3
+  effectScaleMultiplier: 1.6
   effectFishTorpedoWaitTimeout: 2
   bubbleCrabShakeRadius: 15
   bubbleCrabShakeSpeed: 150
@@ -349,11 +349,12 @@ MonoBehaviour:
   rockCrabShakeRadius: 15
   rockCrabShakeSpeed: 150
   rockCrabPreFireDelay: 0.4
-  rockCrabTorpedoInterval: 0.5
+  rockCrabTorpedoInterval: 0.3
   rockCrabTorpedoHitTimeout: 2
-  rockCrabEscapeSpeedMultiplier: 10
+  rockCrabEscapeSpeedMultiplier: 15
   rockCrabEscapeScaleMultiplier: 1.4
   rockCrabEscapeScaleDuration: 0.4
+  rockCrabTorpedoCoinBlastScaleMultiplier: 2.2
   rockCrabTorpedoRockAngle: 1
   rockCrabTorpedoRockDuration: 0.15
   blueFishShakeRadius: 15

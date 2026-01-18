@@ -4,9 +4,9 @@ internal class ElectricBallEffectPool : GenericObjectPool<ImageAnimation>
 {
   internal static ElectricBallEffectPool Instance;
 
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this;
   }
 }

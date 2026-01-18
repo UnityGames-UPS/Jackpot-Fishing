@@ -5,9 +5,9 @@ using UnityEngine;
 public class HitMarkerPool : GenericObjectPool<HitMarker>
 {
   public static HitMarkerPool Instance;
-  internal override void Awake()
+  internal override void Start()
   {
-    base.Awake();
+    base.Start();
     Instance = this;
   }
 }
