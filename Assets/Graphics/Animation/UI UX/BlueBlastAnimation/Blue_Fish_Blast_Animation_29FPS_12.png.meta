@@ -116,10 +116,10 @@ TextureImporter:
       name: Blue_Fish_Blast_Animation_29FPS_12_0
       rect:
         serializedVersion: 2
-        x: 39
-        y: 70
-        width: 503
-        height: 460
+        x: 0
+        y: 0
+        width: 300
+        height: 300
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -5,7 +5,7 @@ using System;
 
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(RectTransform))]
-public class ImageAnimation : MonoBehaviour
+internal class ImageAnimation : MonoBehaviour
 {
   public enum ImageState
   {

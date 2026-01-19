@@ -736,15 +736,15 @@ internal class EffectFish : BaseFish
 
   private void PlayRockCrabLaunchBlast(Vector3 pos)
   {
-    if (BlastAnimationPool.Instance == null)
+    if (OrangeBlastEffectPool.Instance == null)
       return;
 
-    var blast = BlastAnimationPool.Instance.GetFromPool();
+    var blast = OrangeBlastEffectPool.Instance.GetFromPool();
     blast.transform.SetPositionAndRotation(pos, Quaternion.identity);
     blast.StartAnimation();
     blast.OnAnimationComplete = () =>
     {
-      BlastAnimationPool.Instance.ReturnToPool(blast);
+      OrangeBlastEffectPool.Instance.ReturnToPool(blast);
     };
   }
 

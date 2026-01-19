@@ -14,7 +14,6 @@ public class BubbleWhirlpoolController : MonoBehaviour
   [Header("Motion")]
   [SerializeField] private float radialSpeed = 100f;
   [SerializeField] private float angularSpeed = 50f;
-  [SerializeField] private bool randomizeAngularDirection = true;
   [SerializeField] private float returnDistance = 0.1f;
 
   private BubbleWhirlpoolPool pool;

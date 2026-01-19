@@ -187,9 +187,9 @@ MonoBehaviour:
   rendererDelegate: {fileID: 8810277185060403634}
   useSharedMaterial: 1
   doLoopAnimation: 1
-  AnimationSpeed: 10
+  AnimationSpeed: 1
   delayBetweenLoop: 0
-  PlayOnAwake: 1
+  PlayOnAwake: 0
 --- !u!61 &664486131906535265
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -388,7 +388,6 @@ MonoBehaviour:
   spawnRadius: 250
   radialSpeed: 100
   angularSpeed: 50
-  randomizeAngularDirection: 0
   returnDistance: 50
 --- !u!1 &8940523912092782683
 GameObject:

@@ -315,7 +315,7 @@ public class SocketIOManager : MonoBehaviour
       }
     };
     string json = JsonConvert.SerializeObject(obj);
-    Debug.Log(json + variant ?? "");
+    Debug.Log(json + " variant: " + variant ?? "");
     // Debug.Log("HIT: " + variant + " " + FishId + " with " + WeaponType);
     SendDataWithNamespace("request", json);
   }

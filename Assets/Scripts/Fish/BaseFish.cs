@@ -103,6 +103,7 @@ internal class BaseFish : MonoBehaviour
     HitPoint.localPosition = new Vector3(data.colliderOffset.x, data.colliderOffset.y, 0);
 
     // Animation
+    imageAnimation.StopAnimation();
     imageAnimation.SetAnimationData(data.animationFrames, data.animationSpeed, data.loop);
     imageAnimation.StartAnimation();
     baseAnimationSpeed = data.animationSpeed;
