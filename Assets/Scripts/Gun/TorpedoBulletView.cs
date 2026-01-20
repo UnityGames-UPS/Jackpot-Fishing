@@ -62,7 +62,7 @@ public class TorpedoBulletView : MonoBehaviour
     target?.RegisterIncomingTorpedo();
     startPos = transform.position;
 
-    lastKnownTargetPos = fish.HitPoint.position;
+    lastKnownTargetPos = fish.GetAimPoint(Camera.main);
     fireDir = (lastKnownTargetPos - startPos).normalized;
 
     float dist = Vector3.Distance(startPos, lastKnownTargetPos);
@@ -244,7 +244,7 @@ public class TorpedoBulletView : MonoBehaviour
   Vector3 GetEdgeClampedTargetPos(BaseFish fish)
   {
     Camera cam = Camera.main;
-    Vector3 vp = cam.WorldToViewportPoint(fish.HitPoint.position);
+    Vector3 vp = cam.WorldToViewportPoint(fish.GetAimPoint(cam));
 
     vp.x = Mathf.Clamp(vp.x, 0.01f, 0.99f);
     vp.y = Mathf.Clamp(vp.y, 0.01f, 0.99f);

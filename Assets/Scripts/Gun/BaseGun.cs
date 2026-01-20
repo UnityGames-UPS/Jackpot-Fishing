@@ -14,7 +14,17 @@ public abstract class BaseGun : MonoBehaviour
     Vector3 dir = worldPos - transform.position;
     if (dir.sqrMagnitude < 0.001f) return;
     float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
-    angle = Mathf.Clamp(angle, -90f, 90f);
+    OrientationChange orientation = OrientationChange.Instance;
+    float minAngle = -90f;
+    float maxAngle = 90f;
+
+    if (orientation != null && !orientation.IsLandscape)
+    {
+      minAngle = -180f;
+      maxAngle = 0f;
+    }
+
+    angle = Mathf.Clamp(angle, minAngle, maxAngle);
     transform.rotation = Quaternion.Euler(0, 0, angle);
   }
 

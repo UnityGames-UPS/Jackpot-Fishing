@@ -8,11 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-[RequireComponent(typeof(RectTransform))]
-[RequireComponent(typeof(SplineController))]
-[RequireComponent(typeof(Image))]
-[RequireComponent(typeof(ImageAnimation))]
-[RequireComponent(typeof(BoxCollider2D))]
 internal class BaseFish : MonoBehaviour
 {
   [SerializeField] internal FishData data;
@@ -111,7 +106,7 @@ internal class BaseFish : MonoBehaviour
     Rect.sizeDelta = data.spriteSize;
 
     // Fade in
-    if(UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
+    if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
     {
       if (!UIManager.Instance.IsValidTorpedoTarget(this))
       {
@@ -158,7 +153,9 @@ internal class BaseFish : MonoBehaviour
     FlipSprite(faceRight: !rtl);
 
     var provider = CurvyPathProvider.Instance;
-    var splines = provider.GetFallbackSplines(rtl);
+    var splines = data != null && data.fishType == FishType.Jackpot_Dragon
+      ? provider.GetJackpotDragonSplines(rtl)
+      : provider.GetFallbackSplines(rtl);
     if (splines == null || splines.Count == 0)
       return;
 
@@ -240,9 +237,9 @@ internal class BaseFish : MonoBehaviour
     damageTween?.Kill();
 
     damageTween = DOTween.Sequence()
-        .Append(fishImage.DOColor(damageColor, 0.06f).SetEase(Ease.OutQuad))
-        .AppendInterval(0.08f).SetEase(Ease.OutQuad)
-        .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
+          .Append(fishImage.DOColor(damageColor, 0.06f).SetEase(Ease.OutQuad))
+          .AppendInterval(0.08f).SetEase(Ease.OutQuad)
+          .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
   }
 
   protected bool BeginDeath()
@@ -419,8 +416,10 @@ internal class BaseFish : MonoBehaviour
       despawnFinalizeRoutine = null;
     }
 
-    FishManager.Instance.DespawnFish(this);
     OnFishDespawned?.Invoke();
+    OnFishDespawned = null;
+
+    FishManager.Instance.DespawnFish(this);
     ResetFish();
   }
 
@@ -540,11 +539,12 @@ internal class BaseFish : MonoBehaviour
       return;
     }
 
+    // Consider visible if any part of the collider overlaps the viewport.
     IsVisibleInViewport =
-      min.x > viewportPadding &&
-      max.x < 1f - viewportPadding &&
-      min.y > viewportPadding &&
-      max.y < 1f - viewportPadding;
+      max.x >= viewportPadding &&
+      min.x <= 1f - viewportPadding &&
+      max.y >= viewportPadding &&
+      min.y <= 1f - viewportPadding;
   }
 
   private void BeginViewportVisibilityWarmup()
@@ -655,4 +655,43 @@ internal class BaseFish : MonoBehaviour
 
   internal void PlayLaserImpact() { }
   internal void StopLaserImpact() { }
+
+  internal Vector3 GetAimPoint(Camera cam)
+  {
+    if (data == null || data.fishType != FishType.Jackpot_Dragon)
+      return HitPoint.position;
+
+    if (boxCollider == null)
+      boxCollider = GetComponent<BoxCollider2D>();
+    if (boxCollider == null)
+      return HitPoint.position;
+
+    Bounds bounds = boxCollider.bounds;
+    Vector3 center = bounds.center;
+    const float inwardOffset = 1f;
+    float halfWidth = Mathf.Abs(boxCollider.size.x * transform.lossyScale.x) * 0.5f;
+    float edgeOffset = Mathf.Max(halfWidth - inwardOffset, 0f);
+    Vector3 right = center + transform.right * edgeOffset;
+    Vector3 left = center - transform.right * edgeOffset;
+
+    if (cam == null)
+      return center;
+
+    if (IsPointVisible(cam, center, 0f))
+      return center;
+    if (IsPointVisible(cam, left, 0f))
+      return left;
+    if (IsPointVisible(cam, right, 0f))
+      return right;
+
+    return center;
+  }
+
+  private bool IsPointVisible(Camera cam, Vector3 worldPoint, float padding)
+  {
+    Vector3 vp = cam.WorldToViewportPoint(worldPoint);
+    return vp.z > 0f &&
+           vp.x >= padding && vp.x <= 1f - padding &&
+           vp.y >= padding && vp.y <= 1f - padding;
+  }
 }

@@ -30,6 +30,9 @@ public class UIManager : MonoBehaviour
   [SerializeField] private float refundTextOffsetX;
   [SerializeField] private float refundTextOffsetY;
 
+  [Header("Win Animation")]
+  [SerializeField] private RainbowAnimationPool rainbowAnimationPool;
+
   [Header("LEFT PANEL")]
   [SerializeField] private Button LeftPanelopenbtn;
   [SerializeField] private RectTransform Leftpanel;
@@ -331,30 +334,33 @@ public class UIManager : MonoBehaviour
       fish.ColliderMidPoint,
       Quaternion.identity
     );
-    float scale = fish.data.coinBlastScaleMult <= 0f
-      ? 1f
-      : fish.data.coinBlastScaleMult;
-    scale *= GetColliderScaleFactor(fish);
+    float scale = FishManager.Instance != null
+      ? FishManager.Instance.GetCoinBlastScale(fish.data.fishType)
+      : 1f;
+    if (scale <= 0f)
+      scale = 1f;
     coinAnimation.transform.localScale = Vector3.one * scale;
   }
 
-  private float GetColliderScaleFactor(BaseFish fish)
+  internal void PlayRainbowWinAnimation(BaseFish fish, FishData fishData, float winAmount)
   {
-    if (fish == null)
-      return 1f;
+    if (fish == null || fishData == null || winAmount <= 0)
+      return;
+    if (fishData.fishType == FishType.Normal)
+      return;
 
-    var collider = fish.GetComponent<BoxCollider2D>();
-    if (collider == null)
-      return 1f;
+    var pool = rainbowAnimationPool != null ? rainbowAnimationPool : RainbowAnimationPool.Instance;
+    if (pool == null)
+    {
+      Debug.LogError("[UIManager] RainbowAnimationPool not found");
+      return;
+    }
 
-    Vector2 worldSize = collider.bounds.size;
-    Vector2 localSize = collider.size;
-    float baseMag = localSize.magnitude;
-    float worldMag = worldSize.magnitude;
-    if (baseMag <= Mathf.Epsilon)
-      return 1f;
+    var anim = pool.GetFromPool();
+    if (anim == null)
+      return;
 
-    return Mathf.Max(0.1f, worldMag / baseMag);
+    anim.Play(fish, fishData, winAmount);
   }
 
   void OnClickGunSwitch(int index) //0: target lock 1: torpedo

@@ -92,6 +92,7 @@ internal class EffectFish : BaseFish
   private const string BlueFishVariant = "effect_blue_fish";
   private const string RockCrabVariant = "effect_rockcrab_fish";
   private bool blueFishDeathActive;
+  private float pendingWinAmount;
   private enum EffectKind
   {
     BlueBlast,
@@ -125,6 +126,7 @@ internal class EffectFish : BaseFish
 
   internal override void Initialize(FishData data)
   {
+    pendingWinAmount=0;
     base.Initialize(data);
     UpdateRockCrabTorpedoVisual(data.variant == "effect_rockcrab_fish");
     SetupFallbackMovement();
@@ -183,6 +185,7 @@ internal class EffectFish : BaseFish
       segmentedSpeedRoutine = null;
     }
     UpdateRockCrabTorpedoVisual(false);
+    pendingWinAmount = 0f;
     base.ResetFish();
   }
 
@@ -419,12 +422,11 @@ internal class EffectFish : BaseFish
 
     rockCrabPendingTorpedos = 0;
     int targetCount = validTargets.Count;
-    List<Vector3> torpedoTargets = null;
-    bool useGridTargets = TryGetRockCrabTorpedoTargets(out torpedoTargets);
+    bool useGridTargets = TryGetRockCrabTorpedoTargets(out List<Vector3> torpedoTargets);
     int torpedoCount = useGridTargets ? torpedoTargets.Count : Mathf.Max(3, targetCount);
     for (int i = 0; i < torpedoCount; i++)
     {
-      var fish = i < targetCount ? validTargets[i] : null;
+      BaseFish fish = useGridTargets ? null : (i < targetCount ? validTargets[i] : null);
       if (isDespawning || !rockCrabDeathActive)
         break;
 
@@ -455,7 +457,20 @@ internal class EffectFish : BaseFish
       }
     }
 
-    if (targetCount > torpedoCount)
+    TryPlayPendingWin();
+
+    if (useGridTargets)
+    {
+      for (int i = 0; i < targetCount; i++)
+      {
+        var fish = validTargets[i];
+        if (fish == null)
+          continue;
+        fish.PendingVisualDeath = false;
+        fish.ForceDespawn();
+      }
+    }
+    else if (targetCount > torpedoCount)
     {
       for (int i = torpedoCount; i < targetCount; i++)
       {
@@ -1427,6 +1442,7 @@ internal class EffectFish : BaseFish
     Vector3 pos = fish.ColliderMidPoint;
     coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
     coinAnimation.transform.localScale = Vector3.one * effectScaleMultiplier;
+    TryPlayPendingWin();
   }
 
   private void PlayCoinBlast(BaseFish fish, float scaleMultiplier)
@@ -1447,6 +1463,22 @@ internal class EffectFish : BaseFish
     Vector3 pos = fish.ColliderMidPoint;
     coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
     coinAnimation.transform.localScale = Vector3.one * Mathf.Max(0.01f, scaleMultiplier);
+    TryPlayPendingWin();
+  }
+
+  internal void SetPendingWinAmount(float amount)
+  {
+    pendingWinAmount = amount;
+  }
+
+  private void TryPlayPendingWin()
+  {
+    if (pendingWinAmount <= 0f)
+      return;
+
+    float amount = pendingWinAmount;
+    pendingWinAmount = 0f;
+    UIManager.Instance?.PlayRainbowWinAnimation(this, this.data, amount);
   }
 
   private void StartBubbleCrabWhirlpoolImage()

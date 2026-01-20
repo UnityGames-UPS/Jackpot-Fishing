@@ -13,6 +13,10 @@ public class CurvyPathProvider : MonoBehaviour
   [SerializeField] private List<CurvySpline> fallbackLeftToRight = new();
   [SerializeField] private List<CurvySpline> fallbackRightToLeft = new();
 
+  [Header("Jackpot Dragon Paths")]
+  [SerializeField] private List<CurvySpline> jackpotDragonLeftToRight = new();
+  [SerializeField] private List<CurvySpline> jackpotDragonRightToLeft = new();
+
   private readonly HashSet<CurvySpline> reservedSplines = new();
 
   private void Awake()
@@ -37,6 +41,24 @@ public class CurvyPathProvider : MonoBehaviour
         $"[CurvyPathProvider] Fallback splines missing for " +
         (moveRightToLeft ? "RightToLeft" : "LeftToRight")
       );
+    }
+
+    return list;
+  }
+
+  public List<CurvySpline> GetJackpotDragonSplines(bool moveRightToLeft)
+  {
+    var list = moveRightToLeft
+      ? jackpotDragonRightToLeft
+      : jackpotDragonLeftToRight;
+
+    if (list == null || list.Count == 0)
+    {
+      Debug.LogWarning(
+        $"[CurvyPathProvider] Jackpot Dragon splines missing for " +
+        (moveRightToLeft ? "RightToLeft" : "LeftToRight")
+      );
+      return GetFallbackSplines(moveRightToLeft);
     }
 
     return list;

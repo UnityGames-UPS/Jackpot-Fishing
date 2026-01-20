@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 09bdcfc8af8dd4bff908620c323b1c56
+guid: 814c5d3a8a0fc4bd9b56c79b2d745e0f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5803595552005669920
-    second: golden shark0_0
+      213: 8491858496694465582
+    second: golden shark1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: golden shark0_0
+      name: golden shark1_0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 2
-        width: 479
-        height: 279
+        x: 9
+        y: 0
+        width: 467
+        height: 273
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 024c551e7638a8050800000000000000
-      internalID: 5803595552005669920
+      spriteID: e243b5a9f4429d570800000000000000
+      internalID: 8491858496694465582
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      golden shark0_0: 5803595552005669920
+      golden shark1_0: 8491858496694465582
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

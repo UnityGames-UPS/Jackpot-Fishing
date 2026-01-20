@@ -4,6 +4,12 @@ using UnityEngine;
 internal class ImmortalFish : BaseFish
 {
   private Coroutine speedPulseRoutine;
+  internal bool BucketAnimPlaying { get; private set; }
+
+  internal void SetBucketAnimPlaying(bool isPlaying)
+  {
+    BucketAnimPlaying = isPlaying;
+  }
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
@@ -35,6 +41,6 @@ private IEnumerator OctopusSpeedPulse()
     {
       StopCoroutine(speedPulseRoutine);
     }
+    BucketAnimPlaying = false;
   }
 }
-

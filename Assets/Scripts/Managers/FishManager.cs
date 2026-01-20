@@ -25,8 +25,16 @@ internal class FishManager : MonoBehaviour
   [SerializeField] private Vector2 rockCrabTorpedoOffsetMax = Vector2.zero;
   [Header("Fish Anim Parent")]
   [SerializeField] private Transform animParent;
+  [Header("Coin Blast Scales")]
+  [SerializeField] private float normalCoinBlastScale = 1f;
+  [SerializeField] private float specialCoinBlastScale = 1f;
+  [SerializeField] private float goldenCoinBlastScale = 1f;
+  [SerializeField] private float immortalCoinBlastScale = 1f;
+  [SerializeField] private float jackpotFishCoinBlastScale = 1f;
+  [SerializeField] private float jackpotDragonCoinBlastScale = 1f;
   internal Transform AnimParent => animParent;
   [SerializeField] private bool enableMockSpawning = true;
+  [SerializeField] private int mockFishIndex = 25;
   [SerializeField] private List<BaseFish> activeFishes = new();
   private readonly Dictionary<BaseFish, Transform> cachedParents = new();
   private readonly Dictionary<BaseFish, int> cachedSiblingIndices = new();
@@ -60,7 +68,7 @@ internal class FishManager : MonoBehaviour
     // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
 
     FishData baseData =
-      fishesData[23-4];
+      fishesData[mockFishIndex];
 
     BaseFish fish = GetFishFromType(baseData.fishType);
 
@@ -117,6 +125,20 @@ internal class FishManager : MonoBehaviour
       case JackpotFish jf: jackpotFishPool.ReturnToPool(jf); break;
       case JackpotDragon jd: jackpotDragonPool.ReturnToPool(jd); break;
     }
+  }
+
+  internal float GetCoinBlastScale(FishType fishType)
+  {
+    return fishType switch
+    {
+      FishType.Normal => normalCoinBlastScale,
+      FishType.Special => specialCoinBlastScale,
+      FishType.Golden => goldenCoinBlastScale,
+      FishType.Immortal => immortalCoinBlastScale,
+      FishType.Jackpot_Fish => jackpotFishCoinBlastScale,
+      FishType.Jackpot_Dragon => jackpotDragonCoinBlastScale,
+      _ => 1f
+    };
   }
 
   internal void MoveToAnimParent(BaseFish fish)

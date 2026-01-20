@@ -141,7 +141,7 @@ public class LazerGun : BaseGun
       return;
 
     Vector3 worldStart = muzzle.position;
-    Vector3 worldEnd = lockedFish.HitPoint.position;
+    Vector3 worldEnd = lockedFish.GetAimPoint(worldCamera);
 
     // Rotate gun
     UpdateAim(worldEnd);
@@ -168,8 +168,8 @@ public class LazerGun : BaseGun
     size.y = screenDistance;
     laserBeam.sizeDelta = size;
 
-    laserImpactBGAnimation.position = lockedFish.HitPoint.position;
-    laserImpactAnimation.position = lockedFish.HitPoint.position;
+    laserImpactBGAnimation.position = worldEnd;
+    laserImpactAnimation.position = worldEnd;
     laserBeam.position = worldStart + worldDir.normalized * (worldDistance * 0.5f);
   }
 

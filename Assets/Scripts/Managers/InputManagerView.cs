@@ -49,12 +49,9 @@ public class InputManagerView : MonoBehaviour,
   public void OnPointerDown(PointerEventData eventData)
   {
     pointerHeld = true;
-    lastPointerScreenPos = eventData.position;
-    GunManager.Instance.UpdateAim(eventData.position);
-    SetCrosshairActive(true);
-    UpdateCrosshairPosition(eventData.position);
+    UpdatePointer(eventData.position);
 
-    BaseFish hitFish = RaycastFish(eventData.position);
+    BaseFish hitFish = RaycastFish(lastPointerScreenPos);
 
     if (GunManager.Instance.currentGun is LazerGun lazerGun)
     {
@@ -91,15 +88,12 @@ public class InputManagerView : MonoBehaviour,
   public void OnDrag(PointerEventData eventData)
   {
     pointerHeld = true;
-    lastPointerScreenPos = eventData.position;
-    GunManager.Instance.UpdateAim(eventData.position);
-    SetCrosshairActive(true);
-    UpdateCrosshairPosition(eventData.position);
+    UpdatePointer(eventData.position);
 
     if (GunManager.Instance.currentGun is LazerGun lazerGun &&
         !UIManager.Instance.IsTargetLockEnabled)
     {
-      BaseFish hitFish = RaycastFish(eventData.position);
+      BaseFish hitFish = RaycastFish(lastPointerScreenPos);
       lazerGun.UpdateUnlockedFire(hitFish);
       currentPointerFish = hitFish;
       return;
@@ -108,7 +102,7 @@ public class InputManagerView : MonoBehaviour,
     if (GunManager.Instance.currentGun is TorpedoGun torpedoGun &&
         !UIManager.Instance.IsTargetLockEnabled)
     {
-      BaseFish hitFish = RaycastFish(eventData.position);
+      BaseFish hitFish = RaycastFish(lastPointerScreenPos);
       torpedoGun.UpdateUnlockedFire(hitFish);
       currentPointerFish = hitFish;
     }
@@ -118,7 +112,6 @@ public class InputManagerView : MonoBehaviour,
   public void OnPointerUp(PointerEventData eventData)
   {
     pointerHeld = false;
-    currentPointerFish = null;
     currentPointerFish = null;
     SetCrosshairActive(false);
 
@@ -147,14 +140,63 @@ public class InputManagerView : MonoBehaviour,
     RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
 
     if (hit.collider == null)
+      return RaycastFishAtPoint(screenPos);
+
+    BaseFish fish = hit.collider.GetComponent<BaseFish>();
+    return fish != null ? fish : RaycastFishAtPoint(screenPos);
+  }
+
+  private BaseFish RaycastFishAtPoint(Vector2 screenPos)
+  {
+    Camera cam = Camera.main;
+    if (cam == null)
       return null;
 
-    return hit.collider.GetComponent<BaseFish>();
+    float z = Mathf.Abs(cam.transform.position.z);
+    Vector3 worldPoint = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, z));
+    Collider2D[] hits = Physics2D.OverlapPointAll(worldPoint);
+    for (int i = 0; i < hits.Length; i++)
+    {
+      BaseFish fish = hits[i].GetComponent<BaseFish>();
+      if (fish != null)
+        return fish;
+    }
+
+    return null;
   }
 
   internal BaseFish GetCurrentPointerFish()
   {
     return pointerHeld ? currentPointerFish : null;
+  }
+
+  private void UpdatePointer(Vector2 screenPos)
+  {
+    lastPointerScreenPos = AdjustScreenPos(screenPos);
+    GunManager.Instance.UpdateAim(lastPointerScreenPos);
+    SetCrosshairActive(true);
+    UpdateCrosshairPosition(lastPointerScreenPos);
+  }
+
+  private Vector2 AdjustScreenPos(Vector2 screenPos)
+  {
+    if (OrientationChange.Instance == null || OrientationChange.Instance.IsLandscape)
+      return screenPos;
+
+    Camera mainCamera = Camera.main;
+    if (mainCamera == null)
+      return screenPos;
+
+    Vector3 viewportPos = mainCamera.ScreenToViewportPoint(screenPos);
+
+    // Keep axes aligned with touch; just map into the camera's pixel rect.
+    float rotatedX = viewportPos.x;
+    float rotatedY = viewportPos.y;
+
+    return new Vector2(
+      rotatedX * mainCamera.pixelWidth,
+      rotatedY * mainCamera.pixelHeight
+    );
   }
 
   private void SetCrosshairActive(bool active)

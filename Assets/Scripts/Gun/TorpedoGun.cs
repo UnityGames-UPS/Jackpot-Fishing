@@ -380,7 +380,7 @@ public class TorpedoGun : BaseGun
     if (torpedoLockTarget == target)
     {
       if (torpedoLockTarget != null)
-        UpdateTorpedoLockPosition(torpedoLockTarget.ColliderMidPoint);
+        UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint(Camera.main));
       return;
     }
 
@@ -393,7 +393,7 @@ public class TorpedoGun : BaseGun
     }
 
     StartTorpedoLockVisual();
-    UpdateTorpedoLockPosition(torpedoLockTarget.ColliderMidPoint);
+    UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint(Camera.main));
   }
 
   private void StartTorpedoLockVisual()

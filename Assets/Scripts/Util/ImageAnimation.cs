@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-[RequireComponent(typeof(Image))]
-[RequireComponent(typeof(RectTransform))]
 internal class ImageAnimation : MonoBehaviour
 {
   public enum ImageState

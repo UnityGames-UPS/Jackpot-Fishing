@@ -59,7 +59,6 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
-    Debug.Log("Build Test");
     Instance = this;
     Application.runInBackground = true;
     DOTween.Init();
@@ -362,6 +361,65 @@ public class SocketIOManager : MonoBehaviour
         UIManager.Instance?.PlayRefundText(hitResult.totalBet);
       }
       return;
+    }
+
+    if (hitResult.winAmount > 0 && FishManager.Instance != null)
+    {
+      string targetFishId = hitResult.hitFish != null ? hitResult.hitFish.id : null;
+      if (string.IsNullOrEmpty(targetFishId) && hitResult.fishKilled != null)
+        targetFishId = hitResult.fishKilled.id;
+
+      BaseFish targetFish = null;
+      if (!string.IsNullOrEmpty(targetFishId))
+      {
+        targetFish = FishManager.Instance
+          .GetActiveFishes()
+          .FirstOrDefault(x => x.data != null && x.data.fishId == targetFishId);
+      }
+
+      if (targetFish != null && targetFish.data != null &&
+          targetFish.data.fishType != FishType.Normal)
+      {
+        if (targetFish is EffectFish effectFish)
+        {
+          effectFish.SetPendingWinAmount(hitResult.winAmount);
+        }
+        else
+        {
+          UIManager.Instance?.PlayRainbowWinAnimation(
+            targetFish,
+            targetFish.data,
+            hitResult.winAmount
+          );
+        }
+      }
+    }
+
+    if (hitResult.winAmount > 0 &&
+        hitResult.hitFish != null &&
+        hitResult.hitFish.variant == "immo_turtle_fish" &&
+        FishManager.Instance != null)
+    {
+      BaseFish turtleFish = FishManager.Instance
+        .GetActiveFishes()
+        .FirstOrDefault(x => x.data != null && x.data.fishId == hitResult.hitFish.id);
+
+      if (turtleFish is ImmortalFish immortalFish && !immortalFish.BucketAnimPlaying)
+      {
+        var pool = ImmortalBucketAnimPool.Instance;
+        if (pool != null)
+        {
+          var bucketAnim = pool.GetFromPool();
+          if (bucketAnim != null)
+          {
+            immortalFish.SetBucketAnimPlaying(true);
+            bucketAnim.Play(
+              turtleFish.ColliderMidPoint,
+              () => immortalFish.SetBucketAnimPlaying(false)
+            );
+          }
+        }
+      }
     }
 
     if (hitResult.fishKilled != null)
@@ -780,7 +838,7 @@ public class Payload
   public bool isExpired;
   public string weaponType;
   public float totalBet;
-  public int winAmount;
+  public float winAmount;
   public object electricCharge;
   public Fish hitFish;
   public FishKilled fishKilled;
@@ -793,7 +851,7 @@ public class EffectTriggered
 {
   public string type;
   public List<AffectedFish> affectedFish;
-  public List<int> bonusWins;
+  public List<float> bonusWins;
 }
 
 [Serializable]
