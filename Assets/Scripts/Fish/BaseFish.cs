@@ -45,8 +45,9 @@ internal class BaseFish : MonoBehaviour
   internal bool IsVisibleInViewport = false;
   private bool visibilityReady;
   internal int ActiveTorpedoCount { get; private set; }
-  private System.Action onLastTorpedoCleared;
+  private readonly List<System.Action> onLastTorpedoCleared = new List<System.Action>();
   private Coroutine lastTorpedoTimeoutRoutine;
+  private float lastTorpedoTimeout;
 
   internal enum DeathCause
   {
@@ -78,7 +79,8 @@ internal class BaseFish : MonoBehaviour
     PendingVisualDeath = false;
     KillOnTorpedoArrival = false;
     ActiveTorpedoCount = 0;
-    onLastTorpedoCleared = null;
+    onLastTorpedoCleared.Clear();
+    lastTorpedoTimeout = 0f;
     if (lastTorpedoTimeoutRoutine != null)
     {
       StopCoroutine(lastTorpedoTimeoutRoutine);
@@ -303,16 +305,18 @@ internal class BaseFish : MonoBehaviour
     if (ActiveTorpedoCount > 0)
       ActiveTorpedoCount--;
 
-    if (ActiveTorpedoCount == 0 && onLastTorpedoCleared != null)
+    if (ActiveTorpedoCount == 0 && onLastTorpedoCleared.Count > 0)
     {
-      var callback = onLastTorpedoCleared;
-      onLastTorpedoCleared = null;
+      var callbacks = onLastTorpedoCleared.ToArray();
+      onLastTorpedoCleared.Clear();
+      lastTorpedoTimeout = 0f;
       if (lastTorpedoTimeoutRoutine != null)
       {
         StopCoroutine(lastTorpedoTimeoutRoutine);
         lastTorpedoTimeoutRoutine = null;
       }
-      callback.Invoke();
+      for (int i = 0; i < callbacks.Length; i++)
+        callbacks[i]?.Invoke();
     }
   }
 
@@ -327,13 +331,14 @@ internal class BaseFish : MonoBehaviour
       return;
     }
 
-    onLastTorpedoCleared = onReady;
+    onLastTorpedoCleared.Add(onReady);
 
     if (timeout > 0f)
     {
+      lastTorpedoTimeout = Mathf.Max(lastTorpedoTimeout, timeout);
       if (lastTorpedoTimeoutRoutine != null)
         StopCoroutine(lastTorpedoTimeoutRoutine);
-      lastTorpedoTimeoutRoutine = StartCoroutine(LastTorpedoTimeout(timeout));
+      lastTorpedoTimeoutRoutine = StartCoroutine(LastTorpedoTimeout(lastTorpedoTimeout));
     }
   }
 
@@ -342,12 +347,14 @@ internal class BaseFish : MonoBehaviour
     yield return new WaitForSecondsRealtime(timeout);
     lastTorpedoTimeoutRoutine = null;
 
-    if (onLastTorpedoCleared == null)
+    if (onLastTorpedoCleared.Count == 0)
       yield break;
 
-    var callback = onLastTorpedoCleared;
-    onLastTorpedoCleared = null;
-    callback.Invoke();
+    var callbacks = onLastTorpedoCleared.ToArray();
+    onLastTorpedoCleared.Clear();
+    lastTorpedoTimeout = 0f;
+    for (int i = 0; i < callbacks.Length; i++)
+      callbacks[i]?.Invoke();
   }
 
   internal virtual void Die()
@@ -446,6 +453,14 @@ internal class BaseFish : MonoBehaviour
     deathCause = DeathCause.None;
     IsVisibleInViewport = false;
     visibilityReady = false;
+    ActiveTorpedoCount = 0;
+    onLastTorpedoCleared.Clear();
+    lastTorpedoTimeout = 0f;
+    if (lastTorpedoTimeoutRoutine != null)
+    {
+      StopCoroutine(lastTorpedoTimeoutRoutine);
+      lastTorpedoTimeoutRoutine = null;
+    }
     if (visibilityRoutine != null)
     {
       StopCoroutine(visibilityRoutine);

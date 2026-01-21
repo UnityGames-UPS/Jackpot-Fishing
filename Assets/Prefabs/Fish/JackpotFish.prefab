@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 360, y: 420}
+  m_SizeDelta: {x: 360, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6193601671072513495
 CanvasRenderer:
@@ -221,9 +221,10 @@ MonoBehaviour:
     colliderSize: {x: 0, y: 0}
     colliderOffset: {x: 0, y: 0}
     laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
-  torpedoViewportPadding: 0.0005
+  viewportPadding: 0.0005
 --- !u!1 &8702441360588482117
 GameObject:
   m_ObjectHideFlags: 0

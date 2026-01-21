@@ -26,11 +26,18 @@ public class LazerGun : BaseGun
   private float nextAllowedDamageAnimationTime;
   private Vector3 lastLockedPosition;
   private bool hasLastLockedPosition;
+  private Vector2 impactInitSize;
+  private Vector2 impactBgInitSize;
+  private FishType? impactScaleType;
 
   internal void Awake()
   {
     if (worldCamera == null)
       worldCamera = Camera.main;
+
+    impactInitSize = laserImpactAnimation.sizeDelta;
+    impactBgInitSize = laserImpactBGAnimation.sizeDelta;
+    impactScaleType = null;
 
     laserBeam.gameObject.SetActive(false);
     laserImpactAnimation.gameObject.SetActive(false);
@@ -133,6 +140,7 @@ public class LazerGun : BaseGun
     lockedFish?.StopLaserImpact();
 
     laserBeam.gameObject.SetActive(false);
+    impactScaleType = null;
   }
 
   private void UpdateBeam()
@@ -175,15 +183,35 @@ public class LazerGun : BaseGun
 
   private void ToggleLaserImpact(bool enable)
   {
-    if (enable && lockedFishRect)
-    {
-      // Scale impact relative to fish size
-      laserImpactBGAnimation.sizeDelta = lockedFishRect.sizeDelta * lockedFish.data.laserImpactScaleFactor;
-      laserImpactAnimation.sizeDelta = lockedFishRect.sizeDelta * impactScaleFactor;
-    }
-
     laserImpactBGAnimation.gameObject.SetActive(enable);
     laserImpactAnimation.gameObject.SetActive(enable);
+  }
+
+  private void UpdateLaserImpactScale()
+  {
+    if (!laserImpactBGAnimation.gameObject.activeInHierarchy ||
+        !laserImpactAnimation.gameObject.activeInHierarchy ||
+        lockedFish == null ||
+        lockedFish.data == null)
+      return;
+
+    if (impactScaleType.HasValue && impactScaleType.Value == lockedFish.data.fishType)
+      return;
+
+    float typeScale = FishManager.Instance != null
+      ? FishManager.Instance.GetLaserImpactScale(lockedFish.data.fishType)
+      : 1f;
+    float fishScale = 1f;
+    if (lockedFishRect != null)
+    {
+      float refSize = Mathf.Max(impactBgInitSize.x, impactBgInitSize.y);
+      if (refSize > 0f)
+        fishScale = Mathf.Max(lockedFishRect.sizeDelta.x, lockedFishRect.sizeDelta.y) / refSize;
+    }
+    laserImpactBGAnimation.sizeDelta = impactBgInitSize * typeScale * fishScale;
+    laserImpactAnimation.sizeDelta = impactInitSize * typeScale * fishScale * impactScaleFactor;
+    impactScaleType = lockedFish.data.fishType;
+    // Debug.Log($"Lazer Impact Scale updated for {lockedFish.data.fishType}: type={typeScale} fish={fishScale}");
   }
 
   private bool IsFishValidForBeam(BaseFish fish)
@@ -250,6 +278,12 @@ public class LazerGun : BaseGun
       laserBeam.gameObject.SetActive(true);
       ToggleLaserImpact(true);
     }
+    else if (lockedFishRect == null || lockedFishRect.gameObject != lockedFish.gameObject)
+    {
+      lockedFishRect = lockedFish.GetComponent<RectTransform>();
+    }
+
+    UpdateLaserImpactScale();
   }
 
   private void TrySendHit()

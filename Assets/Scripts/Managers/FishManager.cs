@@ -32,6 +32,14 @@ internal class FishManager : MonoBehaviour
   [SerializeField] private float immortalCoinBlastScale = 1f;
   [SerializeField] private float jackpotFishCoinBlastScale = 1f;
   [SerializeField] private float jackpotDragonCoinBlastScale = 1f;
+  [Header("Laser Impact Scales")]
+  [SerializeField] private float normalLaserImpactScale = 1f;
+  [SerializeField] private float specialLaserImpactScale = 1f;
+  [SerializeField] private float goldenLaserImpactScale = 1f;
+  [SerializeField] private float effectLaserImpactScale = 1f;
+  [SerializeField] private float immortalLaserImpactScale = 1f;
+  [SerializeField] private float jackpotFishLaserImpactScale = 1f;
+  [SerializeField] private float jackpotDragonLaserImpactScale = 1f;
   internal Transform AnimParent => animParent;
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private int mockFishIndex = 25;
@@ -88,7 +96,6 @@ internal class FishManager : MonoBehaviour
       spriteSize = baseData.spriteSize,
       colliderSize = baseData.colliderSize,
       colliderOffset = baseData.colliderOffset,
-      laserImpactScaleFactor = baseData.laserImpactScaleFactor,
       coinBlastScaleMult = baseData.coinBlastScaleMult,
       fishType = baseData.fishType,
 
@@ -137,6 +144,21 @@ internal class FishManager : MonoBehaviour
       FishType.Immortal => immortalCoinBlastScale,
       FishType.Jackpot_Fish => jackpotFishCoinBlastScale,
       FishType.Jackpot_Dragon => jackpotDragonCoinBlastScale,
+      _ => 1f
+    };
+  }
+
+  internal float GetLaserImpactScale(FishType fishType)
+  {
+    return fishType switch
+    {
+      FishType.Normal => normalLaserImpactScale,
+      FishType.Special => specialLaserImpactScale,
+      FishType.Golden => goldenLaserImpactScale,
+      FishType.Effect => effectLaserImpactScale,
+      FishType.Immortal => immortalLaserImpactScale,
+      FishType.Jackpot_Fish => jackpotFishLaserImpactScale,
+      FishType.Jackpot_Dragon => jackpotDragonLaserImpactScale,
       _ => 1f
     };
   }
@@ -202,7 +224,6 @@ internal class FishManager : MonoBehaviour
       spriteSize = baseData.spriteSize,
       colliderSize = baseData.colliderSize,
       colliderOffset = baseData.colliderOffset,
-      laserImpactScaleFactor = baseData.laserImpactScaleFactor,
       coinBlastScaleMult = baseData.coinBlastScaleMult,
       fishType = baseData.fishType,
 
@@ -271,7 +292,6 @@ public class FishData
   public Vector2 spriteSize;
   public Vector2 colliderSize;
   public Vector2 colliderOffset;
-  public float laserImpactScaleFactor = 0.7f;
   public float coinBlastScaleMult = 1.8f;
   public int duration = 10000;
   public FishType fishType = FishType.Normal;

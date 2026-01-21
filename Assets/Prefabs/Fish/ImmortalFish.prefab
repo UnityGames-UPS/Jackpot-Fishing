@@ -70,6 +70,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5212179017650814857}
+  - {fileID: 5485057977801171269}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -105,7 +106,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7955495383645958854, guid: 9e3b193c8d9b54ff6a30e9a9add29fad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7d8ff6e91041846be847576753f8e94f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -260,3 +261,137 @@ MonoBehaviour:
     duration: 10000
     fishType: 0
   viewportPadding: 0.0005
+  bubbleSpreadAnim: {fileID: 8715071306520772831}
+  winAnimSpeedMultiplier: 3
+  winAnimSpeedDuration: 1.5
+--- !u!1 &7992161810173599887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5485057977801171269}
+  - component: {fileID: 6047679759846292761}
+  - component: {fileID: 2515285284556669810}
+  - component: {fileID: 8715071306520772831}
+  m_Layer: 5
+  m_Name: BubblesAnim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &5485057977801171269
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992161810173599887}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5969843410720048466}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 540, y: -24}
+  m_SizeDelta: {x: 450, y: 250}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6047679759846292761
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992161810173599887}
+  m_CullTransparentMesh: 1
+--- !u!114 &2515285284556669810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992161810173599887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: cadb08d7804524cffbc8b95e17a18951, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8715071306520772831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992161810173599887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df924dfe59f94e2cb1e3ce9c145b279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textureArray:
+  - {fileID: 21300000, guid: bdd3849faa3d44d6398230930c9aeca9, type: 3}
+  - {fileID: 21300000, guid: d100f743bc20c4231a07c9dc4ae80fc5, type: 3}
+  - {fileID: 21300000, guid: bdd9f847616f9447eb7bb5afd3811f1c, type: 3}
+  - {fileID: 21300000, guid: 99a00260424b24333bd8cfc9b8277b58, type: 3}
+  - {fileID: 21300000, guid: ec348db644b1048028a0e5632936c847, type: 3}
+  - {fileID: 21300000, guid: a449ca0011082436bb2b14bc4c834be2, type: 3}
+  - {fileID: 21300000, guid: 75ed374d51a6149f786f5d11b954cd2e, type: 3}
+  - {fileID: 21300000, guid: 4feeb9c97030843f690e3ce60ddad8ba, type: 3}
+  - {fileID: 21300000, guid: f7fad5bc612974b2ea330d3da9f99cec, type: 3}
+  - {fileID: 21300000, guid: 19e224ca59e394fd29021c0a4285de2f, type: 3}
+  - {fileID: 21300000, guid: 5ffa698beb34d42e2a31fb0f9e279d15, type: 3}
+  - {fileID: 21300000, guid: 65e42485509384dbead2b03b12c25ae2, type: 3}
+  - {fileID: 21300000, guid: f250accdbb5d14b7fa084d6d6f31d632, type: 3}
+  - {fileID: 21300000, guid: d93495ff82ba7410193ff3f30edc39a5, type: 3}
+  - {fileID: 21300000, guid: 4e2c6e224ab6c4789b2570c9e2c60c71, type: 3}
+  - {fileID: 21300000, guid: 2a9402d57a12a4265b1645e6407341b2, type: 3}
+  - {fileID: 21300000, guid: e8b3b8f58929141b69439faa8cd4cb47, type: 3}
+  - {fileID: 21300000, guid: 23a6d932f8e9c4e8e923f0b3f44475eb, type: 3}
+  - {fileID: 21300000, guid: 8736f950a32be4d1bb451bd05e4de613, type: 3}
+  - {fileID: 21300000, guid: 40137d062ad854495b7773f06f31c84f, type: 3}
+  - {fileID: 21300000, guid: c716af4d0af4e4edb8731caa96747064, type: 3}
+  - {fileID: 21300000, guid: dba1f6dec9f234e55a74bbc85f4f8cab, type: 3}
+  - {fileID: 21300000, guid: 64bab193b47fd40748b4de8976f578df, type: 3}
+  - {fileID: 21300000, guid: cadb08d7804524cffbc8b95e17a18951, type: 3}
+  - {fileID: 21300000, guid: 7efe026e03b4d4997a18a06924a944e5, type: 3}
+  - {fileID: 21300000, guid: 7724128ec1cd442ccb5f0bc5527f1e58, type: 3}
+  - {fileID: 21300000, guid: 4a8244224f8ae4d68a65bea6b26e4541, type: 3}
+  - {fileID: 21300000, guid: 366059e14f75f4787bfb5664fd6e7f6b, type: 3}
+  - {fileID: 21300000, guid: e35fe1bd57ede42b09c7a99819219c65, type: 3}
+  - {fileID: 21300000, guid: 636f7d6eb549945af9eebe4fd50aed56, type: 3}
+  - {fileID: 21300000, guid: 5ed22b59fe6474e0a906188e63b1c084, type: 3}
+  - {fileID: 21300000, guid: 969e8d9d27c7b4789942457342b348b4, type: 3}
+  - {fileID: 21300000, guid: dbf19aac60c9a4760a8022e2c46a95a4, type: 3}
+  - {fileID: 21300000, guid: c4b3bb1fe4aab421fbf3825682ae44ca, type: 3}
+  - {fileID: 21300000, guid: e2dac5e4024ee4db682ffd1847efc6fd, type: 3}
+  - {fileID: 21300000, guid: 83135a3fe18ce4f29b452553bdbc8b04, type: 3}
+  rendererDelegate: {fileID: 2515285284556669810}
+  useSharedMaterial: 1
+  doLoopAnimation: 1
+  AnimationSpeed: 27
+  delayBetweenLoop: 0
+  PlayOnAwake: 1

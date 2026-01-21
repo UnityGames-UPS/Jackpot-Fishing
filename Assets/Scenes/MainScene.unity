@@ -2666,12 +2666,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 868.6
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 2340, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -4765,7 +4765,7 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: 36ab582a244044d6a3464505639de877
+  testToken: 51a404a808664c3d9bcf11d437822518
   SpawnEventInterval: 4
   electricHitInterval: 1.5
   bets: []
@@ -11707,7 +11707,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &211605845
 MonoBehaviour:
@@ -37304,7 +37304,6 @@ MonoBehaviour:
     spriteSize: {x: 200, y: 200}
     colliderSize: {x: 63, y: 22}
     colliderOffset: {x: -30, y: -5}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37340,7 +37339,6 @@ MonoBehaviour:
     spriteSize: {x: 120, y: 120}
     colliderSize: {x: 80, y: 18}
     colliderOffset: {x: -15, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37374,7 +37372,6 @@ MonoBehaviour:
     spriteSize: {x: 187, y: 140}
     colliderSize: {x: 70, y: 20}
     colliderOffset: {x: 0, y: -2}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37404,7 +37401,6 @@ MonoBehaviour:
     spriteSize: {x: 174, y: 152}
     colliderSize: {x: 50, y: 50}
     colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37434,7 +37430,6 @@ MonoBehaviour:
     spriteSize: {x: 229.5, y: 174.6}
     colliderSize: {x: 50, y: 50}
     colliderOffset: {x: 0, y: -5}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37468,7 +37463,6 @@ MonoBehaviour:
     spriteSize: {x: 200, y: 200}
     colliderSize: {x: 138, y: 40}
     colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37519,7 +37513,6 @@ MonoBehaviour:
     spriteSize: {x: 274, y: 212}
     colliderSize: {x: 125, y: 48}
     colliderOffset: {x: -30, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37544,40 +37537,11 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 8e0bdfd5b0eae41e1a2912d8d0f305c2, type: 3}
     - {fileID: 21300000, guid: 2e22f83ed9c7c4943abe1a8966d5b713, type: 3}
     - {fileID: 21300000, guid: 65f503a4bda6d4b7b8776198550f36c5, type: 3}
-    - {fileID: 21300000, guid: 6c328028584f047438af1c7ff5ccd07e, type: 3}
-    - {fileID: 21300000, guid: cc1f16e6e6dcb4b00b90ce21562bc65f, type: 3}
-    - {fileID: 21300000, guid: ff6d679e69c60446ebfc9d9c99a8c910, type: 3}
-    - {fileID: 21300000, guid: aa603aa302b334c07a6d41d378eecd0c, type: 3}
-    - {fileID: 21300000, guid: ad968e73765334d43b2f588ba233f20d, type: 3}
-    - {fileID: 21300000, guid: a1ad029d8508e4a8bb2000ba65b3e345, type: 3}
-    - {fileID: 21300000, guid: a71282f48f4754ff8b3cddcb6a04d5b8, type: 3}
-    - {fileID: 21300000, guid: d2dc9441c19f04cd895cc8a8df25233e, type: 3}
-    - {fileID: 21300000, guid: 73c3a4a92dc3e47928165dd593a51fae, type: 3}
-    - {fileID: 21300000, guid: 9d858e478bc57423e9db7c02fff80de2, type: 3}
-    - {fileID: 21300000, guid: e9658e77457574e0da1597726deab647, type: 3}
-    - {fileID: 21300000, guid: 9e0c041deec9c443eb2784b26016a099, type: 3}
-    - {fileID: 21300000, guid: 7f4cc780fb29b4147aa33e01d75199b5, type: 3}
-    - {fileID: 21300000, guid: c4208044f130e42539bbb51d5d2a9930, type: 3}
-    - {fileID: 21300000, guid: f524e1c7de32f43778eef1c984c99a73, type: 3}
-    - {fileID: 21300000, guid: 8170a5ecd6bfc4338bb0378fe0761262, type: 3}
-    - {fileID: 21300000, guid: 12032dad0fa9c46f5b53360d5c5de489, type: 3}
-    - {fileID: 21300000, guid: 1f33b6e1f7fc14f358304ef4cad21827, type: 3}
-    - {fileID: 21300000, guid: d2509e05c3c5341c9969079c101dd344, type: 3}
-    - {fileID: 21300000, guid: 813ac5cc2fb304d87aa54e7fa60adffb, type: 3}
-    - {fileID: 21300000, guid: 67e70822df7e94807af3010beb0d59d2, type: 3}
-    - {fileID: 21300000, guid: 6bbe3c8b3011b4f48a6d5f4ffaa9447d, type: 3}
-    - {fileID: 21300000, guid: 483f98e409064487e88627f9a7a2cf30, type: 3}
-    - {fileID: 21300000, guid: b830acc2b3f8347a1a71ef6c057d78b6, type: 3}
-    - {fileID: 21300000, guid: a5c9d1d91da2b42d1a755bfb404772e3, type: 3}
-    - {fileID: 21300000, guid: 10ffe453a85094168a413233a5e36f94, type: 3}
-    - {fileID: 21300000, guid: b16949fdd45ab4825a5063980bf78655, type: 3}
-    - {fileID: 21300000, guid: edb77a56d066c487e8c7a7ce07ddc83c, type: 3}
-    animationSpeed: 36
+    animationSpeed: 17
     loop: 1
     spriteSize: {x: 275.2, y: 174.4}
     colliderSize: {x: 90, y: 30}
     colliderOffset: {x: 21, y: 5}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37607,7 +37571,6 @@ MonoBehaviour:
     spriteSize: {x: 200, y: 200}
     colliderSize: {x: 80, y: 25}
     colliderOffset: {x: 0, y: 7}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37637,7 +37600,6 @@ MonoBehaviour:
     spriteSize: {x: 200, y: 200}
     colliderSize: {x: 93, y: 44}
     colliderOffset: {x: -22, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37679,7 +37641,6 @@ MonoBehaviour:
     spriteSize: {x: 447, y: 200}
     colliderSize: {x: 218, y: 32}
     colliderOffset: {x: -30, y: 20}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37721,7 +37682,6 @@ MonoBehaviour:
     spriteSize: {x: 350, y: 350}
     colliderSize: {x: 157, y: 81}
     colliderOffset: {x: -53, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37749,7 +37709,6 @@ MonoBehaviour:
     spriteSize: {x: 500, y: 367}
     colliderSize: {x: 349, y: 44}
     colliderOffset: {x: -34, y: 20}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -37784,7 +37743,6 @@ MonoBehaviour:
     spriteSize: {x: 320, y: 180}
     colliderSize: {x: 170, y: 36}
     colliderOffset: {x: -24, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
@@ -37812,7 +37770,6 @@ MonoBehaviour:
     spriteSize: {x: 320, y: 180}
     colliderSize: {x: 170, y: 36}
     colliderOffset: {x: -24, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
@@ -37854,7 +37811,6 @@ MonoBehaviour:
     spriteSize: {x: 450, y: 450}
     colliderSize: {x: 150, y: 77}
     colliderOffset: {x: -67, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 1
@@ -37943,7 +37899,6 @@ MonoBehaviour:
     spriteSize: {x: 420, y: 420}
     colliderSize: {x: 175, y: 98}
     colliderOffset: {x: -62, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
@@ -38030,7 +37985,6 @@ MonoBehaviour:
     spriteSize: {x: 350, y: 350}
     colliderSize: {x: 115, y: 115}
     colliderOffset: {x: 10, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
@@ -38125,7 +38079,6 @@ MonoBehaviour:
     spriteSize: {x: 420, y: 420}
     colliderSize: {x: 173, y: 157}
     colliderOffset: {x: 21, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 2
@@ -38140,12 +38093,11 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 1f22b2e1ed92e4885ac5a63cbee027ac, type: 3}
     - {fileID: 21300000, guid: 77a9cc50949e746f7883e270ceb26fdf, type: 3}
     - {fileID: 21300000, guid: 338ddd31055cc4a45b5d776e7b04a66b, type: 3}
-    animationSpeed: 2.9
+    animationSpeed: 3.4
     loop: 1
-    spriteSize: {x: 526.4, y: 267.2}
-    colliderSize: {x: 210, y: 41}
-    colliderOffset: {x: -37, y: -10}
-    laserImpactScaleFactor: 0.7
+    spriteSize: {x: 526.4, y: 311.76}
+    colliderSize: {x: 235, y: 95}
+    colliderOffset: {x: -54, y: 17}
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
@@ -38186,7 +38138,6 @@ MonoBehaviour:
     spriteSize: {x: 600, y: 650}
     colliderSize: {x: 150, y: 245}
     colliderOffset: {x: 0, y: -42}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
@@ -38212,7 +38163,6 @@ MonoBehaviour:
     spriteSize: {x: 450, y: 450}
     colliderSize: {x: 200, y: 145}
     colliderOffset: {x: 0, y: -46}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 3
@@ -38248,7 +38198,6 @@ MonoBehaviour:
     spriteSize: {x: 825, y: 600}
     colliderSize: {x: 433, y: 155}
     colliderOffset: {x: -50, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 15000
     fishType: 4
@@ -38268,7 +38217,6 @@ MonoBehaviour:
     spriteSize: {x: 800, y: 800}
     colliderSize: {x: 450, y: 125}
     colliderOffset: {x: -75, y: -24}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 4
@@ -38352,7 +38300,6 @@ MonoBehaviour:
     spriteSize: {x: 900, y: 550}
     colliderSize: {x: 300, y: 300}
     colliderOffset: {x: 50, y: 22}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 4
@@ -38387,7 +38334,6 @@ MonoBehaviour:
     spriteSize: {x: 1920, y: 673}
     colliderSize: {x: 1518, y: 308}
     colliderOffset: {x: -46, y: 16.5}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 6
@@ -38454,12 +38400,11 @@ MonoBehaviour:
     - {fileID: 21300000, guid: bcf8ab27e36954218a9375e93c1febc8, type: 3}
     - {fileID: 21300000, guid: 27444bac74bb74baebec40792f6102a8, type: 3}
     - {fileID: 21300000, guid: 29831a92c1666421889b64e22a7e43a7, type: 3}
-    animationSpeed: 45
+    animationSpeed: 50
     loop: 1
-    spriteSize: {x: 360, y: 320}
-    colliderSize: {x: 163, y: 56}
-    colliderOffset: {x: -58, y: 0}
-    laserImpactScaleFactor: 0.7
+    spriteSize: {x: 480, y: 400}
+    colliderSize: {x: 189, y: 70}
+    colliderOffset: {x: -70, y: 2}
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 5
@@ -38490,6 +38435,13 @@ MonoBehaviour:
   immortalCoinBlastScale: 1.4
   jackpotFishCoinBlastScale: 1.4
   jackpotDragonCoinBlastScale: 1.4
+  normalLaserImpactScale: 1
+  specialLaserImpactScale: 1.2
+  goldenLaserImpactScale: 1
+  effectLaserImpactScale: 1
+  immortalLaserImpactScale: 1
+  jackpotFishLaserImpactScale: 1
+  jackpotDragonLaserImpactScale: 0.2
   enableMockSpawning: 1
   mockFishIndex: 17
   activeFishes: []
@@ -43417,8 +43369,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -151.90002}
-  m_SizeDelta: {x: 1546.3, y: 203.8}
+  m_AnchoredPosition: {x: 0, y: -116.69}
+  m_SizeDelta: {x: 1546.3, y: 188.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &772669017
 GameObject:
@@ -61616,7 +61568,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 72, y: 412}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1134196807
 MonoBehaviour:
@@ -109164,8 +109116,8 @@ MonoBehaviour:
   worldCamera: {fileID: 519420031}
   laserImpactAnimation: {fileID: 1134196806}
   laserImpactBGAnimation: {fileID: 211605844}
-  impactScaleFactor: 0.7
-  fishDamageColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  impactScaleFactor: 0.6
+  fishDamageColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
   minDamageAnimationInterval: 0.2
 --- !u!114 &1966824574
 MonoBehaviour:

@@ -62,7 +62,7 @@ MonoBehaviour:
   textAppearEase: 27
   pulseScale: 0.25
   pulseDuration: 0.55
-  ttl: 4
+  ttl: 3
   fishSpeedMultiplier: 2
 --- !u!1 &3195329371153767035
 GameObject:

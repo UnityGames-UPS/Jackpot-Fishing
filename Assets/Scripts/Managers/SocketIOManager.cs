@@ -378,7 +378,8 @@ public class SocketIOManager : MonoBehaviour
       }
 
       if (targetFish != null && targetFish.data != null &&
-          targetFish.data.fishType != FishType.Normal)
+          targetFish.data.fishType != FishType.Normal &&
+          targetFish.data.fishType != FishType.Jackpot_Dragon)
       {
         if (targetFish is EffectFish effectFish)
         {
@@ -386,12 +387,33 @@ public class SocketIOManager : MonoBehaviour
         }
         else
         {
-          UIManager.Instance?.PlayRainbowWinAnimation(
-            targetFish,
-            targetFish.data,
-            hitResult.winAmount
-          );
+          if (hitResult.weaponType == "torpedo")
+          {
+            targetFish.WaitForLastTorpedo(
+              () => UIManager.Instance?.PlayRainbowWinAnimation(
+                targetFish,
+                targetFish.data,
+                hitResult.winAmount
+              ),
+              1f
+            );
+          }
+          else
+          {
+            UIManager.Instance?.PlayRainbowWinAnimation(
+              targetFish,
+              targetFish.data,
+              hitResult.winAmount
+            );
+          }
         }
+      }
+
+      if (targetFish is ImmortalFish immortalFish &&
+          (targetFish.data.variant == "immo_shark_fish" ||
+           targetFish.data.variant == "immo_squid_fish"))
+      {
+        immortalFish.TriggerWinAnimSpeedBoost();
       }
     }
 
@@ -475,7 +497,7 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerBubbleCrabDeath(affectedFishes),
-            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+            2f
           );
         }
         else
@@ -492,7 +514,7 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerBlueFishDeath(affectedFishes),
-            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+            2f
           );
         }
         else
@@ -509,12 +531,28 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerRockCrabDeath(affectedFishes),
-            effectFish.ActiveTorpedoCount > 0 ? 2f : 0f
+            2f
           );
         }
         else
         {
           effectFish.TriggerRockCrabDeath(affectedFishes);
+        }
+        return;
+      }
+
+      if (fish is JackpotDragon jackpotDragon)
+      {
+        if (hitResult.weaponType == "torpedo")
+        {
+          fish.WaitForLastTorpedo(
+            () => jackpotDragon.TriggerDeathSequence(hitResult.winAmount),
+            2f
+          );
+        }
+        else
+        {
+          jackpotDragon.TriggerDeathSequence(hitResult.winAmount);
         }
         return;
       }
@@ -525,7 +563,7 @@ public class SocketIOManager : MonoBehaviour
         fish.deathCause = BaseFish.DeathCause.Torpedo;
         fish.WaitForLastTorpedo(
           () => fish.Die(),
-          fish.ActiveTorpedoCount > 0 ? 2f : 0f
+          2f
         );
       }
       else
