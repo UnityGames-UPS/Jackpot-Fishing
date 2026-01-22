@@ -35,6 +35,7 @@ public class UIManager : MonoBehaviour
 
   [Header("LEFT PANEL")]
   [SerializeField] private Button LeftPanelopenbtn;
+  [SerializeField] private Button LeftPanelBGCloseButton;
   [SerializeField] private RectTransform Leftpanel;
   [SerializeField] private Button InfoBtn;
   [SerializeField] private Button SoundOnBtn;
@@ -62,12 +63,17 @@ public class UIManager : MonoBehaviour
 
   [Header("Popup PANEL")]
 
-  [SerializeField] private GameObject MainPopupPanel;
+  [SerializeField] private Button PopupPanelBGButton;
   [SerializeField] private GameObject RoosterObject;
   [SerializeField] private GameObject InfoObject;
+  [SerializeField] private GameObject QuitPopupObject;
+
+  [Header("Quit Panel")]
+  [SerializeField] private Button QuitYesBtn;
+  [SerializeField] private Button QuitNoBtn;
 
   [Header("Help Panel")]
-  [SerializeField] private Button ClosehelpBtn;
+  [SerializeField] private Button CloseHelp;
 
   [SerializeField] private Button FeatureBtn;
   [SerializeField] private GameObject FeatureHighlight;
@@ -81,27 +87,20 @@ public class UIManager : MonoBehaviour
   [SerializeField] private GameObject UIHighlight;
   [SerializeField] private GameObject UIPanel;
 
-  [SerializeField] private Button OptionBtn;
-  [SerializeField] private GameObject OptionHighlight;
-  [SerializeField] private GameObject OptionPanel;
-
-  [Header("info PANEL")]
+  [Header("Info Panel")]
   [SerializeField] private Button HNavPrev;
   [SerializeField] private Button HNavNext;
   [SerializeField] private TMP_Text pageCount;
   [SerializeField] private List<GameObject> InfoPages;
 
-  [Header("paytable PANEL")]
+  [Header("Paytable Panel")]
   [SerializeField] private Button INavPrev;
   [SerializeField] private Button INavNext;
   [SerializeField] private TMP_Text IpageCount;
   [SerializeField] private List<GameObject> PaytablePages;
 
-  [Header("Close PANEL Btn")]
-  [SerializeField] private Button CloseHelp;
+  [Header("Close Panel Btn")]
   [SerializeField] private Button CloseRooster;
-
-  internal GunType activeGun = GunType.Simple;
 
   private int infoPageIndex = 0;
   private int paytablePageIndex = 0;
@@ -113,9 +112,9 @@ public class UIManager : MonoBehaviour
   private bool isTargetLock = false;
   private bool isTorpedoGun = false;
   private Tween balanceTween;
+  internal GunType activeGun = GunType.Simple;
   internal int BetCounter = 0;
   internal bool IsTargetLockEnabled => isTargetLock;
-
 
   void Awake()
   {
@@ -140,16 +139,28 @@ public class UIManager : MonoBehaviour
       HallSelectionBtn.onClick.RemoveAllListeners();
       HallSelectionBtn.onClick.AddListener(OnClickHallSelection);
     }
+    
+    if (PopupPanelBGButton)
+    {
+      PopupPanelBGButton.onClick.RemoveAllListeners();
+      PopupPanelBGButton.onClick.AddListener(OnClickClosePopup);
+    }
+
+    if(LeftPanelBGCloseButton)
+    {
+      LeftPanelBGCloseButton.onClick.RemoveAllListeners();
+      LeftPanelBGCloseButton.onClick.AddListener(OnClickOpenLeftpanel);
+    }
 
     if (CloseHelp)
     {
       CloseHelp.onClick.RemoveAllListeners();
-      CloseHelp.onClick.AddListener(OnClickCloseRoster);
+      CloseHelp.onClick.AddListener(OnClickClosePopup);
     }
     if (CloseRooster)
     {
       CloseRooster.onClick.RemoveAllListeners();
-      CloseRooster.onClick.AddListener(OnClickCloseRoster);
+      CloseRooster.onClick.AddListener(OnClickClosePopup);
     }
     // --- Left Panel Inner Buttons ---
     if (InfoBtn)
@@ -182,7 +193,6 @@ public class UIManager : MonoBehaviour
             { FeatureBtn, (FeatureHighlight, FeaturePanel) },
             { PaytableBtn, (PaytableHighlight, PaytablePanel) },
             { UIBtn, (UIHighlight, UIPanel) },
-            { OptionBtn, (OptionHighlight, OptionPanel) }
         };
 
     foreach (var kvp in helpMap)
@@ -205,8 +215,6 @@ public class UIManager : MonoBehaviour
     if (INavPrev) INavPrev.onClick.AddListener(PrevPaytablePage);
     ShowPaytablePage();
 
-
-    // --- paytable panel ---
     // --- Initial states ---
     if (ExpandedRoomPanel)
     {
@@ -473,10 +481,9 @@ public class UIManager : MonoBehaviour
     UpdateTorpedoFishVisuals();
   }
 
-
-  void OnClickCloseRoster()
+  void OnClickClosePopup()
   {
-    MainPopupPanel.SetActive(false);
+    PopupPanelBGButton.gameObject.SetActive(false);
     InfoObject.SetActive(false);
     RoosterObject.SetActive(false);
     OnClickOpenLeftpanel();
@@ -489,27 +496,29 @@ public class UIManager : MonoBehaviour
     {
       Leftpanel.DOAnchorPosX(0f, 0.4f).SetEase(Ease.OutCubic);
       isLeftPanelOpen = true;
+      LeftPanelBGCloseButton.gameObject.SetActive(true);
     }
     else
     {
       Leftpanel.DOAnchorPosX(-280f, 0.4f).SetEase(Ease.InCubic);
       isLeftPanelOpen = false;
+      LeftPanelBGCloseButton.gameObject.SetActive(false);
     }
   }
 
   void OnClickInfo()
   {
-    if (!MainPopupPanel || !InfoObject) return;
+    if (!PopupPanelBGButton || !InfoObject) return;
 
-    MainPopupPanel.SetActive(true);
+    PopupPanelBGButton.gameObject.SetActive(true);
     InfoObject.SetActive(true);
   }
 
   void OnClickRooster()
   {
-    if (!MainPopupPanel || !RoosterObject) return;
+    if (!PopupPanelBGButton || !RoosterObject) return;
 
-    MainPopupPanel.SetActive(true);
+    PopupPanelBGButton.gameObject.SetActive(true);
     RoosterObject.SetActive(true);
   }
 
@@ -530,9 +539,6 @@ public class UIManager : MonoBehaviour
   }
   #endregion
 
-
-
-
   #region Top Panel
   void OnClickOpenTopPanel()
   {
@@ -546,7 +552,6 @@ public class UIManager : MonoBehaviour
     isTopPanelOpen = !isTopPanelOpen;
   }
   #endregion
-
 
   #region Hall Selection Panel
   void OnClickHallSelection()
@@ -592,8 +597,6 @@ public class UIManager : MonoBehaviour
       kvp.Value.highlight.SetActive(isActive);
       kvp.Value.panel.SetActive(isActive);
     }
-
-
   }
   void ShowPage(List<GameObject> pages, int index, TMP_Text counter)
   {

@@ -42,6 +42,7 @@ public class SocketIOManager : MonoBehaviour
   private readonly Dictionary<string, Coroutine> effectFishExpireRoutines = new Dictionary<string, Coroutine>();
   [SerializeField] private float disconnectDelay = 180f;
   internal float ElectricHitInterval => electricHitInterval;
+  private List<InitFishGroup> initFishes = new List<InitFishGroup>();
 
   private void Start()
   {
@@ -63,30 +64,30 @@ public class SocketIOManager : MonoBehaviour
     Application.runInBackground = true;
     DOTween.Init();
     DOTween.defaultTimeScaleIndependent = true;
-    // blocker.SetActive(true);
+    blocker.SetActive(true);
     isLoaded = false;
   }
 
-  // private void OnApplicationFocus(bool hasFocus)
-  // {
-  //   if (!hasFocus)
-  //   {
-  //     disconnectTimerCoroutine = StartCoroutine(DisconnectTimer());
-  //   }
-  //   else
-  //   {
-  //     if (disconnectTimerCoroutine != null)
-  //     {
-  //       StopCoroutine(disconnectTimerCoroutine);
-  //       disconnectTimerCoroutine = null;
-  //       // Debug.Log("Disconnect timer cancelled. App regained focus.");
-  //     }
-  //   }
-  // }
+  private void OnApplicationFocus(bool hasFocus)
+  {
+    if (!hasFocus)
+    {
+      disconnectTimerCoroutine = StartCoroutine(DisconnectTimer());
+    }
+    else
+    {
+      if (disconnectTimerCoroutine != null)
+      {
+        StopCoroutine(disconnectTimerCoroutine);
+        disconnectTimerCoroutine = null;
+        // Debug.Log("Disconnect timer cancelled. App regained focus.");
+      }
+    }
+  }
 
   private IEnumerator DisconnectTimer()
   {
-    // Debug.Log($"App lost focus. Disconnect timer started for {disconnectDelay} seconds.");
+    Debug.Log($"App lost focus. Disconnect timer started for {disconnectDelay} seconds.");
     yield return new WaitForSeconds(disconnectDelay);
 
     Debug.Log("Disconnect timer finished. Disconnecting due to prolonged focus loss.");
@@ -180,7 +181,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void ParseResponse(string obj)
   {
-    // Debug.Log("RESP:" + obj);
+    Debug.Log("RESP:" + obj);
     Root root = JsonConvert.DeserializeObject<Root>(obj);
 
     if (root.player != null && root.player.balance != 0)
@@ -195,6 +196,10 @@ public class SocketIOManager : MonoBehaviour
         bets = root.gameData.bets;
         ApplyWeaponCosts(root.gameData);
         ApplyGameIntervals(root.gameData);
+        if (root.gameData?.fishes != null)
+        {
+          initFishes = root.gameData.fishes;
+        }
         SendFishSpawnEvent();
         UIManager.Instance.HandeGameInit();
 
@@ -674,6 +679,7 @@ public class SocketIOManager : MonoBehaviour
   {
     Debug.LogWarning("⚠️ Disconnected from server.");
     // uiManager.DisconnectionPopup();
+    blocker.SetActive(true);
     ResetPingRoutine();
   }
 
@@ -813,6 +819,8 @@ public class GameData
   public Weapons weapons;
   public int spawnInterval;
   public int lazerInterval;
+  public List<string> halls;
+  public List<InitFishGroup> fishes;
 }
 
 [Serializable]
@@ -820,6 +828,7 @@ public class Weapons
 {
   public WeaponCost normal;
   public WeaponCost torpedo;
+  public WeaponCost lazer;
   public WeaponCost electric;
 }
 
@@ -862,6 +871,15 @@ public class Fish
   public string type;
   public string variant;
   public int lifespan;
+}
+
+[Serializable]
+public class InitFishGroup
+{
+  public string type;
+  public List<string> variants;
+  public object multipliers;
+  public List<float> immortalRewards;
 }
 
 [Serializable]

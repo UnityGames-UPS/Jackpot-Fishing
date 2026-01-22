@@ -1,0 +1,184 @@
+{
+  "id": "initData",
+  "gameData": {
+    "bets": [
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100
+    ],
+    "historyLimit": 18,
+    "jackpotValues": {
+      "mini": 50,
+      "minor": 250,
+      "major": 2500,
+      "grand": 10000
+    },
+    "halls": [
+      "regal",
+      "joy"
+    ],
+    "weapons": {
+      "normal": {
+        "cost": 1
+      },
+      "torpedo": {
+        "cost": 6
+      },
+      "lazer": {
+        "cost": 1
+      },
+      "electric": {
+        "cost": 1,
+        "chargeRequired": 100
+      }
+    },
+    "spawnInterval": 4000,
+    "lazerInterval": 1200,
+    "fishes": [
+      {
+        "type": "normal",
+        "variants": [
+          "small_dragon_fish",
+          "orange_fish",
+          "angel_fish",
+          "pinecone_fish",
+          "puffer_fish",
+          "turtle_fish",
+          "jelly_fish",
+          "lobster_fish",
+          "lion_fish",
+          "babyocto_fish",
+          "saw_fish",
+          "bluewing_fish",
+          "hammer_head"
+        ],
+        "multipliers": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          8,
+          10,
+          12,
+          15,
+          20,
+          25,
+          30,
+          35
+        ],
+        "immortalRewards": []
+      },
+      {
+        "type": "golden",
+        "variants": [
+          "golden_clownfish",
+          "golden_angelfish",
+          "golden_wing"
+        ],
+        "multipliers": [
+          50,
+          55,
+          60
+        ],
+        "immortalRewards": []
+      },
+      {
+        "type": "special",
+        "variants": [
+          "special_armored_fish",
+          "special_angler_fish",
+          "special_diamond_turtle"
+        ],
+        "multipliers": {
+          "base": [
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50
+          ],
+          "specialWin": [
+            100,
+            120,
+            150,
+            180,
+            200,
+            220,
+            250
+          ]
+        },
+        "immortalRewards": []
+      },
+      {
+        "type": "effect",
+        "variants": [
+          "effect_blue_fish",
+          "effect_bubblecrab_fish",
+          "effect_rockcrab_fish"
+        ],
+        "multipliers": [
+          70,
+          85,
+          100
+        ],
+        "immortalRewards": []
+      },
+      {
+        "type": "immortal_ocean_king",
+        "variants": [
+          "immo_squid_fish",
+          "immo_shark_fish",
+          "immo_turtle_fish"
+        ],
+        "multipliers": [
+          150,
+          300,
+          800
+        ],
+        "immortalRewards": [
+          10,
+          20,
+          30,
+          50,
+          80,
+          100,
+          150
+        ]
+      },
+      {
+        "type": "jackpot_fish",
+        "variants": [
+          "jackpot_rainbow_fish"
+        ],
+        "multipliers": [
+          200,
+          300,
+          500
+        ],
+        "immortalRewards": []
+      },
+      {
+        "type": "jackpot_dragon",
+        "variants": [
+          "jackpot_dragon_fish"
+        ],
+        "multipliers": [
+          500,
+          1000,
+          2000
+        ],
+        "immortalRewards": []
+      }
+    ]
+  },
+  "player": {
+    "balance": 97813.376
+  }
+}
