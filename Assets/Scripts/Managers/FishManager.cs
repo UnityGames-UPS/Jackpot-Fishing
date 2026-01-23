@@ -54,6 +54,7 @@ internal class FishManager : MonoBehaviour
 
   private void Awake() => Instance = this;
 
+#if UNITY_EDITOR
   private void Update()
   {
     if (!enableMockSpawning)
@@ -64,6 +65,7 @@ internal class FishManager : MonoBehaviour
       SpawnMockFish();
     }
   }
+#endif
   internal void SpawnMockFish()
   {
     if (fishesData == null || fishesData.Count == 0)

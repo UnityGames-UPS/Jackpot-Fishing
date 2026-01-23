@@ -29,7 +29,7 @@ public class SocketIOManager : MonoBehaviour
   private float pingInterval = 2f;
   private bool waitingForPong = false;
   private int missedPongs = 0;
-  private const int MaxMissedPongs = 5;
+  private const int MaxMissedPongs = 15;
   private Coroutine PingRoutine;
   private string myAuth = null;
   internal bool isLoaded = false;
@@ -60,6 +60,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
+    Debug.Log("got the new build");
     Instance = this;
     Application.runInBackground = true;
     DOTween.Init();
@@ -400,7 +401,7 @@ public class SocketIOManager : MonoBehaviour
                 targetFish.data,
                 hitResult.winAmount
               ),
-              1f
+              1.5f
             );
           }
           else
@@ -502,7 +503,7 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerBubbleCrabDeath(affectedFishes),
-            2f
+            3f
           );
         }
         else
@@ -519,7 +520,7 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerBlueFishDeath(affectedFishes),
-            2f
+            3f
           );
         }
         else
@@ -536,7 +537,7 @@ public class SocketIOManager : MonoBehaviour
         {
           effectFish.WaitForLastTorpedo(
             () => effectFish.TriggerRockCrabDeath(affectedFishes),
-            2f
+            3f
           );
         }
         else
@@ -552,7 +553,7 @@ public class SocketIOManager : MonoBehaviour
         {
           fish.WaitForLastTorpedo(
             () => jackpotDragon.TriggerDeathSequence(hitResult.winAmount),
-            2f
+            3f
           );
         }
         else
@@ -568,7 +569,7 @@ public class SocketIOManager : MonoBehaviour
         fish.deathCause = BaseFish.DeathCause.Torpedo;
         fish.WaitForLastTorpedo(
           () => fish.Die(),
-          2f
+          3f
         );
       }
       else
@@ -658,7 +659,7 @@ public class SocketIOManager : MonoBehaviour
 
     if (hasEverConnected)
     {
-      // uiManager.CheckAndClosePopups();
+      UIManager.Instance.CheckAndClosePopups();
     }
 
     hasEverConnected = true;
@@ -678,8 +679,8 @@ public class SocketIOManager : MonoBehaviour
   private void OnDisconnected()
   {
     Debug.LogWarning("⚠️ Disconnected from server.");
-    // uiManager.DisconnectionPopup();
-    blocker.SetActive(true);
+    UIManager.Instance.DisconnectionPopup();
+    // blocker.SetActive(true);
     ResetPingRoutine();
   }
 
@@ -716,23 +717,20 @@ public class SocketIOManager : MonoBehaviour
 
       if (missedPongs == 0)
       {
-        // uiManager.CheckAndClosePopups();
+        UIManager.Instance.CheckAndClosePopups();
       }
 
       // If waiting for pong, and timeout passed
       if (waitingForPong)
       {
-        if (missedPongs == 2)
-        {
-          // uiManager.ReconnectionPopup();
-        }
+        UIManager.Instance.ReconnectionPopup();
         missedPongs++;
         Debug.LogWarning($"⚠️ Pong missed #{missedPongs}/{MaxMissedPongs}");
 
         if (missedPongs >= MaxMissedPongs)
         {
           Debug.LogError("❌ Unable to connect to server — 5 consecutive pongs missed.");
-          // uiManager.DisconnectionPopup();
+          UIManager.Instance.DisconnectionPopup();
           yield break;
         }
       }
@@ -784,7 +782,6 @@ public class SocketIOManager : MonoBehaviour
     MainSocketManager = null;
 
     Debug.Log("Waiting for socket to close");
-
     yield return new WaitForSeconds(0.5f);
 
     Debug.Log("Socket Closed");
@@ -792,6 +789,7 @@ public class SocketIOManager : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnExit");
 #endif
+    Application.Quit();
   }
 }
 

@@ -67,8 +67,18 @@ public class UIManager : MonoBehaviour
   [SerializeField] private GameObject RoosterObject;
   [SerializeField] private GameObject InfoObject;
   [SerializeField] private GameObject QuitPopupObject;
+  [SerializeField] private GameObject LowBalancePopupObject;
+  [SerializeField] private GameObject ReconnectionPopupObject;
+  [SerializeField] private GameObject DisconnectPopupObject; 
+  
+  [Header("Low Balance Panel")]
+  [SerializeField] private Button LowBalanceCloseBtn;
+
+  [Header("Disconnect Panel")]
+  [SerializeField] private Button DisconnectPopupCloseBtn; 
 
   [Header("Quit Panel")]
+  [SerializeField] private Button QuitBtn;
   [SerializeField] private Button QuitYesBtn;
   [SerializeField] private Button QuitNoBtn;
 
@@ -115,6 +125,7 @@ public class UIManager : MonoBehaviour
   internal GunType activeGun = GunType.Simple;
   internal int BetCounter = 0;
   internal bool IsTargetLockEnabled => isTargetLock;
+  private bool UserExited = false;
 
   void Awake()
   {
@@ -123,6 +134,35 @@ public class UIManager : MonoBehaviour
 
   void Start()
   {
+    if (LowBalanceCloseBtn)
+    {
+      LowBalanceCloseBtn.onClick.RemoveAllListeners();
+      LowBalanceCloseBtn.onClick.AddListener(OnClickClosePopup);
+    }
+
+    if (DisconnectPopupCloseBtn)
+    {
+      DisconnectPopupCloseBtn.onClick.RemoveAllListeners();
+      DisconnectPopupCloseBtn.onClick.AddListener(OnClickQuitYes);
+    }
+    // --- Quit Panel ---
+    if(QuitBtn)
+    {
+      QuitBtn.onClick.RemoveAllListeners();
+      QuitBtn.onClick.AddListener(OnClickQuitPopup);
+    }
+    if (QuitYesBtn)
+    {
+      QuitYesBtn.onClick.RemoveAllListeners();
+      QuitYesBtn.onClick.AddListener(OnClickQuitYes);
+    }
+
+    if (QuitNoBtn)
+    {
+      QuitNoBtn.onClick.RemoveAllListeners();
+      QuitNoBtn.onClick.AddListener(OnClickQuitNo);
+    }
+
     if (InfoBtn) InfoBtn.onClick.RemoveAllListeners();
     if (InfoBtn) InfoBtn.onClick.AddListener(OnClickInfo);
 
@@ -448,7 +488,7 @@ public class UIManager : MonoBehaviour
 
     if (currentBalance < cost)
     {
-      Debug.LogError("❌ Not enough balance"); // add popup message here
+      ShowLowBalancePopup();
       return false;
     }
 
@@ -483,10 +523,12 @@ public class UIManager : MonoBehaviour
 
   void OnClickClosePopup()
   {
-    PopupPanelBGButton.gameObject.SetActive(false);
+    if(!DisconnectPopupObject.activeInHierarchy && !ReconnectionPopupObject.activeInHierarchy)
+      PopupPanelBGButton.gameObject.SetActive(false);
+    LowBalancePopupObject.SetActive(false);
+    QuitPopupObject.SetActive(false);
     InfoObject.SetActive(false);
     RoosterObject.SetActive(false);
-    OnClickOpenLeftpanel();
   }
   #region LEftpanel
 
@@ -506,10 +548,38 @@ public class UIManager : MonoBehaviour
     }
   }
 
+  void ShowLowBalancePopup()
+  {
+    if (!PopupPanelBGButton || !LowBalancePopupObject) return;
+    PopupPanelBGButton.gameObject.SetActive(true);
+    LowBalancePopupObject.SetActive(true);
+  }
+
+  void OnClickQuitPopup()
+  {
+    if (!PopupPanelBGButton || !QuitPopupObject) return;
+    OnClickOpenLeftpanel();
+    PopupPanelBGButton.gameObject.SetActive(true);
+    QuitPopupObject.SetActive(true);
+  }
+
+  void OnClickQuitYes()
+  {
+    if(UserExited)
+      return;
+    UserExited = true;
+    SocketIOManager.Instance.CloseGame();
+  }
+
+  void OnClickQuitNo()
+  {
+    OnClickClosePopup();
+  }
+
   void OnClickInfo()
   {
     if (!PopupPanelBGButton || !InfoObject) return;
-
+    OnClickOpenLeftpanel();
     PopupPanelBGButton.gameObject.SetActive(true);
     InfoObject.SetActive(true);
   }
@@ -517,7 +587,7 @@ public class UIManager : MonoBehaviour
   void OnClickRooster()
   {
     if (!PopupPanelBGButton || !RoosterObject) return;
-
+    OnClickOpenLeftpanel();
     PopupPanelBGButton.gameObject.SetActive(true);
     RoosterObject.SetActive(true);
   }
@@ -584,7 +654,38 @@ public class UIManager : MonoBehaviour
   }
   #endregion
 
+  internal void DisconnectionPopup()
+  {
+    if(UserExited)
+      return;
+    
+    OnClickClosePopup();
+    PopupPanelBGButton.gameObject.SetActive(true);
+    DisconnectPopupObject.SetActive(true);
+  }
 
+  internal void ReconnectionPopup()
+  {
+    OnClickClosePopup();
+    PopupPanelBGButton.gameObject.SetActive(true);
+    ReconnectionPopupObject.SetActive(true);
+  }
+
+  internal void CheckAndClosePopups()
+  {
+    if(PopupPanelBGButton.gameObject.activeInHierarchy == false)
+      return;
+    if(DisconnectPopupObject.activeInHierarchy)
+    {
+      DisconnectPopupObject.SetActive(false);
+      PopupPanelBGButton.gameObject.SetActive(false); 
+    }
+    else if(ReconnectionPopupObject.activeInHierarchy)
+    {
+      ReconnectionPopupObject.SetActive(false);
+      PopupPanelBGButton.gameObject.SetActive(false); 
+    }
+  }
   #region Infopanel
 
 

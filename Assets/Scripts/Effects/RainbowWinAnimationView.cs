@@ -34,6 +34,7 @@ internal class RainbowWinAnimationView : MonoBehaviour
   private Tween pulseTween;
   private Coroutine ttlRoutine;
   private bool scalesCached;
+  private bool lastLandscape;
 
   private void Awake()
   {
@@ -61,7 +62,7 @@ internal class RainbowWinAnimationView : MonoBehaviour
     ResetVisuals();
 
     Vector3 spawnPos = ResolveSpawnPosition(fish);
-    transform.SetPositionAndRotation(spawnPos, Quaternion.identity);
+    transform.position = spawnPos;
 
     if (winAmountLabel != null)
       winAmountLabel.text = winAmount.ToString("0.##");

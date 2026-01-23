@@ -29,6 +29,7 @@ public class LazerGun : BaseGun
   private Vector2 impactInitSize;
   private Vector2 impactBgInitSize;
   private FishType? impactScaleType;
+  private const float MinCanvasScale = 0.0001f;
 
   internal void Awake()
   {
@@ -169,16 +170,76 @@ public class LazerGun : BaseGun
     if (screenDistance <= 1f)
       return;
 
-    float angle = Mathf.Atan2(dirScreen.y, dirScreen.x) * Mathf.Rad2Deg - 90f;
-    laserBeam.rotation = Quaternion.Euler(0, 0, angle);
+    RectTransform beamParent = laserBeam != null ? laserBeam.parent as RectTransform : null;
+    Camera uiCamera = GetCanvasCamera();
+    if (beamParent != null &&
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(beamParent, screenStart, uiCamera, out Vector2 localStart) &&
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(beamParent, screenEnd, uiCamera, out Vector2 localEnd))
+    {
+      Vector2 localDir = localEnd - localStart;
+      float canvasScale = canvas != null ? Mathf.Max(canvas.scaleFactor, MinCanvasScale) : 1f;
+      float maxLengthLocal = maxLength / canvasScale;
+      float localDistance = Mathf.Min(localDir.magnitude, maxLengthLocal);
 
-    Vector2 size = laserBeam.sizeDelta;
-    size.y = screenDistance;
-    laserBeam.sizeDelta = size;
+      if (localDistance <= 1f)
+        return;
 
-    laserImpactBGAnimation.position = worldEnd;
-    laserImpactAnimation.position = worldEnd;
-    laserBeam.position = worldStart + worldDir.normalized * (worldDistance * 0.5f);
+      float angle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg - 90f;
+      laserBeam.localRotation = Quaternion.Euler(0, 0, angle);
+
+      Vector2 size = laserBeam.sizeDelta;
+      size.y = localDistance;
+      laserBeam.sizeDelta = size;
+
+      Vector2 localMid = localStart + localDir.normalized * (localDistance * 0.5f);
+      laserBeam.anchoredPosition = localMid;
+
+      SetImpactPosition(screenEnd);
+    }
+    else
+    {
+      float angle = Mathf.Atan2(dirScreen.y, dirScreen.x) * Mathf.Rad2Deg - 90f;
+      laserBeam.rotation = Quaternion.Euler(0, 0, angle);
+
+      Vector2 size = laserBeam.sizeDelta;
+      size.y = screenDistance;
+      laserBeam.sizeDelta = size;
+
+      laserImpactBGAnimation.position = worldEnd;
+      laserImpactAnimation.position = worldEnd;
+      laserBeam.position = worldStart + worldDir.normalized * (worldDistance * 0.5f);
+    }
+  }
+
+  private void SetImpactPosition(Vector2 screenEnd)
+  {
+    Camera uiCamera = GetCanvasCamera();
+    SetRectTransformScreenPosition(laserImpactAnimation, screenEnd, uiCamera);
+    SetRectTransformScreenPosition(laserImpactBGAnimation, screenEnd, uiCamera);
+  }
+
+  private void SetRectTransformScreenPosition(RectTransform target, Vector2 screenPosition, Camera uiCamera)
+  {
+    if (target == null)
+      return;
+
+    RectTransform parent = target.parent as RectTransform;
+    if (parent == null)
+      return;
+
+    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPosition, uiCamera, out Vector2 localPoint))
+      target.anchoredPosition = localPoint;
+  }
+
+  private Camera GetCanvasCamera()
+  {
+    if (canvas == null)
+      return worldCamera;
+
+    if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+      return null;
+
+    return canvas.worldCamera != null ? canvas.worldCamera : worldCamera;
   }
 
   private void ToggleLaserImpact(bool enable)

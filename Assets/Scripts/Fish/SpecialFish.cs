@@ -3,26 +3,21 @@ using UnityEngine;
 // SpecialFish class
 internal class SpecialFish : BaseFish
 {
-  [SerializeField] private Vector3 ringOffset = Vector3.zero;
   private SpecialFishRingView ringView;
 
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
     SetupFallbackMovement();
-    Invoke("AttachRing", 0.1f);
+    Invoke(nameof(AttachRing), 0.1f);
   }
 
-  internal override void ResetFish()
+  protected override void DespawnFish()
   {
+    base.DespawnFish();
     ReturnRingToPool();
-    base.ResetFish();
   }
 
-  private void OnDisable()
-  {
-    ReturnRingToPool();
-  }
 
   private void AttachRing()
   {
@@ -35,7 +30,7 @@ internal class SpecialFish : BaseFish
       return;
 
     ringView.gameObject.SetActive(false);
-    ringView.AttachToFish(this, ringOffset);
+    ringView.AttachToFish(this);
     ringView.gameObject.SetActive(true);
   }
 

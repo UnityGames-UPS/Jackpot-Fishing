@@ -368,7 +368,7 @@ internal class BaseFish : MonoBehaviour
   // --------------------------------------------------------
   // DESPAWN LOGIC (IDEMPOTENT)
   // --------------------------------------------------------
-  protected void DespawnFish()
+  protected virtual void DespawnFish()
   {
     if (isDespawning || finalized)
       return;
@@ -592,8 +592,8 @@ internal class BaseFish : MonoBehaviour
     PendingVisualDeath = true;
     if (boxCollider == null)
       boxCollider = GetComponent<BoxCollider2D>();
-    if (boxCollider != null)
-      boxCollider.enabled = false;
+    // if (boxCollider != null)
+    //   boxCollider.enabled = false;
   }
   internal void WaitForTorpedoKill(float timeout = 10f)
   {
@@ -674,7 +674,7 @@ internal class BaseFish : MonoBehaviour
   internal Vector3 GetAimPoint(Camera cam)
   {
     if (data == null || data.fishType != FishType.Jackpot_Dragon)
-      return HitPoint.position;
+      return ColliderMidPoint;
 
     if (boxCollider == null)
       boxCollider = GetComponent<BoxCollider2D>();

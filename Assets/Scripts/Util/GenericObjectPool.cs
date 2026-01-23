@@ -52,12 +52,12 @@ public class GenericObjectPool<T> : MonoBehaviour where T : MonoBehaviour
       return;
     }
 
+    item.gameObject.SetActive(false);
     if (ParentTransform != null)
       item.transform.SetParent(ParentTransform, false);
     item.transform.localPosition = Vector3.zero;
     item.transform.localRotation = Quaternion.identity;
     item.transform.localScale = Vector3.one;
-    item.gameObject.SetActive(false);
     PoolQueue.Enqueue(item);
     ItemsInUse.Remove(item);
   }

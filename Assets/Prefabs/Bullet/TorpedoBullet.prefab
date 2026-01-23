@@ -189,7 +189,7 @@ MonoBehaviour:
   pulseAmount: 1.2
   phase2Speed: 12
   maxLifetime: 1
-  hitDistance: 0.1
+  hitDistance: 0.2
   phase2ScaleDownDistanceFactor: 0.3
   sideAnim:
   - {fileID: 21300000, guid: fd8ad6c643155423f8e6e5fde2baa1a5, type: 3}

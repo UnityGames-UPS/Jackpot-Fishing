@@ -422,19 +422,18 @@ internal class EffectFish : BaseFish
 
     rockCrabPendingTorpedos = 0;
     int targetCount = validTargets.Count;
-    bool useGridTargets = TryGetRockCrabTorpedoTargets(out List<Vector3> torpedoTargets);
-    int torpedoCount = useGridTargets ? torpedoTargets.Count : Mathf.Max(3, targetCount);
+    List<Vector3> torpedoTargets = GetRockCrabTorpedoTargets();
+    if (torpedoTargets.Count == 0)
+      yield break;
+    const int torpedoCount = 3;
     for (int i = 0; i < torpedoCount; i++)
     {
-      BaseFish fish = useGridTargets ? null : (i < targetCount ? validTargets[i] : null);
       if (isDespawning || !rockCrabDeathActive)
         break;
 
       rockCrabPendingTorpedos++;
-      Vector3? targetPos = (useGridTargets && i < torpedoTargets.Count) ? torpedoTargets[i] : (Vector3?)null;
-      if (!targetPos.HasValue && fish == null)
-        targetPos = transform.position;
-      FireRockCrabTorpedo(fish, targetPos);
+      Vector3 targetPos = torpedoTargets[i % torpedoTargets.Count];
+      FireRockCrabTorpedo(targetPos);
       if (i == torpedoCount - 1 && rockCrabTorpedoVisual != null)
       {
         rockCrabTorpedoVisual.SetActive(false);
@@ -459,27 +458,13 @@ internal class EffectFish : BaseFish
 
     TryPlayPendingWin();
 
-    if (useGridTargets)
+    for (int i = 0; i < targetCount; i++)
     {
-      for (int i = 0; i < targetCount; i++)
-      {
-        var fish = validTargets[i];
-        if (fish == null)
-          continue;
-        fish.PendingVisualDeath = false;
-        fish.ForceDespawn();
-      }
-    }
-    else if (targetCount > torpedoCount)
-    {
-      for (int i = torpedoCount; i < targetCount; i++)
-      {
-        var fish = validTargets[i];
-        if (fish == null)
-          continue;
-        fish.PendingVisualDeath = false;
-        fish.ForceDespawn();
-      }
+      var fish = validTargets[i];
+      if (fish == null)
+        continue;
+      fish.PendingVisualDeath = false;
+      fish.ForceDespawn();
     }
 
     if (rockCrabTorpedoVisual != null)
@@ -496,7 +481,7 @@ internal class EffectFish : BaseFish
     StartRockCrabEscape();
   }
 
-  private void FireRockCrabTorpedo(BaseFish target, Vector3? targetPos)
+  private void FireRockCrabTorpedo(Vector3 targetPos)
   {
     if (CrabTorpedoPool.Instance == null)
       return;
@@ -513,10 +498,7 @@ internal class EffectFish : BaseFish
       : transform.position;
     torpedo.transform.SetPositionAndRotation(launchPos, Quaternion.identity);
     torpedo.SetCoinBlastScaleMultiplier(rockCrabTorpedoCoinBlastScaleMultiplier);
-    if (targetPos.HasValue)
-      torpedo.Init(target, targetPos.Value, OnRockCrabTorpedoHit);
-    else
-      torpedo.Init(target, OnRockCrabTorpedoHit);
+    torpedo.InitToPosition(targetPos, OnRockCrabTorpedoHit);
     PlayRockCrabLaunchBlast(launchPos);
   }
 
@@ -533,20 +515,19 @@ internal class EffectFish : BaseFish
     target.ForceDespawn();
   }
 
-  private bool TryGetRockCrabTorpedoTargets(out List<Vector3> targets)
+  private List<Vector3> GetRockCrabTorpedoTargets()
   {
-    targets = null;
     if (FishManager.Instance == null)
-      return false;
+      return new List<Vector3>();
 
     Transform[] gridTargets = FishManager.Instance.RockCrabTorpedoGridTargets;
     if (gridTargets == null || gridTargets.Length == 0)
-      return false;
+      return new List<Vector3>();
 
     int columns = Mathf.Max(1, FishManager.Instance.RockCrabTorpedoGridColumns);
     int rows = gridTargets.Length / columns;
     if (rows <= 0)
-      return false;
+      return new List<Vector3>();
 
     Vector3 crabPos = transform.position;
     Vector2 offsetMin = FishManager.Instance.RockCrabTorpedoOffsetMin;
@@ -558,7 +539,7 @@ internal class EffectFish : BaseFish
 
     int closestColumn = FindClosestRockCrabColumn(columns, rows, crabPos, gridTargets);
     List<int> columnOrder = BuildRockCrabColumnOrder(columns, rows, crabPos, gridTargets);
-    targets = new List<Vector3>(columns);
+    List<Vector3> targets = new List<Vector3>(columns);
     for (int orderIndex = 0; orderIndex < columnOrder.Count; orderIndex++)
     {
       int col = columnOrder[orderIndex];
@@ -588,7 +569,7 @@ internal class EffectFish : BaseFish
       targets.Add(pos);
     }
 
-    return targets.Count > 0;
+    return targets;
   }
 
   private int FindClosestRockCrabColumn(
