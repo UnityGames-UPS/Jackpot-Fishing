@@ -10,4 +10,5 @@ jobs:
   call-reusable:
     uses: UnityGames-UPS/unity-build-pipeline/.github/workflows/main.yml@main
     with:
+      s3_bucket: unity.build-prod
       s3_folder: OT-JF
