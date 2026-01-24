@@ -29,6 +29,10 @@ public class CrabTorpedoBulletView : MonoBehaviour
   private RectTransform rectTransform;
   private float initialHeight;
   private System.Action<BaseFish> onHit;
+  private float pendingStarWinAmount;
+  private float pendingStarTotalBet;
+  private BaseFish starCoinSourceFish;
+  private FishManager.StarCoinPoolMode starCoinPoolMode = FishManager.StarCoinPoolMode.Default;
   private Vector3 lastKnownTargetPos;
   private Vector3 startPos;
   private Vector3 phase1End;
@@ -57,6 +61,19 @@ public class CrabTorpedoBulletView : MonoBehaviour
   internal void SetCoinBlastScaleMultiplier(float multiplier)
   {
     coinBlastScaleMultiplier = Mathf.Max(0.01f, multiplier);
+  }
+
+  internal void SetStarCoinData(
+    float winAmount,
+    float totalBet,
+    BaseFish sourceFish,
+    FishManager.StarCoinPoolMode poolMode
+  )
+  {
+    pendingStarWinAmount = winAmount;
+    pendingStarTotalBet = totalBet;
+    starCoinSourceFish = sourceFish;
+    starCoinPoolMode = poolMode;
   }
 
   private void InitInternal(System.Action<BaseFish> onHitCallback, Vector3 targetPos)
@@ -257,6 +274,15 @@ public class CrabTorpedoBulletView : MonoBehaviour
     var coinAnimation = CoinBlastAnimPool.Instance.GetFromPool();
     coinAnimation.transform.SetPositionAndRotation(pos, Quaternion.identity);
     coinAnimation.transform.localScale = Vector3.one * coinBlastScaleMultiplier;
+
+    FishManager.Instance?.TryPlayStarCoinsAtPosition(
+      pos,
+      pendingStarWinAmount,
+      starCoinSourceFish,
+      0,
+      false,
+      starCoinPoolMode
+    );
   }
 
   private void Finish()
@@ -269,6 +295,10 @@ public class CrabTorpedoBulletView : MonoBehaviour
     anim.StopAnimation();
     onHit = null;
     SetHeight(0f);
+    pendingStarWinAmount = 0f;
+    pendingStarTotalBet = 0f;
+    starCoinSourceFish = null;
+    starCoinPoolMode = FishManager.StarCoinPoolMode.Default;
 
     StartCoroutine(ReturnNextFrame());
   }

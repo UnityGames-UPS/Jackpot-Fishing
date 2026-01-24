@@ -311,7 +311,6 @@ MonoBehaviour:
     spriteSize: {x: 0, y: 0}
     colliderSize: {x: 0, y: 0}
     colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
     coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
@@ -384,7 +383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bubblePrefab: {fileID: 4470991053211229912, guid: 7a052d10773a64d2da1d0900ea13b0bd, type: 3}
   initialPoolSize: 50
-  spawnInterval: 0.2
+  spawnInterval: 0.3
   spawnRadius: 250
   radialSpeed: 100
   angularSpeed: 50

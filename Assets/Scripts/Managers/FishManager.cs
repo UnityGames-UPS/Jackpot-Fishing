@@ -32,6 +32,16 @@ internal class FishManager : MonoBehaviour
   [SerializeField] private float immortalCoinBlastScale = 1f;
   [SerializeField] private float jackpotFishCoinBlastScale = 1f;
   [SerializeField] private float jackpotDragonCoinBlastScale = 1f;
+  [Header("Star Coins")]
+  [SerializeField] private Transform starCoinTarget;
+  [SerializeField] private Transform starCoinFirstTarget;
+  [SerializeField] private float starCoinSpawnRadius = 30f;
+  [SerializeField] private float starCoinSpawnRadiusPerFishWidth = 0.4f;
+  [SerializeField] private float starCoinSpawnRadiusMax = 120f;
+  [SerializeField] private List<StarCoinSetPool> starCoinSmallPools = new List<StarCoinSetPool>();
+  [SerializeField] private List<StarCoinSetPool> starCoinBigPools = new List<StarCoinSetPool>();
+  [SerializeField, Min(0)] private int starCoinBlockedFishCount = 6;
+  private bool starCoinTargetMissingLogged;
   [Header("Laser Impact Scales")]
   [SerializeField] private float normalLaserImpactScale = 1f;
   [SerializeField] private float specialLaserImpactScale = 1f;
@@ -235,6 +245,189 @@ internal class FishManager : MonoBehaviour
     };
 
     return runtimeData;
+  }
+
+  internal void TryPlayStarCoins(BaseFish fish, float winAmount, float totalBet)
+  {
+    if (fish.data.fishType == FishType.Immortal)
+      return;
+
+    TryPlayStarCoinsAtPosition(fish.ColliderMidPoint, winAmount, totalBet, fish);
+  }
+
+  internal void TryPlayStarCoinsAtPosition(
+    Vector3 position,
+    float winAmount,
+    float totalBet,
+    BaseFish contextFish
+  )
+  {
+    TryPlayStarCoinsAtPosition(position, winAmount, contextFish, 0, false, StarCoinPoolMode.Default);
+  }
+
+  internal void TryPlayStarCoinsAtPosition(
+    Vector3 position,
+    float winAmount,
+    BaseFish contextFish,
+    int setCountOverride,
+    bool applyScatter,
+    StarCoinPoolMode poolMode
+  )
+  {
+    if (contextFish != null && !IsStarCoinAllowedByVariant(contextFish.data?.variant))
+      return;
+
+    if (starCoinTarget == null || starCoinFirstTarget == null)
+    {
+      if (!starCoinTargetMissingLogged)
+      {
+        Debug.LogWarning("[FishManager] Star coin targets not assigned");
+        starCoinTargetMissingLogged = true;
+      }
+      return;
+    }
+
+    if (!TryResolveStarCoinPool(winAmount, contextFish, poolMode, out var pool, out int setCount))
+      return;
+
+    if (setCountOverride > 0)
+      setCount = setCountOverride;
+
+    float scatterRadius = GetStarCoinScatterRadius(contextFish);
+    for (int i = 0; i < setCount; i++)
+    {
+      if (pool == null)
+        continue;
+
+      var view = pool.GetFromPool();
+      if (view == null)
+        continue;
+
+      Vector3 spawnPos = position;
+      if (applyScatter)
+      {
+        Vector2 offset2D = UnityEngine.Random.insideUnitCircle * scatterRadius;
+        spawnPos += new Vector3(offset2D.x, offset2D.y, 0f);
+      }
+      view.Play(
+        spawnPos,
+        starCoinFirstTarget.position,
+        starCoinTarget.position,
+        v => pool.ReturnToPool(v)
+      );
+    }
+  }
+
+  private bool TryResolveStarCoinPool(
+    float winAmount,
+    BaseFish contextFish,
+    StarCoinPoolMode poolMode,
+    out StarCoinSetPool pool,
+    out int setCount
+  )
+  {
+    pool = null;
+    setCount = 0;
+
+    if (winAmount <= 0f)
+      return false;
+
+    if (contextFish == null || contextFish.data == null)
+      return false;
+
+    setCount = 1;
+    switch (poolMode)
+    {
+      case StarCoinPoolMode.ForceBig:
+        pool = GetStarCoinPoolByIndex(starCoinBigPools, 0);
+        break;
+      case StarCoinPoolMode.ForceSmall:
+        pool = GetRandomStarCoinPool(starCoinSmallPools);
+        break;
+      case StarCoinPoolMode.ForceRandom:
+        pool = GetRandomStarCoinPoolFromAll();
+        break;
+      default:
+        if (contextFish.data.fishType == FishType.Normal)
+          pool = GetRandomStarCoinPool(starCoinSmallPools);
+        else
+          pool = GetStarCoinPoolByIndex(starCoinBigPools, 0);
+        break;
+    }
+
+    return pool != null;
+  }
+
+
+  private StarCoinSetPool GetRandomStarCoinPool(List<StarCoinSetPool> pools)
+  {
+    if (pools == null || pools.Count == 0)
+      return null;
+
+    int index = UnityEngine.Random.Range(0, pools.Count);
+    return pools[index];
+  }
+
+  private StarCoinSetPool GetRandomStarCoinPoolFromAll()
+  {
+    List<StarCoinSetPool> combined = new List<StarCoinSetPool>();
+    if (starCoinSmallPools != null)
+      combined.AddRange(starCoinSmallPools);
+    if (starCoinBigPools != null)
+      combined.AddRange(starCoinBigPools);
+
+    return GetRandomStarCoinPool(combined);
+  }
+
+  private StarCoinSetPool GetStarCoinPoolByIndex(List<StarCoinSetPool> pools, int index)
+  {
+    if (pools == null || pools.Count == 0)
+      return null;
+
+    int safeIndex = Mathf.Clamp(index, 0, pools.Count - 1);
+    return pools[safeIndex];
+  }
+
+  private float GetStarCoinScatterRadius(BaseFish fish)
+  {
+    float radius = Mathf.Max(0f, starCoinSpawnRadius);
+    if (fish == null || fish.data == null)
+      return Mathf.Min(radius, starCoinSpawnRadiusMax);
+
+    if (fish.data.fishType != FishType.Jackpot_Dragon && fish.Rect != null)
+    {
+      float width = fish.Rect.rect.width;
+      radius += width * Mathf.Max(0f, starCoinSpawnRadiusPerFishWidth);
+    }
+
+    return Mathf.Min(radius, starCoinSpawnRadiusMax);
+  }
+
+  internal enum StarCoinPoolMode
+  {
+    Default,
+    ForceBig,
+    ForceSmall,
+    ForceRandom
+  }
+
+
+  private bool IsStarCoinAllowedByVariant(string variant)
+  {
+    if (string.IsNullOrEmpty(variant))
+      return true;
+
+    if (fishesData == null || fishesData.Count == 0)
+      return true;
+
+    int blockCount = Mathf.Clamp(starCoinBlockedFishCount, 0, fishesData.Count);
+    for (int i = 0; i < blockCount; i++)
+    {
+      if (fishesData[i] != null && fishesData[i].variant == variant)
+        return false;
+    }
+
+    return true;
   }
 
 

@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class BaseGun : MonoBehaviour
 {
   protected Transform muzzle => transform.GetChild(0);
+  internal Transform GetMuzzleTransform() => muzzle;
 
   internal virtual void UpdateAim(Vector3 worldPos)
   {

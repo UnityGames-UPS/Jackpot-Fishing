@@ -61,6 +61,8 @@ internal class BaseFish : MonoBehaviour
   internal DeathCause deathCause = DeathCause.None;
   internal bool WaitingForKillingTorpedo;
   private Coroutine killFailSafeRoutine;
+  protected float pendingStarWinAmount;
+  protected float pendingStarTotalBet;
 
   void OnEnable()
   {
@@ -79,6 +81,8 @@ internal class BaseFish : MonoBehaviour
     PendingVisualDeath = false;
     KillOnTorpedoArrival = false;
     ActiveTorpedoCount = 0;
+    pendingStarWinAmount = 0f;
+    pendingStarTotalBet = 0f;
     onLastTorpedoCleared.Clear();
     lastTorpedoTimeout = 0f;
     if (lastTorpedoTimeoutRoutine != null)
@@ -384,6 +388,7 @@ internal class BaseFish : MonoBehaviour
     }
 
     isDespawning = true;
+    TryPlayPendingStarCoins();
 
     // Debug.Log("Despawning fish : " + data?.variant + " " + data?.fishId);
 
@@ -454,6 +459,8 @@ internal class BaseFish : MonoBehaviour
     IsVisibleInViewport = false;
     visibilityReady = false;
     ActiveTorpedoCount = 0;
+    pendingStarWinAmount = 0f;
+    pendingStarTotalBet = 0f;
     onLastTorpedoCleared.Clear();
     lastTorpedoTimeout = 0f;
     if (lastTorpedoTimeoutRoutine != null)
@@ -503,6 +510,26 @@ internal class BaseFish : MonoBehaviour
     }
 
     speedMultiplier = 1f;
+  }
+
+  internal void SetPendingStarCoins(float winAmount, float totalBet)
+  {
+    pendingStarWinAmount = winAmount;
+    pendingStarTotalBet = totalBet;
+  }
+
+  private void TryPlayPendingStarCoins()
+  {
+    if (pendingStarWinAmount <= 0f || pendingStarTotalBet <= 0f)
+    {
+      return;
+    }
+
+    float winAmount = pendingStarWinAmount;
+    float totalBet = pendingStarTotalBet;
+    pendingStarWinAmount = 0f;
+    pendingStarTotalBet = 0f;
+    FishManager.Instance?.TryPlayStarCoins(this, winAmount, totalBet);
   }
 
   internal void SetAnimationSpeedMultiplier(float multiplier)

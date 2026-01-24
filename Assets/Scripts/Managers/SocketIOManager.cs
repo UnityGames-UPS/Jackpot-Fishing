@@ -60,7 +60,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
-    Debug.Log("got the new build");
+    Debug.Log("NEW BUILD DEVOPS TEST 2");
     Instance = this;
     Application.runInBackground = true;
     DOTween.Init();
@@ -464,6 +464,8 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
+      fish.SetPendingStarCoins(hitResult.winAmount, hitResult.totalBet);
+
       EffectFish effectFish = fish as EffectFish;
       bool isBubbleCrab = effectFish != null &&
         fish.data != null &&
@@ -474,6 +476,9 @@ public class SocketIOManager : MonoBehaviour
       bool isRockCrab = effectFish != null &&
         fish.data != null &&
         fish.data.variant == "effect_rockcrab_fish";
+
+      if (effectFish != null)
+        effectFish.SetPendingEffectBonusWins(hitResult.effectTriggered?.bonusWins, hitResult.totalBet);
       if (!isBubbleCrab && !isBlueFish && !isRockCrab)
       {
         // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
