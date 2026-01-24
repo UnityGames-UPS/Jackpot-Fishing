@@ -13,4 +13,4 @@ jobs:
       s3_bucket: unity.build-prod
       s3_folder: OT-JF
       cloudfront_distribution_id: EVFPZ9ROHP45P
-      invalidate_paths: "/*"
+      invalidate_paths: "/OT-JF/*"
