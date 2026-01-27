@@ -297,8 +297,6 @@ internal class EffectFish : BaseFish
     if (rockCrabDeathActive)
       return;
 
-    pendingStarWinAmount = 0f;
-    pendingStarTotalBet = 0f;
     rockCrabTorpedoFiredCount = 0;
     rockCrabDeathActive = true;
     MarkPendingDeath();
@@ -317,7 +315,10 @@ internal class EffectFish : BaseFish
     rockCrabEffectRoutine = StartCoroutine(RockCrabEffectRoutine(affectedFishes));
   }
 
-  internal override void OnTorpedoImpact() { }
+  internal override void OnTorpedoImpact()
+  {
+    base.OnTorpedoImpact();
+  }
 
   private IEnumerator BubbleCrabShakeRoutine()
   {
@@ -391,7 +392,7 @@ internal class EffectFish : BaseFish
     }
 
     PlayCoinBlast(this);
-    TryPlayEffectStarCoins(validTargets.Count);
+    FishManager.Instance?.PlayEffectFishStarCoins(this, validTargets.Count);
 
     foreach (var fish in validTargets)
     {
@@ -515,30 +516,16 @@ internal class EffectFish : BaseFish
     torpedo.transform.SetPositionAndRotation(launchPos, Quaternion.identity);
     torpedo.SetCoinBlastScaleMultiplier(rockCrabTorpedoCoinBlastScaleMultiplier);
     rockCrabTorpedoFiredCount++;
-    var poolMode = rockCrabTorpedoFiredCount <= 2
-      ? FishManager.StarCoinPoolMode.ForceBig
-      : FishManager.StarCoinPoolMode.ForceSmall;
-    torpedo.SetStarCoinData(
-      pendingStarWinAmount,
-      pendingStarTotalBet,
-      this,
-      poolMode
-    );
     torpedo.InitToPosition(targetPos, OnRockCrabTorpedoHit);
     PlayRockCrabLaunchBlast(launchPos);
   }
 
-  private void OnRockCrabTorpedoHit(BaseFish target)
+  private void OnRockCrabTorpedoHit(Vector3 impactPosition)
   {
     if (rockCrabPendingTorpedos > 0)
       rockCrabPendingTorpedos--;
 
-    if (target == null)
-      return;
-
-    PlayCoinBlast(target, rockCrabTorpedoCoinBlastScaleMultiplier);
-    target.PendingVisualDeath = false;
-    target.ForceDespawn();
+    FishManager.Instance?.PlayRockCrabTorpedoStarCoins(impactPosition);
   }
 
   private List<Vector3> GetRockCrabTorpedoTargets()
@@ -956,8 +943,7 @@ internal class EffectFish : BaseFish
     if (!blueFishCoinBlastPlayed)
     {
       PlayCoinBlast(this);
-      TryPlayEffectStarCoins(validTargets.Count);
-      TryPlayEffectStarCoins(blueFishEffectTargets != null ? blueFishEffectTargets.Count : 0);
+      FishManager.Instance?.PlayEffectFishStarCoins(this, validTargets.Count);
       foreach (var fish in validTargets)
         PlayCoinBlast(fish);
     }
@@ -1373,6 +1359,7 @@ internal class EffectFish : BaseFish
     if (blueFishEffectTargets != null)
     {
       PlayCoinBlast(this);
+      FishManager.Instance?.PlayEffectFishStarCoins(this, blueFishEffectTargets.Count);
       foreach (var fish in blueFishEffectTargets)
         PlayCoinBlast(fish);
     }
@@ -1510,39 +1497,6 @@ internal class EffectFish : BaseFish
     float amount = pendingEffectBonusWins[rockCrabBonusWinIndex];
     rockCrabBonusWinIndex++;
     return amount;
-  }
-
-  private void TryPlayEffectStarCoins(int affectedCount)
-  {
-    if (pendingStarWinAmount <= 0f)
-      return;
-
-    FishManager.Instance?.TryPlayStarCoinsAtPosition(
-      ColliderMidPoint,
-      pendingStarWinAmount,
-      this,
-      1,
-      false,
-      FishManager.StarCoinPoolMode.ForceBig
-    );
-
-    if (affectedCount > 0)
-    {
-      FishManager.Instance?.TryPlayStarCoinsAtPosition(
-        ColliderMidPoint,
-        pendingStarWinAmount,
-        this,
-        affectedCount,
-        true,
-        FishManager.StarCoinPoolMode.ForceSmall
-      );
-    }
-
-    pendingStarWinAmount = 0f;
-    pendingStarTotalBet = 0f;
-    pendingEffectBonusWins.Clear();
-    pendingEffectTotalBet = 0f;
-    rockCrabBonusWinIndex = 0;
   }
 
   private void StartBubbleCrabWhirlpoolImage()

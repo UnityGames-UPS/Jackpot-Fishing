@@ -45,9 +45,7 @@ internal class BaseFish : MonoBehaviour
   internal bool IsVisibleInViewport = false;
   private bool visibilityReady;
   internal int ActiveTorpedoCount { get; private set; }
-  private readonly List<System.Action> onLastTorpedoCleared = new List<System.Action>();
-  private Coroutine lastTorpedoTimeoutRoutine;
-  private float lastTorpedoTimeout;
+  private readonly List<System.Action> onNextTorpedoImpact = new List<System.Action>();
 
   internal enum DeathCause
   {
@@ -61,8 +59,6 @@ internal class BaseFish : MonoBehaviour
   internal DeathCause deathCause = DeathCause.None;
   internal bool WaitingForKillingTorpedo;
   private Coroutine killFailSafeRoutine;
-  protected float pendingStarWinAmount;
-  protected float pendingStarTotalBet;
 
   void OnEnable()
   {
@@ -81,15 +77,7 @@ internal class BaseFish : MonoBehaviour
     PendingVisualDeath = false;
     KillOnTorpedoArrival = false;
     ActiveTorpedoCount = 0;
-    pendingStarWinAmount = 0f;
-    pendingStarTotalBet = 0f;
-    onLastTorpedoCleared.Clear();
-    lastTorpedoTimeout = 0f;
-    if (lastTorpedoTimeoutRoutine != null)
-    {
-      StopCoroutine(lastTorpedoTimeoutRoutine);
-      lastTorpedoTimeoutRoutine = null;
-    }
+    onNextTorpedoImpact.Clear();
 
     splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
@@ -297,7 +285,16 @@ internal class BaseFish : MonoBehaviour
     DespawnFish();
   }
 
-  internal virtual void OnTorpedoImpact() { }
+  internal virtual void OnTorpedoImpact()
+  {
+    if (onNextTorpedoImpact.Count == 0)
+      return;
+
+    var callbacks = onNextTorpedoImpact.ToArray();
+    onNextTorpedoImpact.Clear();
+    for (int i = 0; i < callbacks.Length; i++)
+      callbacks[i]?.Invoke();
+  }
 
   internal void RegisterIncomingTorpedo()
   {
@@ -308,20 +305,6 @@ internal class BaseFish : MonoBehaviour
   {
     if (ActiveTorpedoCount > 0)
       ActiveTorpedoCount--;
-
-    if (ActiveTorpedoCount == 0 && onLastTorpedoCleared.Count > 0)
-    {
-      var callbacks = onLastTorpedoCleared.ToArray();
-      onLastTorpedoCleared.Clear();
-      lastTorpedoTimeout = 0f;
-      if (lastTorpedoTimeoutRoutine != null)
-      {
-        StopCoroutine(lastTorpedoTimeoutRoutine);
-        lastTorpedoTimeoutRoutine = null;
-      }
-      for (int i = 0; i < callbacks.Length; i++)
-        callbacks[i]?.Invoke();
-    }
   }
 
   internal void WaitForLastTorpedo(System.Action onReady, float timeout)
@@ -335,30 +318,7 @@ internal class BaseFish : MonoBehaviour
       return;
     }
 
-    onLastTorpedoCleared.Add(onReady);
-
-    if (timeout > 0f)
-    {
-      lastTorpedoTimeout = Mathf.Max(lastTorpedoTimeout, timeout);
-      if (lastTorpedoTimeoutRoutine != null)
-        StopCoroutine(lastTorpedoTimeoutRoutine);
-      lastTorpedoTimeoutRoutine = StartCoroutine(LastTorpedoTimeout(lastTorpedoTimeout));
-    }
-  }
-
-  private IEnumerator LastTorpedoTimeout(float timeout)
-  {
-    yield return new WaitForSecondsRealtime(timeout);
-    lastTorpedoTimeoutRoutine = null;
-
-    if (onLastTorpedoCleared.Count == 0)
-      yield break;
-
-    var callbacks = onLastTorpedoCleared.ToArray();
-    onLastTorpedoCleared.Clear();
-    lastTorpedoTimeout = 0f;
-    for (int i = 0; i < callbacks.Length; i++)
-      callbacks[i]?.Invoke();
+    onNextTorpedoImpact.Add(onReady);
   }
 
   internal virtual void Die()
@@ -388,8 +348,6 @@ internal class BaseFish : MonoBehaviour
     }
 
     isDespawning = true;
-    TryPlayPendingStarCoins();
-
     // Debug.Log("Despawning fish : " + data?.variant + " " + data?.fishId);
 
     movementTween?.Kill();
@@ -459,15 +417,7 @@ internal class BaseFish : MonoBehaviour
     IsVisibleInViewport = false;
     visibilityReady = false;
     ActiveTorpedoCount = 0;
-    pendingStarWinAmount = 0f;
-    pendingStarTotalBet = 0f;
-    onLastTorpedoCleared.Clear();
-    lastTorpedoTimeout = 0f;
-    if (lastTorpedoTimeoutRoutine != null)
-    {
-      StopCoroutine(lastTorpedoTimeoutRoutine);
-      lastTorpedoTimeoutRoutine = null;
-    }
+    onNextTorpedoImpact.Clear();
     if (visibilityRoutine != null)
     {
       StopCoroutine(visibilityRoutine);
@@ -510,26 +460,6 @@ internal class BaseFish : MonoBehaviour
     }
 
     speedMultiplier = 1f;
-  }
-
-  internal void SetPendingStarCoins(float winAmount, float totalBet)
-  {
-    pendingStarWinAmount = winAmount;
-    pendingStarTotalBet = totalBet;
-  }
-
-  private void TryPlayPendingStarCoins()
-  {
-    if (pendingStarWinAmount <= 0f || pendingStarTotalBet <= 0f)
-    {
-      return;
-    }
-
-    float winAmount = pendingStarWinAmount;
-    float totalBet = pendingStarTotalBet;
-    pendingStarWinAmount = 0f;
-    pendingStarTotalBet = 0f;
-    FishManager.Instance?.TryPlayStarCoins(this, winAmount, totalBet);
   }
 
   internal void SetAnimationSpeedMultiplier(float multiplier)

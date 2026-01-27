@@ -22,6 +22,7 @@ public class SocketIOManager : MonoBehaviour
   [SerializeField] private float SpawnEventInterval = 5f;
   [SerializeField] private float electricHitInterval = 1.5f;
   [SerializeField] internal List<float> bets = new();
+  [SerializeField] internal List<InitFishGroup> initFishes;
   [SerializeField] internal List<float> GunCosts = new() { 1, 1, 6 }; //1: normal 2: torpedo 3: electric
   protected string gameNamespace = "playground";
   private bool hasEverConnected = false;
@@ -42,7 +43,6 @@ public class SocketIOManager : MonoBehaviour
   private readonly Dictionary<string, Coroutine> effectFishExpireRoutines = new Dictionary<string, Coroutine>();
   [SerializeField] private float disconnectDelay = 180f;
   internal float ElectricHitInterval => electricHitInterval;
-  private List<InitFishGroup> initFishes = new List<InitFishGroup>();
 
   private void Start()
   {
@@ -60,7 +60,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void Awake()
   {
-    Debug.Log("NEW BUILD DEVOPS TEST 2");
+    Debug.Log("NEW BUILD DEVOPS TEST 5");
     Instance = this;
     Application.runInBackground = true;
     DOTween.Init();
@@ -182,7 +182,7 @@ public class SocketIOManager : MonoBehaviour
 
   private void ParseResponse(string obj)
   {
-    Debug.Log("RESP:" + obj);
+    // Debug.Log("RESP:" + obj);
     Root root = JsonConvert.DeserializeObject<Root>(obj);
 
     if (root.player != null && root.player.balance != 0)
@@ -212,7 +212,7 @@ public class SocketIOManager : MonoBehaviour
 
         break;
       case "spawnresult":
-        // Debug.Log("SPAWNRESULT: " + obj);
+        Debug.Log("SPAWNRESULT: " + obj);
         HandleSpawnResult(root);
         break;
       case "hitresult":
@@ -362,7 +362,7 @@ public class SocketIOManager : MonoBehaviour
     if (!root.success)
     {
       if (!string.IsNullOrEmpty(hitResult.message) &&
-          hitResult.message.IndexOf("amount refunded", StringComparison.OrdinalIgnoreCase) >= 0)
+          hitResult.message.Contains("amount refunded", StringComparison.OrdinalIgnoreCase))
       {
         UIManager.Instance?.PlayRefundText(hitResult.totalBet);
       }
@@ -401,7 +401,7 @@ public class SocketIOManager : MonoBehaviour
                 targetFish.data,
                 hitResult.winAmount
               ),
-              1.5f
+              0f
             );
           }
           else
@@ -464,8 +464,6 @@ public class SocketIOManager : MonoBehaviour
         return;
       }
 
-      fish.SetPendingStarCoins(hitResult.winAmount, hitResult.totalBet);
-
       EffectFish effectFish = fish as EffectFish;
       bool isBubbleCrab = effectFish != null &&
         fish.data != null &&
@@ -479,6 +477,24 @@ public class SocketIOManager : MonoBehaviour
 
       if (effectFish != null)
         effectFish.SetPendingEffectBonusWins(hitResult.effectTriggered?.bonusWins, hitResult.totalBet);
+
+      if (fish.data != null &&
+          fish.data.fishType != FishType.Immortal &&
+          fish.data.fishType != FishType.Effect)
+      {
+        if (hitResult.weaponType == "torpedo")
+        {
+          fish.WaitForLastTorpedo(
+            () => FishManager.Instance?.PlayStarCoinsForFish(fish),
+            0f
+          );
+        }
+        else
+        {
+          FishManager.Instance?.PlayStarCoinsForFish(fish);
+        }
+      }
+
       if (!isBubbleCrab && !isBlueFish && !isRockCrab)
       {
         // if(HitResult.winAmount > UIManager.Instance.currentBet * UIManager.Instance.GetGunCost())
@@ -881,8 +897,20 @@ public class InitFishGroup
 {
   public string type;
   public List<string> variants;
-  public object multipliers;
-  public List<float> immortalRewards;
+  public Multipliers multipliers;
+}
+
+[Serializable]
+public class Multipliers
+{
+  public List<float> normal = new();
+  public List<float> golden = new();
+  public List<List<float>> special = new();
+  public List<List<float>> specialWin = new();
+  public List<List<float>> effect = new();
+  public List<List<float>> immortal_ocean_king = new();
+  public List<List<float>> jackpot_fish = new();
+  public List<List<float>> jackpot_dragon = new();
 }
 
 [Serializable]

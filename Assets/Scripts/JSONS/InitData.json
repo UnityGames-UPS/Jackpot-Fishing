@@ -11,12 +11,6 @@
       100
     ],
     "historyLimit": 18,
-    "jackpotValues": {
-      "mini": 50,
-      "minor": 250,
-      "major": 2500,
-      "grand": 10000
-    },
     "halls": [
       "regal",
       "joy"
@@ -56,22 +50,23 @@
           "bluewing_fish",
           "hammer_head"
         ],
-        "multipliers": [
-          2,
-          3,
-          4,
-          5,
-          6,
-          8,
-          10,
-          12,
-          15,
-          20,
-          25,
-          30,
-          35
-        ],
-        "immortalRewards": []
+        "multipliers": {
+          "normal": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            10,
+            12,
+            15,
+            20,
+            25,
+            30,
+            35
+          ]
+        }
       },
       {
         "type": "golden",
@@ -80,12 +75,13 @@
           "golden_angelfish",
           "golden_wing"
         ],
-        "multipliers": [
-          50,
-          55,
-          60
-        ],
-        "immortalRewards": []
+        "multipliers": {
+          "golden": [
+            50,
+            55,
+            60
+          ]
+        }
       },
       {
         "type": "special",
@@ -95,26 +91,35 @@
           "special_diamond_turtle"
         ],
         "multipliers": {
-          "base": [
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50
+          "special": [
+            [
+              20,
+              30
+            ],
+            [
+              30,
+              40
+            ],
+            [
+              40,
+              50
+            ]
           ],
           "specialWin": [
-            100,
-            120,
-            150,
-            180,
-            200,
-            220,
-            250
+            [
+              100,
+              150
+            ],
+            [
+              150,
+              200
+            ],
+            [
+              200,
+              250
+            ]
           ]
-        },
-        "immortalRewards": []
+        }
       },
       {
         "type": "effect",
@@ -123,12 +128,22 @@
           "effect_bubblecrab_fish",
           "effect_rockcrab_fish"
         ],
-        "multipliers": [
-          70,
-          85,
-          100
-        ],
-        "immortalRewards": []
+        "multipliers": {
+          "effect": [
+            [
+              70,
+              90
+            ],
+            [
+              80,
+              100
+            ],
+            [
+              90,
+              110
+            ]
+          ]
+        }
       },
       {
         "type": "immortal_ocean_king",
@@ -137,48 +152,86 @@
           "immo_shark_fish",
           "immo_turtle_fish"
         ],
-        "multipliers": [
-          150,
-          300,
-          800
-        ],
-        "immortalRewards": [
-          10,
-          20,
-          30,
-          50,
-          80,
-          100,
-          150
-        ]
+        "multipliers": {
+          "immortal_ocean_king": [
+            [
+              150,
+              180,
+              200
+            ],
+            [
+              80,
+              160,
+              240
+            ],
+            [
+              3,
+              168,
+              666
+            ]
+          ]
+        }
       },
       {
         "type": "jackpot_fish",
         "variants": [
           "jackpot_rainbow_fish"
         ],
-        "multipliers": [
-          200,
-          300,
-          500
-        ],
-        "immortalRewards": []
+        "multipliers": {
+          "jackpot_fish": [
+            [
+              66,
+              88,
+              168
+            ]
+          ]
+        }
       },
       {
         "type": "jackpot_dragon",
         "variants": [
           "jackpot_dragon_fish"
         ],
-        "multipliers": [
-          500,
-          1000,
-          2000
-        ],
-        "immortalRewards": []
+        "multipliers": {
+          "jackpot_dragon": [
+            [
+              160,
+              240,
+              320
+            ]
+          ]
+        }
       }
-    ]
+    ],
+    "jackpot": {
+      "types": [
+        "speed",
+        "jackpot",
+        "lucky"
+      ],
+      "triggerBets": {
+        "speed": 5,
+        "jackpot": 50,
+        "lucky": 10
+      },
+      "baseValues": {
+        "speed": 50,
+        "jackpot": 2500,
+        "lucky": 250
+      },
+      "triggerRates": {
+        "speed": 0.01,
+        "jackpot": 0.005,
+        "lucky": 0.001
+      },
+      "resetValues": {
+        "speed": 5000,
+        "jackpot": 25000,
+        "lucky": 10000
+      }
+    }
   },
   "player": {
-    "balance": 97813.376
+    "balance": 185392.376
   }
 }

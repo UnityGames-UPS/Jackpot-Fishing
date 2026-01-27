@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -69,13 +70,13 @@ public class UIManager : MonoBehaviour
   [SerializeField] private GameObject QuitPopupObject;
   [SerializeField] private GameObject LowBalancePopupObject;
   [SerializeField] private GameObject ReconnectionPopupObject;
-  [SerializeField] private GameObject DisconnectPopupObject; 
-  
+  [SerializeField] private GameObject DisconnectPopupObject;
+
   [Header("Low Balance Panel")]
   [SerializeField] private Button LowBalanceCloseBtn;
 
   [Header("Disconnect Panel")]
-  [SerializeField] private Button DisconnectPopupCloseBtn; 
+  [SerializeField] private Button DisconnectPopupCloseBtn;
 
   [Header("Quit Panel")]
   [SerializeField] private Button QuitBtn;
@@ -108,6 +109,14 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Button INavNext;
   [SerializeField] private TMP_Text IpageCount;
   [SerializeField] private List<GameObject> PaytablePages;
+  [SerializeField] private List<TMP_Text> NormalFishesMultTexts;
+  [SerializeField] private List<TMP_Text> GoldenFishMultTexts;
+  [SerializeField] private List<TMP_Text> SpecialFishesMultTexts;
+  [SerializeField] private List<TMP_Text> SpecialFishesMultTexts2;
+  [SerializeField] private List<TMP_Text> EffectFishsesMultTexts;
+  [SerializeField] private List<TMP_Text> ImmortalFishesMultTexts;
+  [SerializeField] private TMP_Text JackpotFishesMultText;
+  [SerializeField] private TMP_Text JackpotDragonMultText;
 
   [Header("Close Panel Btn")]
   [SerializeField] private Button CloseRooster;
@@ -146,7 +155,7 @@ public class UIManager : MonoBehaviour
       DisconnectPopupCloseBtn.onClick.AddListener(OnClickQuitYes);
     }
     // --- Quit Panel ---
-    if(QuitBtn)
+    if (QuitBtn)
     {
       QuitBtn.onClick.RemoveAllListeners();
       QuitBtn.onClick.AddListener(OnClickQuitPopup);
@@ -179,14 +188,14 @@ public class UIManager : MonoBehaviour
       HallSelectionBtn.onClick.RemoveAllListeners();
       HallSelectionBtn.onClick.AddListener(OnClickHallSelection);
     }
-    
+
     if (PopupPanelBGButton)
     {
       PopupPanelBGButton.onClick.RemoveAllListeners();
       PopupPanelBGButton.onClick.AddListener(OnClickClosePopup);
     }
 
-    if(LeftPanelBGCloseButton)
+    if (LeftPanelBGCloseButton)
     {
       LeftPanelBGCloseButton.onClick.RemoveAllListeners();
       LeftPanelBGCloseButton.onClick.AddListener(OnClickOpenLeftpanel);
@@ -295,6 +304,7 @@ public class UIManager : MonoBehaviour
   {
     SetBetText();
     SetTorpedoBulletValue();
+    UpdatePaytableMultipliers(SocketIOManager.Instance?.initFishes);
   }
 
   void ChangeBet(bool IncDec)
@@ -523,7 +533,7 @@ public class UIManager : MonoBehaviour
 
   void OnClickClosePopup()
   {
-    if(!DisconnectPopupObject.activeInHierarchy && !ReconnectionPopupObject.activeInHierarchy)
+    if (!DisconnectPopupObject.activeInHierarchy && !ReconnectionPopupObject.activeInHierarchy)
       PopupPanelBGButton.gameObject.SetActive(false);
     LowBalancePopupObject.SetActive(false);
     QuitPopupObject.SetActive(false);
@@ -565,7 +575,7 @@ public class UIManager : MonoBehaviour
 
   void OnClickQuitYes()
   {
-    if(UserExited)
+    if (UserExited)
       return;
     UserExited = true;
     SocketIOManager.Instance.CloseGame();
@@ -656,9 +666,9 @@ public class UIManager : MonoBehaviour
 
   internal void DisconnectionPopup()
   {
-    if(UserExited)
+    if (UserExited)
       return;
-    
+
     OnClickClosePopup();
     PopupPanelBGButton.gameObject.SetActive(true);
     DisconnectPopupObject.SetActive(true);
@@ -673,17 +683,17 @@ public class UIManager : MonoBehaviour
 
   internal void CheckAndClosePopups()
   {
-    if(PopupPanelBGButton.gameObject.activeInHierarchy == false)
+    if (PopupPanelBGButton.gameObject.activeInHierarchy == false)
       return;
-    if(DisconnectPopupObject.activeInHierarchy)
+    if (DisconnectPopupObject.activeInHierarchy)
     {
       DisconnectPopupObject.SetActive(false);
-      PopupPanelBGButton.gameObject.SetActive(false); 
+      PopupPanelBGButton.gameObject.SetActive(false);
     }
-    else if(ReconnectionPopupObject.activeInHierarchy)
+    else if (ReconnectionPopupObject.activeInHierarchy)
     {
       ReconnectionPopupObject.SetActive(false);
-      PopupPanelBGButton.gameObject.SetActive(false); 
+      PopupPanelBGButton.gameObject.SetActive(false);
     }
   }
   #region Infopanel
@@ -845,5 +855,96 @@ public class UIManager : MonoBehaviour
     }
 
     return true;
+  }
+
+
+  void UpdatePaytableMultipliers(List<InitFishGroup> initFishGroup)
+  {
+    if (initFishGroup == null || initFishGroup.Count <= 0)
+    {
+      Debug.LogError("Multipliers data is null");
+      return;
+    }
+
+    var multiplier = initFishGroup[0].multipliers;
+
+    int normalIndex = 0;
+    foreach (var text in NormalFishesMultTexts)
+    {
+      text.text = multiplier.normal[normalIndex].ToString("N0") + " X";
+      normalIndex++;
+    }
+
+    multiplier = initFishGroup[1].multipliers;
+
+    int goldenIndex = 0;
+    foreach (var text in GoldenFishMultTexts)
+    {
+      text.text = multiplier.golden[goldenIndex].ToString("N0") + " X";
+      goldenIndex++;
+    }
+
+    multiplier = initFishGroup[2].multipliers;
+
+    int specialIndex = 0;
+    foreach (var text in SpecialFishesMultTexts)
+    {
+      text.text = multiplier.special[specialIndex][0].ToString("N0") + "-" +
+                  multiplier.special[specialIndex][1].ToString("N0") + " X\n" +
+                  multiplier.specialWin[specialIndex][0].ToString("N0") + "-" +
+                  multiplier.specialWin[specialIndex][1].ToString("N0") + " X";
+      specialIndex++;
+    }
+
+    int special2Index = 0;
+    foreach (var text in SpecialFishesMultTexts2)
+    {
+      text.text = multiplier.special[special2Index][0].ToString("N0") + "-" +
+                  multiplier.special[special2Index][1].ToString("N0") + " X";
+      special2Index++;
+    }
+
+    multiplier = initFishGroup[3].multipliers;
+
+    int effectIndex = 0;
+    foreach (var text in EffectFishsesMultTexts)
+    {
+      text.text = multiplier.effect[effectIndex][0].ToString("N0") + ", " + 
+                  multiplier.effect[effectIndex][1].ToString("N0") + " X";
+      effectIndex++;
+    }
+
+    multiplier = initFishGroup[4].multipliers;
+
+    int immortalIndex = 0;
+    foreach (var text in ImmortalFishesMultTexts)
+    {
+      if (immortalIndex != 2)
+      {
+        text.text = multiplier.immortal_ocean_king[immortalIndex][0].ToString("N0") + ", " +
+                    multiplier.immortal_ocean_king[immortalIndex][1].ToString("N0") + ", " +
+                    multiplier.immortal_ocean_king[immortalIndex][2].ToString("N0") + " X";
+      }
+      else
+      {
+        text.text = multiplier.immortal_ocean_king[immortalIndex][0].ToString("N0") + "x / " +
+                    multiplier.immortal_ocean_king[immortalIndex][1].ToString("N0") + "x, " +
+                    multiplier.immortal_ocean_king[immortalIndex][2].ToString("N0") + "x";
+      }
+      immortalIndex++;
+    }
+
+    multiplier = initFishGroup[5].multipliers;
+
+    JackpotFishesMultText.text = multiplier.jackpot_fish[0][0].ToString("N0") + "x, " +
+                                 multiplier.jackpot_fish[0][1].ToString("N0") + "x, " +
+                                 multiplier.jackpot_fish[0][2].ToString("N0") + "x, Jackpots";
+
+    multiplier = initFishGroup[6].multipliers;
+
+    JackpotDragonMultText.text = multiplier.jackpot_dragon[0][0].ToString("N0") + "x, " +
+                                  multiplier.jackpot_dragon[0][1].ToString("N0") + "x, " +
+                                  multiplier.jackpot_dragon[0][2].ToString("N0") + "x, Jackpots";
+
   }
 }
