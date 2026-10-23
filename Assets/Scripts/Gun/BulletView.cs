@@ -1,148 +1,200 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
+// Normal bullet, simulated in server space exactly like the backend's reference client:
+// constant speed, bounces off the 1920x1080 edges (each axis hit counts as one bounce),
+// circle hit test against each fish's server position and hitboxRadius.
+//
+// Every bullet resolves exactly once and sends exactly one SHOOT, which is what charges
+// the bet: on a hit, when it bounces more than maxBulletBounces, or when its lifetime ends.
 public class BulletView : MonoBehaviour
 {
-  [SerializeField] private float speed = 20f;
-  [SerializeField] private float lifeTime = 4f;
-  [SerializeField] private float wallPushDistance = 0.05f;
+  private const float MaxStep = 1f / 60f; // substep long frames so bullets can't tunnel through fish
+
+  [SerializeField] private float serverSpeed = 1200f; // server px per second (matches the reference client)
+  [SerializeField] private float maxLifetime = 10f; // safety net; bounces normally end a miss first
 
   [Header("On Fish Hit")]
   [SerializeField] private Color fishDamageColor;
 
-  [Header("Debug")]
-  [SerializeField] private bool drawDebugRay = false;
-  private Vector2 velocity;
-  private Rigidbody2D rb;
-  private float lifeTimer;
+  internal static int InFlight { get; private set; }
+
+  private string bulletId;
+  private Vector2 origin;   // the seat, as reported to the server
+  private Vector2 position; // server px
+  private Vector2 velocity; // server px/s
+  private int bounceCount;
+  private int maxBounces;
+  private float age;
   private bool active;
-  private bool fishHit;
-  private bool finalized;
 
   void Awake()
   {
-    rb = GetComponent<Rigidbody2D>();
-    rb.gravityScale = 0;
-    rb.freezeRotation = true;
-    rb.bodyType = RigidbodyType2D.Kinematic;
+    // Hits are tested in server space, not by physics.
+    if (TryGetComponent<Collider2D>(out var col))
+      col.enabled = false;
+    if (TryGetComponent<Rigidbody2D>(out var rb))
+      rb.bodyType = RigidbodyType2D.Kinematic;
   }
 
-  internal void Fire(Vector2 direction)
+  internal void Fire(string id, Vector2 serverOrigin, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces)
   {
-    velocity = direction.normalized * speed;
-    rb.position = transform.position;
-
-    UpdateVisual(direction);
-
-    lifeTimer = lifeTime;
+    bulletId = id;
+    origin = serverOrigin;
+    position = serverStart;
+    velocity = serverDirection.normalized * serverSpeed;
+    bounceCount = 0;
+    maxBounces = maxBulletBounces;
+    age = 0f;
     active = true;
-    fishHit = false;
-    finalized = false;
+    InFlight++;
+
+    Render();
   }
 
-  void FixedUpdate()
+  void Update()
   {
-    if (!active) return;
+    if (!active)
+      return;
 
-    float delta = Time.fixedDeltaTime;
-    Vector2 currentPos = rb.position;
-    Vector2 nextPos = currentPos + velocity * delta;
-
-    // Raycast for wall hit
-    RaycastHit2D hit = Physics2D.Raycast(
-        currentPos,
-        velocity.normalized,
-        velocity.magnitude * delta,
-        LayerMask.GetMask("Wall")
-    );
-
-    DebugRay(currentPos, delta);
-
-    if (hit)
+    float remaining = Time.deltaTime;
+    while (active && remaining > 0f)
     {
-      ReflectFromHit(hit);
-      nextPos = hit.point + hit.normal * wallPushDistance;
+      float step = Mathf.Min(remaining, MaxStep);
+      remaining -= step;
+      Step(step);
     }
 
-    rb.MovePosition(nextPos);
-
-    lifeTimer -= delta;
-    if (lifeTimer <= 0f)
-      ReturnToPool();
+    if (active)
+      Render();
   }
 
-  void OnTriggerEnter2D(Collider2D other)
+  private void Step(float dt)
   {
-    // Fish hit handling moved to BaseFish.
-  }
+    position += velocity * dt;
+    Bounce();
 
-  void ReflectFromHit(RaycastHit2D hit)
-  {
-    Vector2 dir = velocity.normalized;
-
-    Vector2 reflectedDir;
-
-    // Corner-safe reflection
-    if (Mathf.Abs(hit.normal.x) > 0.5f && Mathf.Abs(hit.normal.y) > 0.5f)
+    if (bounceCount > maxBounces)
     {
-      reflectedDir = new Vector2(-dir.x, -dir.y);
-    }
-    else
-    {
-      reflectedDir = Vector2.Reflect(dir, hit.normal);
+      ResolveMiss();
+      return;
     }
 
-    velocity = reflectedDir.normalized * speed;
-    UpdateVisual(velocity.normalized);
+    double now = ServerClock.NowMs;
+    BaseFish hit = FindHitFish(now);
+    if (hit != null)
+    {
+      ResolveHit(hit, now);
+      return;
+    }
+
+    age += dt;
+    if (age >= maxLifetime)
+      ResolveMiss();
   }
 
-
-  void UpdateVisual(Vector2 direction)
+  private void Bounce()
   {
-    transform.up = direction;
+    if (position.x <= 0f)
+    {
+      position.x = 0f;
+      velocity.x = -velocity.x;
+      bounceCount++;
+    }
+    else if (position.x >= Playfield.Width)
+    {
+      position.x = Playfield.Width;
+      velocity.x = -velocity.x;
+      bounceCount++;
+    }
+
+    if (position.y <= 0f)
+    {
+      position.y = 0f;
+      velocity.y = -velocity.y;
+      bounceCount++;
+    }
+    else if (position.y >= Playfield.Height)
+    {
+      position.y = Playfield.Height;
+      velocity.y = -velocity.y;
+      bounceCount++;
+    }
   }
 
-  void ReturnToPool()
+  // First fish (in spawn order) whose server hitbox contains the bullet, like the server.
+  private BaseFish FindHitFish(double now)
   {
-    if (finalized) return;
+    var fishes = FishManager.Instance.GetActiveFishes();
+    for (int i = 0; i < fishes.Count; i++)
+    {
+      BaseFish fish = fishes[i];
+      if (!fish.IsHittable(now))
+        continue;
 
-    finalized = true;
+      float radius = fish.HitboxRadius;
+      if ((position - fish.ServerPositionAt(now)).sqrMagnitude <= radius * radius)
+        return fish;
+    }
+    return null;
+  }
+
+  private void ResolveHit(BaseFish fish, double now)
+  {
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, $"Hit {bulletId} -> {fish.Id} ({fish.data?.variant}) at ({position.x:F0},{position.y:F0}) bounces={bounceCount}");
+    SocketIOManager.Instance.SendShoot(bulletId, origin, position, bounceCount, now);
+
+    Vector3 world = Playfield.ServerToWorld(position);
+    HitMarkerPool.Instance.GetFromPool().Play(world);
+    fish.StartCoroutine(fish.DamageAnimation(fishDamageColor));
+    Finish();
+  }
+
+  private void ResolveMiss()
+  {
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, $"Miss {bulletId} at ({position.x:F0},{position.y:F0}) bounces={bounceCount} age={age:F1}s");
+    SocketIOManager.Instance.SendShoot(bulletId, origin, position, bounceCount, ServerClock.NowMs);
+    Finish();
+  }
+
+  private void Finish()
+  {
+    if (!active)
+      return;
+
     active = false;
-    rb.linearVelocity = Vector2.zero;
+    InFlight = Mathf.Max(0, InFlight - 1);
     BulletPool.Instance.ReturnToPool(this);
-    HandleMiss();
   }
 
-  void HandleMiss()
+  private void Render()
   {
-    if (fishHit) return;
-    // TODO: handle miss bullets with backend once success=false includes fishId/weaponType.
-    SocketIOManager.Instance.SendHitEvent("", "normal");
+    Vector3 world = Playfield.ServerToWorld(position);
+    Vector3 ahead = Playfield.ServerToWorld(position + velocity.normalized);
+    transform.position = world;
+    transform.up = ahead - world;
   }
 
+  void OnDisable()
+  {
+    if (!active)
+      return;
+
+    // Should never happen; the ledger releases the reservation after its timeout.
+    GameLog.Warn(LogCategory.Bullet, $"{bulletId} disabled before resolving; no SHOOT was sent");
+    active = false;
+    InFlight = Mathf.Max(0, InFlight - 1);
+  }
+
+  // Old-backend physics hit (Curvy fish only). Server-driven fish never reach this.
   internal void OnFishHit(BaseFish fish)
   {
     if (!active)
       return;
 
-    fishHit = true;
     HitMarkerPool.Instance.GetFromPool().Play(transform.position);
     StartCoroutine(fish.DamageAnimation(fishDamageColor));
-    ReturnToPool();
-  }
-
-  void DebugRay(Vector2 currentPos, float delta)
-  {
-#if UNITY_EDITOR
-    if (drawDebugRay)
-    {
-      Debug.DrawRay(
-          currentPos,
-          velocity.normalized * velocity.magnitude * delta,
-          Color.red,
-          5f
-      );
-    }
-#endif
+    Finish();
   }
 }

@@ -1,0 +1,282 @@
+{
+  "id": "ML-FG",
+  "name": "fishgame",
+  "seats": [
+    {
+      "x": 480,
+      "y": 1080,
+      "z": 0
+    },
+    {
+      "x": 1440,
+      "y": 1080,
+      "z": 0
+    },
+    {
+      "x": 480,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "x": 1440,
+      "y": 0,
+      "z": 0
+    }
+  ],
+  "fishes": [
+    {
+      "type": "sardine",
+      "lifespan": 24000,
+      "movement": {
+        "pathTypes": [
+          "straight",
+          "curve",
+          "w_shape"
+        ],
+        "curveRange": {
+          "max": 50,
+          "min": -50
+        },
+        "speedRange": {
+          "max": 200,
+          "min": 100
+        },
+        "wShapeAmplitudeRange": {
+          "max": 250,
+          "min": 100
+        }
+      },
+      "variants": [
+        "sardine_a",
+        "sardine_b"
+      ],
+      "hitChance": 0,
+      "multiplier": 20,
+      "spawnWeight": 40,
+      "hitboxRadius": 40
+    },
+    {
+      "type": "clownfish",
+      "lifespan": 28000,
+      "movement": {
+        "pathTypes": [
+          "straight",
+          "curve",
+          "w_shape"
+        ],
+        "curveRange": {
+          "max": 30,
+          "min": -30
+        },
+        "speedRange": {
+          "max": 180,
+          "min": 120
+        }
+      },
+      "variants": [
+        "clownfish_a"
+      ],
+      "hitChance": 0.03,
+      "multiplier": 30,
+      "spawnWeight": 25,
+      "hitboxRadius": 45
+    },
+    {
+      "type": "angelfish",
+      "lifespan": 32000,
+      "movement": {
+        "pathTypes": [
+          "straight",
+          "s_curve",
+          "w_shape"
+        ],
+        "curveRange": {
+          "max": 80,
+          "min": -80
+        },
+        "speedRange": {
+          "max": 150,
+          "min": 80
+        }
+      },
+      "variants": [
+        "angelfish_a"
+      ],
+      "hitChance": 0.415,
+      "multiplier": 60,
+      "spawnWeight": 15,
+      "hitboxRadius": 50
+    },
+    {
+      "type": "shark",
+      "lifespan": 36000,
+      "movement": {
+        "pathTypes": [
+          "straight",
+          "curve"
+        ],
+        "curveRange": {
+          "max": 100,
+          "min": -100
+        },
+        "speedRange": {
+          "max": 250,
+          "min": 150
+        }
+      },
+      "variants": [
+        "shark_a"
+      ],
+      "hitChance": 0.345,
+      "multiplier": 20,
+      "spawnWeight": 10,
+      "hitboxRadius": 60
+    },
+    {
+      "type": "golden_dragon",
+      "density": {
+        "enabled": true,
+        "allowedSpecies": [
+          "sardine",
+          "clownfish",
+          "angelfish"
+        ],
+        "supportCountRange": {
+          "max": 14,
+          "min": 6
+        },
+        "preSpawnDelayRangeMs": {
+          "max": 1200,
+          "min": 300
+        },
+        "postSpawnDelayRangeMs": {
+          "max": 1800,
+          "min": 400
+        }
+      },
+      "lifespan": 40000,
+      "movement": {
+        "pathTypes": [
+          "straight",
+          "s_curve",
+          "curve"
+        ],
+        "curveRange": {
+          "max": 150,
+          "min": -150
+        },
+        "speedRange": {
+          "max": 350,
+          "min": 200
+        }
+      },
+      "variants": [
+        "golden_dragon_a"
+      ],
+      "hitChance": 0.1125,
+      "multiplier": 80,
+      "spawnWeight": 2,
+      "hitboxRadius": 200
+    },
+    {
+      "type": "crab",
+      "lifespan": 30000,
+      "movement": {
+        "pathTypes": [
+          "zigzag"
+        ],
+        "speedRange": {
+          "max": 180,
+          "min": 120
+        },
+        "speedProfile": {
+          "type": "waypoints",
+          "dipDistance": 30,
+          "numDipsRange": {
+            "max": 1,
+            "min": 1
+          },
+          "dipSpeedFactor": 0.1
+        }
+      },
+      "variants": [
+        "crab_a"
+      ],
+      "hitChance": 0.5,
+      "multiplier": 15,
+      "spawnWeight": 100,
+      "hitboxRadius": 45
+    },
+    {
+      "type": "tortoise",
+      "lifespan": 40000,
+      "movement": {
+        "pathTypes": [
+          "zigzag"
+        ],
+        "speedRange": {
+          "max": 180,
+          "min": 120
+        },
+        "speedProfile": {
+          "type": "waypoints",
+          "dipDistance": 10,
+          "numDipsRange": {
+            "max": 3,
+            "min": 1
+          },
+          "dipSpeedFactor": 0.09
+        }
+      },
+      "variants": [
+        "tortoise_a"
+      ],
+      "hitChance": 0.3,
+      "multiplier": 25,
+      "spawnWeight": 100,
+      "hitboxRadius": 50
+    }
+  ],
+  "weapons": {
+    "normal": {
+      "cost": 1,
+      "hitChanceMultiplier": 1
+    }
+  },
+  "roomLimit": 4,
+  "spawnInterval": 1500,
+  "maxBulletBounces": 3,
+  "maxConcurrentFish": 25,
+  "formationPhaseConfig": {
+    "formations": [
+      {
+        "type": "radial_flower",
+        "weight": 50,
+        "direction": "CENTER_OUT",
+        "fishCount": 20,
+        "spawnDelayMs": 0,
+        "allowedSpecies": [
+          "sardine"
+        ],
+        "repeatIntervalMs": 2000
+      },
+      {
+        "type": "v_shape",
+        "weight": 50,
+        "spacing": 0.1,
+        "direction": "LEFT_TO_RIGHT",
+        "fishCount": 12,
+        "spawnDelayMs": 200,
+        "allowedSpecies": [
+          "clownfish",
+          "angelfish"
+        ],
+        "repeatIntervalMs": 8000
+      }
+    ],
+    "intervalMs": 20000,
+    "phaseDurationMs": 40000,
+    "textAnimationDurationMs": 3000
+  },
+  "lagCompensationWindowMs": 400
+}

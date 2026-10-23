@@ -12,9 +12,13 @@ internal class SpecialFish : BaseFish
     Invoke(nameof(AttachRing), 0.1f);
   }
 
-  protected override void DespawnFish()
+  protected override void OnServerSpawned()
   {
-    base.DespawnFish();
+    Invoke(nameof(AttachRing), 0.1f);
+  }
+
+  protected override void OnReleased()
+  {
     ReturnRingToPool();
   }
 

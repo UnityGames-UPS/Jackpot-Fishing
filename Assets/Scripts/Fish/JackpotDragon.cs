@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 internal class JackpotDragon : BaseFish
@@ -6,8 +7,8 @@ internal class JackpotDragon : BaseFish
   [SerializeField] private Sprite[] deathAnimationFrames;
   [SerializeField] private float deathAnimationSpeed = 10f;
   [SerializeField] private Vector2 deathSizeDelta = new Vector2(400f, 400f);
-  private bool deathSequencePlaying;
   private float pendingWinAmount;
+  private bool playLegacyRewards;
 
   internal override void Initialize(FishData data)
   {
@@ -15,20 +16,23 @@ internal class JackpotDragon : BaseFish
     SetupFallbackMovement();
   }
 
+  // Old backend: the hit handler drove the death and its rewards from here.
   internal void TriggerDeathSequence(float winAmount)
   {
-    if (deathSequencePlaying)
+    if (State != FishState.Alive)
       return;
 
-    deathSequencePlaying = true;
     pendingWinAmount = winAmount;
+    playLegacyRewards = true;
     OnFishDespawned = null;
-    MarkPendingDeath();
-    StopPathMovement();
+    Kill();
+  }
 
+  protected override void PlayDeath(Action onComplete)
+  {
     if (deathAnimationFrames == null || deathAnimationFrames.Length == 0)
     {
-      HandleDeathAnimationComplete();
+      FinishDeath(onComplete);
       return;
     }
 
@@ -36,23 +40,28 @@ internal class JackpotDragon : BaseFish
     imageAnimation.StopAnimation();
     imageAnimation.doLoopAnimation = false;
     imageAnimation.SetAnimationData(deathAnimationFrames, deathAnimationSpeed, false);
-    imageAnimation.OnAnimationComplete = HandleDeathAnimationComplete;
+    imageAnimation.OnAnimationComplete = () => FinishDeath(onComplete);
     imageAnimation.StartAnimation();
   }
 
-  private void HandleDeathAnimationComplete()
+  private void FinishDeath(Action onComplete)
   {
     imageAnimation.OnAnimationComplete = null;
-    UIManager.Instance?.PlayCoinBlastForFish(this);
-    UIManager.Instance?.PlayRainbowWinAnimation(this, data, pendingWinAmount);
-    Die();
+
+    if (playLegacyRewards)
+    {
+      UIManager.Instance?.PlayCoinBlastForFish(this);
+      UIManager.Instance?.PlayRainbowWinAnimation(this, data, pendingWinAmount);
+    }
+
+    base.PlayDeath(onComplete);
   }
 
   internal override void ResetFish()
   {
     base.ResetFish();
-    deathSequencePlaying = false;
     pendingWinAmount = 0f;
+    playLegacyRewards = false;
     if (imageAnimation != null)
       imageAnimation.OnAnimationComplete = null;
   }

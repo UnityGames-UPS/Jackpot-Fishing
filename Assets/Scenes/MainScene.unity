@@ -488,9 +488,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1557048298}
-  - {fileID: 1987229289}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -1947,8 +1945,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 311, y: -10}
-  m_SizeDelta: {x: 120, y: 120}
+  m_AnchoredPosition: {x: 272, y: -10}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &38715356
 MonoBehaviour:
@@ -2629,7 +2627,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 868.6
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -2868,13 +2866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1953539787}
-  - {fileID: 245984132}
-  - {fileID: 196473332}
-  - {fileID: 1538633058}
-  - {fileID: 496822259}
-  - {fileID: 1745724038}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -2924,7 +2916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 48572275}
   m_Layer: 5
-  m_Name: UI
+  m_Name: BetUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3009,15 +3001,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 52750573}
-  - {fileID: 383025882}
-  - {fileID: 1377975094}
-  - {fileID: 2065652091}
-  - {fileID: 1141517798}
-  - {fileID: 519788859}
-  - {fileID: 1537102153}
-  - {fileID: 2073597532}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -3383,15 +3367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1357409380}
-  - {fileID: 281127009}
-  - {fileID: 680091289}
-  - {fileID: 40511219}
-  - {fileID: 1259437836}
-  - {fileID: 1793741660}
-  - {fileID: 566325516}
-  - {fileID: 1080113789}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -4591,8 +4567,9 @@ MonoBehaviour:
   blocker: {fileID: 1574267015}
   JSManager: {fileID: 65143892}
   TestSocketURI: https://devrealtime.dingdinghouse.com/
-  testToken: b4a0d885545940879808dc0077cdd852
-  SpawnEventInterval: 4
+  testToken: e1d7c1fc270c4ecda86bcde309d8f39e
+  requestAckTimeout: 5
+  clockSyncWait: 2
   electricHitInterval: 1.5
   bets: []
   initFishes: []
@@ -4600,8 +4577,6 @@ MonoBehaviour:
   - 1
   - 1
   - 6
-  effectFishExpireWait: 2
-  disconnectDelay: 180
 --- !u!4 &84247399
 Transform:
   m_ObjectHideFlags: 0
@@ -6050,9 +6025,6 @@ MonoBehaviour:
   UIWrapperSecondary: {fileID: 1177030584}
   CanvasScalerPrimary: {fileID: 425042028}
   CanvasScalerSecondary: {fileID: 44676259}
-  MatchWidth: 0
-  MatchHeight: 1
-  PortraitMatchHeight: 1
   transitionDuration: 0.2
   waitForRotation: 0.2
 --- !u!1 &120953263
@@ -6241,11 +6213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1338675078}
-  - {fileID: 1082770825}
-  - {fileID: 1056183616}
-  - {fileID: 1582488980}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -6567,15 +6535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1111000201}
-  - {fileID: 623818531}
-  - {fileID: 856376096}
-  - {fileID: 1906740000}
-  - {fileID: 1485303495}
-  - {fileID: 1878997409}
-  - {fileID: 2095563039}
-  - {fileID: 1635327551}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -6870,12 +6830,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1410687553}
-  - {fileID: 430417346}
-  - {fileID: 121304989}
-  - {fileID: 1922314281}
-  - {fileID: 1210104818}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -7176,17 +7131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 302870924}
-  - {fileID: 867727197}
-  - {fileID: 378648877}
-  - {fileID: 422680809}
-  - {fileID: 221615140}
-  - {fileID: 2131448036}
-  - {fileID: 167814649}
-  - {fileID: 1341881712}
-  - {fileID: 2071013304}
-  - {fileID: 845734609}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -8140,12 +8085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 987731478}
-  - {fileID: 1107749978}
-  - {fileID: 1368799770}
-  - {fileID: 956393718}
-  - {fileID: 92257233}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -8440,12 +8380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1008761955}
-  - {fileID: 1963836475}
-  - {fileID: 1348249633}
-  - {fileID: 696535271}
-  - {fileID: 1418044576}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -8971,14 +8906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 22772203}
-  - {fileID: 1482355667}
-  - {fileID: 682455838}
-  - {fileID: 994471248}
-  - {fileID: 1637292540}
-  - {fileID: 2056340172}
-  - {fileID: 649505229}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -9278,17 +9206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1007848725}
-  - {fileID: 1822541703}
-  - {fileID: 2002996806}
-  - {fileID: 1537061085}
-  - {fileID: 1682347176}
-  - {fileID: 1844369125}
-  - {fileID: 1269624797}
-  - {fileID: 859931835}
-  - {fileID: 592793224}
-  - {fileID: 637541531}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -9719,12 +9637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 26801019}
-  - {fileID: 1039575966}
-  - {fileID: 1803740483}
-  - {fileID: 429770301}
-  - {fileID: 1564229080}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -9795,9 +9708,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 772381678}
-  - {fileID: 1566575366}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -9974,13 +9885,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 983776720}
-  - {fileID: 857396299}
-  - {fileID: 687731509}
-  - {fileID: 541196736}
-  - {fileID: 1703774141}
-  - {fileID: 1405683389}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -10881,14 +10786,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1658136256}
-  - {fileID: 1452731121}
-  - {fileID: 1498566564}
-  - {fileID: 830146636}
-  - {fileID: 1702506916}
-  - {fileID: 820508036}
-  - {fileID: 1904420953}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -11052,17 +10950,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1301171909}
-  - {fileID: 1946110318}
-  - {fileID: 750950396}
-  - {fileID: 419153205}
-  - {fileID: 1107289608}
-  - {fileID: 602902953}
-  - {fileID: 1491962892}
-  - {fileID: 770610814}
-  - {fileID: 87878111}
-  - {fileID: 1740867409}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -12388,9 +12276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 399808221}
-  - {fileID: 436194720}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -12832,15 +12718,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1278965769}
-  - {fileID: 2138015345}
-  - {fileID: 1333115246}
-  - {fileID: 1819654919}
-  - {fileID: 261594629}
-  - {fileID: 2013860979}
-  - {fileID: 142963917}
-  - {fileID: 451886531}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -14256,17 +14134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1976184814}
-  - {fileID: 1370765256}
-  - {fileID: 2141652185}
-  - {fileID: 1276573688}
-  - {fileID: 1201432790}
-  - {fileID: 1060250086}
-  - {fileID: 377790685}
-  - {fileID: 855060169}
-  - {fileID: 2140207328}
-  - {fileID: 1228670069}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -14563,14 +14431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1160948066}
-  - {fileID: 708977664}
-  - {fileID: 1987695501}
-  - {fileID: 1105283798}
-  - {fileID: 647569608}
-  - {fileID: 141201845}
-  - {fileID: 2107201247}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -15364,13 +15225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1990202523}
-  - {fileID: 1073326836}
-  - {fileID: 949927091}
-  - {fileID: 1202084973}
-  - {fileID: 119128368}
-  - {fileID: 58693398}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -16768,13 +16623,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 700579952}
-  - {fileID: 959155470}
-  - {fileID: 229444512}
-  - {fileID: 1540120755}
-  - {fileID: 375444278}
-  - {fileID: 1637524756}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -17990,13 +17839,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2057653453}
-  - {fileID: 1692771984}
-  - {fileID: 2077331786}
-  - {fileID: 1757415155}
-  - {fileID: 1943908451}
-  - {fileID: 745958321}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -18401,15 +18244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1198243548}
-  - {fileID: 142461250}
-  - {fileID: 846885565}
-  - {fileID: 2052445384}
-  - {fileID: 1277198140}
-  - {fileID: 2067280038}
-  - {fileID: 1825867387}
-  - {fileID: 1863006475}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -18841,13 +18676,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1736536006}
-  - {fileID: 2010810029}
-  - {fileID: 823758487}
-  - {fileID: 102650491}
-  - {fileID: 1126853690}
-  - {fileID: 794635016}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -19571,17 +19400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1801873899}
-  - {fileID: 1311469561}
-  - {fileID: 1030997733}
-  - {fileID: 1909578862}
-  - {fileID: 156600254}
-  - {fileID: 1086746033}
-  - {fileID: 209191633}
-  - {fileID: 717903566}
-  - {fileID: 274411557}
-  - {fileID: 1616217333}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -21264,12 +21083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 794544635}
-  - {fileID: 2021188647}
-  - {fileID: 6640196}
-  - {fileID: 1172861152}
-  - {fileID: 410784555}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -21705,12 +21519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 318921627}
-  - {fileID: 327076473}
-  - {fileID: 850985964}
-  - {fileID: 1834817268}
-  - {fileID: 939986816}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -22143,14 +21952,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 800932800}
-  - {fileID: 869432978}
-  - {fileID: 1578521978}
-  - {fileID: 1899572915}
-  - {fileID: 557299854}
-  - {fileID: 1302593973}
-  - {fileID: 1860709661}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -22314,17 +22116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1318361574}
-  - {fileID: 2045970035}
-  - {fileID: 1256318238}
-  - {fileID: 81509922}
-  - {fileID: 731093101}
-  - {fileID: 1677331308}
-  - {fileID: 697102090}
-  - {fileID: 704691439}
-  - {fileID: 1364409922}
-  - {fileID: 1867824416}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -23374,15 +23166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 571223647}
-  - {fileID: 301418759}
-  - {fileID: 1888965001}
-  - {fileID: 1835722841}
-  - {fileID: 551712077}
-  - {fileID: 679034649}
-  - {fileID: 293702715}
-  - {fileID: 1957112910}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -23543,14 +23327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1901862866}
-  - {fileID: 1580633736}
-  - {fileID: 1326259952}
-  - {fileID: 893097773}
-  - {fileID: 1384097617}
-  - {fileID: 708277164}
-  - {fileID: 1888574387}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -24057,7 +23834,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 868.6
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -25584,9 +25361,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 657418734}
-  - {fileID: 1874372038}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -25799,7 +25574,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2340, y: 1080}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &469943436
 MonoBehaviour:
@@ -26902,16 +26677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1524770739}
-  - {fileID: 1283873873}
-  - {fileID: 1829401661}
-  - {fileID: 667693825}
-  - {fileID: 1039491328}
-  - {fileID: 2116804831}
-  - {fileID: 272324341}
-  - {fileID: 869613259}
-  - {fileID: 906928742}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -27276,13 +27042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1032221719}
-  - {fileID: 1916233458}
-  - {fileID: 827354987}
-  - {fileID: 1431220673}
-  - {fileID: 741112403}
-  - {fileID: 16284554}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -28060,17 +27820,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 236701190}
-  - {fileID: 261912537}
-  - {fileID: 989063489}
-  - {fileID: 756537697}
-  - {fileID: 288491160}
-  - {fileID: 503675879}
-  - {fileID: 205747734}
-  - {fileID: 1551637677}
-  - {fileID: 1347157607}
-  - {fileID: 475123875}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -28298,13 +28048,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 240111177}
-  - {fileID: 1217912942}
-  - {fileID: 589040665}
-  - {fileID: 675745956}
-  - {fileID: 1473390994}
-  - {fileID: 1797265410}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -28482,15 +28226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 104726538}
-  - {fileID: 905621445}
-  - {fileID: 1344277337}
-  - {fileID: 1742730857}
-  - {fileID: 595730108}
-  - {fileID: 2046003603}
-  - {fileID: 235354596}
-  - {fileID: 1496556874}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -28946,13 +28682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 939097620}
-  - {fileID: 1913320271}
-  - {fileID: 496403972}
-  - {fileID: 1003601205}
-  - {fileID: 713765048}
-  - {fileID: 236186377}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -30189,13 +29919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 168002732}
-  - {fileID: 67621702}
-  - {fileID: 2139613514}
-  - {fileID: 578882502}
-  - {fileID: 883377589}
-  - {fileID: 151932580}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -30492,13 +30216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 914171386}
-  - {fileID: 1877275099}
-  - {fileID: 1060316101}
-  - {fileID: 2082306972}
-  - {fileID: 747547094}
-  - {fileID: 1695982128}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -30866,17 +30584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 357489793}
-  - {fileID: 1571015655}
-  - {fileID: 358390304}
-  - {fileID: 208077824}
-  - {fileID: 606961945}
-  - {fileID: 2056672294}
-  - {fileID: 1039440584}
-  - {fileID: 432419994}
-  - {fileID: 68898784}
-  - {fileID: 1682209826}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -31036,13 +30744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1211508160}
-  - {fileID: 83169713}
-  - {fileID: 567285818}
-  - {fileID: 687353318}
-  - {fileID: 1490197430}
-  - {fileID: 1835605298}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -33577,15 +33279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 394944357}
-  - {fileID: 1440168334}
-  - {fileID: 1572528090}
-  - {fileID: 2071534165}
-  - {fileID: 1342329784}
-  - {fileID: 979779709}
-  - {fileID: 2044454877}
-  - {fileID: 1389310952}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -33880,12 +33574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 577499488}
-  - {fileID: 1786523108}
-  - {fileID: 1655629419}
-  - {fileID: 1677502829}
-  - {fileID: 728524415}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -34860,13 +34549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2029649544}
-  - {fileID: 279195015}
-  - {fileID: 354558649}
-  - {fileID: 352914040}
-  - {fileID: 1599536245}
-  - {fileID: 1073176202}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -35738,13 +35421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1065821694}
-  - {fileID: 1017922403}
-  - {fileID: 608983569}
-  - {fileID: 587066989}
-  - {fileID: 354599252}
-  - {fileID: 2005804837}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -36442,17 +36119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 325916841}
-  - {fileID: 859942661}
-  - {fileID: 1599263077}
-  - {fileID: 379877147}
-  - {fileID: 1025750515}
-  - {fileID: 338631186}
-  - {fileID: 1487020967}
-  - {fileID: 86364471}
-  - {fileID: 987920638}
-  - {fileID: 861922260}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -37063,15 +36730,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 933716870}
-  - {fileID: 374035383}
-  - {fileID: 293953060}
-  - {fileID: 1715389166}
-  - {fileID: 192239385}
-  - {fileID: 1429888627}
-  - {fileID: 82732103}
-  - {fileID: 1442257465}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -37470,12 +37129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 796601860}
-  - {fileID: 619526415}
-  - {fileID: 633347193}
-  - {fileID: 2022572508}
-  - {fileID: 1147793054}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -38117,13 +37771,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1594435220}
-  - {fileID: 1945146132}
-  - {fileID: 1069641377}
-  - {fileID: 363166347}
-  - {fileID: 2054917450}
-  - {fileID: 876306777}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -39430,9 +39078,27 @@ MonoBehaviour:
   normalSmallPoolAThreshold: 2
   normalSmallPoolBThreshold: 7
   normalBigPoolThreshold: 8
+  starCoinDelay: 0.5
   effectStarCoinOffsetRadius: 2
   effectStarCoinOffsetRadiusPerFishWidth: 1
   effectStarCoinOffsetRadiusMax: 3
+  playfieldRect: {fileID: 469943435}
+  variantAliases:
+  - serverVariant: sardine
+    clientVariant: small_dragon_fish
+  - serverVariant: clownfish
+    clientVariant: pinecone_fish
+  - serverVariant: angelfish
+    clientVariant: angel_fish
+  - serverVariant: shark
+    clientVariant: hammer_head
+  - serverVariant: crab
+    clientVariant: orange_fish
+  - serverVariant: tortoise
+    clientVariant: bluewing_fish
+  - serverVariant: golden_dragon
+    clientVariant: jelly_fish
+  fallbackVariant: 
   enableMockSpawning: 0
   mockFishIndex: 6
   activeFishes: []
@@ -39493,12 +39159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1983714927}
-  - {fileID: 2109499254}
-  - {fileID: 1298990469}
-  - {fileID: 1015549943}
-  - {fileID: 57578090}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -39678,13 +39339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1060406855}
-  - {fileID: 1621617276}
-  - {fileID: 480455422}
-  - {fileID: 579241088}
-  - {fileID: 1072436233}
-  - {fileID: 1407579051}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -39823,13 +39478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 761812600}
-  - {fileID: 1183168415}
-  - {fileID: 1860980437}
-  - {fileID: 1018413595}
-  - {fileID: 762892231}
-  - {fileID: 1240212899}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -41943,9 +41592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 542575570}
-  - {fileID: 1990571304}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -42559,15 +42206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1358190189}
-  - {fileID: 297107158}
-  - {fileID: 1287683648}
-  - {fileID: 1646516939}
-  - {fileID: 1813357237}
-  - {fileID: 1818638805}
-  - {fileID: 811849176}
-  - {fileID: 17954087}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -42607,6 +42246,51 @@ MonoBehaviour:
   m_OnBeforeControlPointDelete:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &747207785
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 747207787}
+  - component: {fileID: 747207786}
+  m_Layer: 0
+  m_Name: Audio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &747207786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747207785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4904b6f4b8e2a4ab2a2f21332773aaf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioController
+  sources: []
+--- !u!4 &747207787
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747207785}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.46906, y: -2.42007, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &747433246
 GameObject:
   m_ObjectHideFlags: 0
@@ -43570,6 +43254,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 760479782}
   m_CullTransparentMesh: 1
+--- !u!1 &761553750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761553752}
+  - component: {fileID: 761553751}
+  m_Layer: 0
+  m_Name: Logs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &761553751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761553750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f49f8f07cd9c4efa8372b5f724b6b3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogSettings
+  socket: 1
+  payloads: 0
+  clock: 0
+  fish: 0
+  bullets: 0
+  balance: 0
+  ui: 1
+  lifecycle: 1
+  legacy: 0
+  alwaysShowWarnings: 1
+  infoLogsInReleaseBuilds: 0
+--- !u!4 &761553752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761553750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.66601, y: -1.67734, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &761812599
 GameObject:
   m_ObjectHideFlags: 0
@@ -43805,13 +43544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2103040434}
-  - {fileID: 1604003955}
-  - {fileID: 1265725889}
-  - {fileID: 984044510}
-  - {fileID: 741464635}
-  - {fileID: 1542806092}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -44504,13 +44237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1875470921}
-  - {fileID: 472011132}
-  - {fileID: 4801391}
-  - {fileID: 797821378}
-  - {fileID: 341633179}
-  - {fileID: 2040315261}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -45456,11 +45183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1810889485}
-  - {fileID: 1549960567}
-  - {fileID: 184049110}
-  - {fileID: 1392235667}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -45844,14 +45567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1626359742}
-  - {fileID: 957519421}
-  - {fileID: 536485723}
-  - {fileID: 1729433471}
-  - {fileID: 1355890010}
-  - {fileID: 1177291867}
-  - {fileID: 931787743}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -46216,14 +45932,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 56170909}
-  - {fileID: 222531151}
-  - {fileID: 823833106}
-  - {fileID: 1251944415}
-  - {fileID: 293860078}
-  - {fileID: 2052642723}
-  - {fileID: 938050302}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -46451,13 +46160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1200268718}
-  - {fileID: 147154865}
-  - {fileID: 1673121149}
-  - {fileID: 592089056}
-  - {fileID: 463111002}
-  - {fileID: 840642948}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -46638,6 +46341,8 @@ MonoBehaviour:
   JackpotFishesMultText: {fileID: 1101041044}
   JackpotDragonMultText: {fileID: 500312066}
   CloseRooster: {fileID: 968364302}
+  jsFunctCalls: {fileID: 65143892}
+  audioController: {fileID: 747207786}
 --- !u!4 &819296387
 Transform:
   m_ObjectHideFlags: 0
@@ -47392,12 +47097,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1860984424}
-  - {fileID: 1805074014}
-  - {fileID: 269465140}
-  - {fileID: 1325533393}
-  - {fileID: 127945693}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -47692,12 +47392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1604235374}
-  - {fileID: 764938938}
-  - {fileID: 1265158732}
-  - {fileID: 2082776525}
-  - {fileID: 748911376}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -47993,13 +47688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 249194815}
-  - {fileID: 2029556841}
-  - {fileID: 461225113}
-  - {fileID: 1854557526}
-  - {fileID: 1805893349}
-  - {fileID: 554192324}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -48092,14 +47781,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2038404154}
-  - {fileID: 2025670925}
-  - {fileID: 1862210114}
-  - {fileID: 1125193444}
-  - {fileID: 1888369079}
-  - {fileID: 331395736}
-  - {fileID: 1350543265}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -49851,9 +49533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1267423778}
-  - {fileID: 384717787}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -51740,13 +51420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1610049745}
-  - {fileID: 183088671}
-  - {fileID: 1875959577}
-  - {fileID: 732941469}
-  - {fileID: 1614898963}
-  - {fileID: 1194431122}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -51907,14 +51581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 18380490}
-  - {fileID: 1736880796}
-  - {fileID: 1502823261}
-  - {fileID: 1222632269}
-  - {fileID: 603500548}
-  - {fileID: 748835124}
-  - {fileID: 1169857777}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -53165,13 +52832,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 188641732}
-  - {fileID: 686707269}
-  - {fileID: 100157592}
-  - {fileID: 962638088}
-  - {fileID: 1327336923}
-  - {fileID: 41286093}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -54102,14 +53763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1768412041}
-  - {fileID: 1510156697}
-  - {fileID: 21461766}
-  - {fileID: 1989470273}
-  - {fileID: 392468088}
-  - {fileID: 1559297528}
-  - {fileID: 577419730}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -54500,12 +54154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1814515066}
-  - {fileID: 840779985}
-  - {fileID: 354226953}
-  - {fileID: 1205899509}
-  - {fileID: 446209950}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -55253,17 +54902,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 551292437}
-  - {fileID: 453967792}
-  - {fileID: 1354683499}
-  - {fileID: 788968510}
-  - {fileID: 108508121}
-  - {fileID: 321591836}
-  - {fileID: 1670617753}
-  - {fileID: 354918380}
-  - {fileID: 1818178252}
-  - {fileID: 472751293}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -56468,13 +56107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 460378358}
-  - {fileID: 1914951900}
-  - {fileID: 752390322}
-  - {fileID: 663806469}
-  - {fileID: 224173256}
-  - {fileID: 1394712731}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -56633,12 +56266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 146442969}
-  - {fileID: 1125477304}
-  - {fileID: 1302588617}
-  - {fileID: 832588553}
-  - {fileID: 747433248}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -57331,13 +56959,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1405263716}
-  - {fileID: 1172557874}
-  - {fileID: 1950092784}
-  - {fileID: 273655759}
-  - {fileID: 171147423}
-  - {fileID: 419765605}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -57873,9 +57495,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 267934706}
-  - {fileID: 1754069060}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -57971,17 +57591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 923520996}
-  - {fileID: 1254095140}
-  - {fileID: 1670024114}
-  - {fileID: 1916744414}
-  - {fileID: 247365347}
-  - {fileID: 1246525971}
-  - {fileID: 2076001066}
-  - {fileID: 595321052}
-  - {fileID: 300596116}
-  - {fileID: 485861034}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -58213,17 +57823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1295229724}
-  - {fileID: 1306679804}
-  - {fileID: 2061997793}
-  - {fileID: 1004099789}
-  - {fileID: 910607088}
-  - {fileID: 115751581}
-  - {fileID: 772669019}
-  - {fileID: 86050421}
-  - {fileID: 655548483}
-  - {fileID: 278338195}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -59374,9 +58974,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1933116655}
-  - {fileID: 2088283594}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -59566,12 +59164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1795546445}
-  - {fileID: 457072690}
-  - {fileID: 2044194373}
-  - {fileID: 912170411}
-  - {fileID: 706286149}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -60745,14 +60338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2102502841}
-  - {fileID: 1789856503}
-  - {fileID: 1525673356}
-  - {fileID: 150553704}
-  - {fileID: 716684238}
-  - {fileID: 529923248}
-  - {fileID: 1986298897}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -61953,14 +61539,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1085732724}
-  - {fileID: 1978077167}
-  - {fileID: 1809894514}
-  - {fileID: 1427804558}
-  - {fileID: 498403875}
-  - {fileID: 967108536}
-  - {fileID: 1230955358}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -62916,17 +62495,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1201359744}
-  - {fileID: 632856808}
-  - {fileID: 702673383}
-  - {fileID: 629408452}
-  - {fileID: 1810966019}
-  - {fileID: 1809641792}
-  - {fileID: 1121572363}
-  - {fileID: 1030646449}
-  - {fileID: 592740133}
-  - {fileID: 376957825}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -63677,16 +63246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1214544542}
-  - {fileID: 1799673617}
-  - {fileID: 607782035}
-  - {fileID: 240170888}
-  - {fileID: 1746494298}
-  - {fileID: 1606553201}
-  - {fileID: 579934785}
-  - {fileID: 400440893}
-  - {fileID: 1182675543}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -63886,14 +63446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 948936886}
-  - {fileID: 1103034754}
-  - {fileID: 1910253465}
-  - {fileID: 1226201964}
-  - {fileID: 1594153356}
-  - {fileID: 725840432}
-  - {fileID: 2059945818}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -64536,11 +64089,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1736402125}
-  - {fileID: 755647997}
-  - {fileID: 1538830782}
-  - {fileID: 1855562095}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -64637,6 +64186,7 @@ MonoBehaviour:
   bgRect: {fileID: 1009898494}
   worldCamera: {fileID: 519420031}
   GunSwitchAnimation: {fileID: 796786936}
+  seatRoot: {fileID: 0}
 --- !u!1 &1160948064
 GameObject:
   m_ObjectHideFlags: 0
@@ -64756,12 +64306,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 295346747}
-  - {fileID: 928516835}
-  - {fileID: 1261668367}
-  - {fileID: 1239660882}
-  - {fileID: 511119979}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -65578,13 +65123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 893697640}
-  - {fileID: 120953265}
-  - {fileID: 1977543114}
-  - {fileID: 1101413717}
-  - {fileID: 1000422477}
-  - {fileID: 1399074733}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -65802,7 +65341,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2340, y: 1080}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1177030585
 MonoBehaviour:
@@ -66185,16 +65724,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 518880734}
-  - {fileID: 846107500}
-  - {fileID: 1437908368}
-  - {fileID: 45830022}
-  - {fileID: 487991102}
-  - {fileID: 2041823693}
-  - {fileID: 264962665}
-  - {fileID: 1563967813}
-  - {fileID: 2009231483}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -66670,17 +66200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1263185365}
-  - {fileID: 630325380}
-  - {fileID: 1782008063}
-  - {fileID: 1558851399}
-  - {fileID: 558497790}
-  - {fileID: 2132156312}
-  - {fileID: 39229348}
-  - {fileID: 722131612}
-  - {fileID: 1761005304}
-  - {fileID: 1725136349}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -67184,17 +66704,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 714213181}
-  - {fileID: 634037918}
-  - {fileID: 1030967230}
-  - {fileID: 1650584668}
-  - {fileID: 255853310}
-  - {fileID: 1713362899}
-  - {fileID: 652161626}
-  - {fileID: 1469533039}
-  - {fileID: 1040906131}
-  - {fileID: 197749029}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -68236,12 +67746,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1871775949}
-  - {fileID: 2078845458}
-  - {fileID: 2090747180}
-  - {fileID: 1815703879}
-  - {fileID: 1198158056}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -69150,13 +68655,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 413828202}
-  - {fileID: 299509746}
-  - {fileID: 1848522799}
-  - {fileID: 726618675}
-  - {fileID: 1501167741}
-  - {fileID: 1661174035}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -69558,12 +69057,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1759167641}
-  - {fileID: 1605707533}
-  - {fileID: 195338500}
-  - {fileID: 1553979870}
-  - {fileID: 1683648588}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -70272,9 +69766,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1377370625}
-  - {fileID: 1926244678}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -71413,14 +70905,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 890548769}
-  - {fileID: 321052235}
-  - {fileID: 38661849}
-  - {fileID: 922290353}
-  - {fileID: 384175838}
-  - {fileID: 1103763083}
-  - {fileID: 46581977}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -71512,13 +70997,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1753764199}
-  - {fileID: 401450779}
-  - {fileID: 1545844794}
-  - {fileID: 1630030762}
-  - {fileID: 925435521}
-  - {fileID: 780968230}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -71609,12 +71088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 266061126}
-  - {fileID: 1719991456}
-  - {fileID: 1148262317}
-  - {fileID: 1430397006}
-  - {fileID: 1072352139}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -72141,17 +71615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1103915941}
-  - {fileID: 132516490}
-  - {fileID: 434680806}
-  - {fileID: 36829588}
-  - {fileID: 1946574172}
-  - {fileID: 92496493}
-  - {fileID: 621271210}
-  - {fileID: 358376373}
-  - {fileID: 28183388}
-  - {fileID: 984830715}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -72222,11 +71686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 161000309}
-  - {fileID: 941084309}
-  - {fileID: 1165388598}
-  - {fileID: 807312234}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -72594,13 +72054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1941517407}
-  - {fileID: 1309047501}
-  - {fileID: 251626360}
-  - {fileID: 743604085}
-  - {fileID: 1273941381}
-  - {fileID: 1727322533}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -72911,9 +72365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1516008276}
-  - {fileID: 1627066876}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -73005,13 +72457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1722233730}
-  - {fileID: 1850177823}
-  - {fileID: 1335324987}
-  - {fileID: 534165195}
-  - {fileID: 932704236}
-  - {fileID: 57950376}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -73082,11 +72528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1909766254}
-  - {fileID: 1907006690}
-  - {fileID: 1025852219}
-  - {fileID: 994073001}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -76039,13 +75481,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1795662241}
-  - {fileID: 619968476}
-  - {fileID: 1683021457}
-  - {fileID: 2114857108}
-  - {fileID: 484951640}
-  - {fileID: 1668228467}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -76475,11 +75911,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1200754644}
-  - {fileID: 1132425287}
-  - {fileID: 838926330}
-  - {fileID: 2120026424}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -76555,8 +75987,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 16, y: -12.999998}
-  m_SizeDelta: {x: 190, y: 218.5}
+  m_AnchoredPosition: {x: 16, y: 0.0000038146973}
+  m_SizeDelta: {x: 179.07, y: 205.5}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1361010123
 MonoBehaviour:
@@ -76615,6 +76047,7 @@ MonoBehaviour:
   muzzleFadeIn: 0.03
   muzzleFadeOut: 0.08
   fireRate: 5
+  maxBulletsInFlight: 30
 --- !u!1 &1364409920
 GameObject:
   m_ObjectHideFlags: 0
@@ -77206,13 +76639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 941468328}
-  - {fileID: 1859517957}
-  - {fileID: 996346490}
-  - {fileID: 1459065362}
-  - {fileID: 1856444202}
-  - {fileID: 1210300441}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -77817,12 +77244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1995797602}
-  - {fileID: 54564900}
-  - {fileID: 1703734874}
-  - {fileID: 669016668}
-  - {fileID: 1965038600}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -78398,13 +77820,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 384667739}
-  - {fileID: 990184579}
-  - {fileID: 1282361686}
-  - {fileID: 2025300503}
-  - {fileID: 485897856}
-  - {fileID: 1494597907}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -78987,12 +78403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1668895964}
-  - {fileID: 1938047802}
-  - {fileID: 1806027626}
-  - {fileID: 1966423496}
-  - {fileID: 1304440522}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -79426,14 +78837,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 641036578}
-  - {fileID: 1440939408}
-  - {fileID: 1080918574}
-  - {fileID: 1063887813}
-  - {fileID: 1513435682}
-  - {fileID: 384855380}
-  - {fileID: 1456809441}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -79488,7 +78892,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1412930002
 Transform:
   m_ObjectHideFlags: 0
@@ -81337,14 +80741,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 277913300}
-  - {fileID: 732041359}
-  - {fileID: 246170095}
-  - {fileID: 604787928}
-  - {fileID: 1566362283}
-  - {fileID: 225774544}
-  - {fileID: 907252515}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -82050,14 +81447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 135171628}
-  - {fileID: 388055580}
-  - {fileID: 1146613091}
-  - {fileID: 1451303781}
-  - {fileID: 306294316}
-  - {fileID: 1677073013}
-  - {fileID: 642154564}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -82217,13 +81607,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 9584638}
-  - {fileID: 1303122982}
-  - {fileID: 1561982796}
-  - {fileID: 1895098009}
-  - {fileID: 477765934}
-  - {fileID: 2119027970}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -84165,15 +83549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1539367740}
-  - {fileID: 1189016500}
-  - {fileID: 803139984}
-  - {fileID: 2139071689}
-  - {fileID: 1398393690}
-  - {fileID: 752395819}
-  - {fileID: 1055773599}
-  - {fileID: 490088333}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -84266,14 +83642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1807023466}
-  - {fileID: 306427148}
-  - {fileID: 1256055468}
-  - {fileID: 87482724}
-  - {fileID: 816391424}
-  - {fileID: 1883574389}
-  - {fileID: 475693019}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -84911,14 +84280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1461084997}
-  - {fileID: 1324423133}
-  - {fileID: 73439420}
-  - {fileID: 670385111}
-  - {fileID: 941894471}
-  - {fileID: 1044290747}
-  - {fileID: 1861855738}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -85353,14 +84715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 534161968}
-  - {fileID: 502904570}
-  - {fileID: 2057564839}
-  - {fileID: 1981179658}
-  - {fileID: 1509649117}
-  - {fileID: 860528369}
-  - {fileID: 1382799967}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -85591,15 +84946,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 266768797}
-  - {fileID: 1804654520}
-  - {fileID: 1378757611}
-  - {fileID: 1588689288}
-  - {fileID: 333375880}
-  - {fileID: 1489774957}
-  - {fileID: 772031205}
-  - {fileID: 1323329613}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -85899,17 +85246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 998706791}
-  - {fileID: 370223387}
-  - {fileID: 1460385216}
-  - {fileID: 352229890}
-  - {fileID: 2110393906}
-  - {fileID: 1500714253}
-  - {fileID: 434850748}
-  - {fileID: 347061841}
-  - {fileID: 787565978}
-  - {fileID: 1185991947}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -86002,14 +85339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1893811097}
-  - {fileID: 721970346}
-  - {fileID: 1468792138}
-  - {fileID: 558977736}
-  - {fileID: 2016702688}
-  - {fileID: 475796591}
-  - {fileID: 1523949349}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -86577,13 +85907,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1557157030}
-  - {fileID: 310451451}
-  - {fileID: 1509994616}
-  - {fileID: 1755177801}
-  - {fileID: 1714750794}
-  - {fileID: 796718771}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -87654,17 +86978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1058308413}
-  - {fileID: 345578581}
-  - {fileID: 1299639635}
-  - {fileID: 1307953736}
-  - {fileID: 1852357076}
-  - {fileID: 1472319220}
-  - {fileID: 1483414806}
-  - {fileID: 1467910171}
-  - {fileID: 1941521719}
-  - {fileID: 1103744408}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -88439,14 +87753,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1249167197}
-  - {fileID: 1566894414}
-  - {fileID: 1764371588}
-  - {fileID: 280031590}
-  - {fileID: 215186059}
-  - {fileID: 1932061259}
-  - {fileID: 1468386526}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -88588,8 +87895,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 47.29, y: -29.9}
-  m_SizeDelta: {x: 300.15, y: 98.85}
+  m_AnchoredPosition: {x: 36.84, y: -29.35}
+  m_SizeDelta: {x: 321.05, y: 92.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1566498241
 MonoBehaviour:
@@ -88638,7 +87945,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 66.9
+  m_fontSize: 62.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -89480,15 +88787,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 2016850842}
-  - {fileID: 480593895}
-  - {fileID: 1085972414}
-  - {fileID: 524765046}
-  - {fileID: 1722829035}
-  - {fileID: 933067743}
-  - {fileID: 976003531}
-  - {fileID: 2027957720}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -90677,9 +89976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1741523567}
-  - {fileID: 1593910456}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -93055,14 +92352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 651494639}
-  - {fileID: 1914317196}
-  - {fileID: 525679780}
-  - {fileID: 1698974292}
-  - {fileID: 240863246}
-  - {fileID: 1166349544}
-  - {fileID: 1411766731}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -93412,14 +92702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 390242845}
-  - {fileID: 790567822}
-  - {fileID: 1664321802}
-  - {fileID: 52341568}
-  - {fileID: 2036867519}
-  - {fileID: 1746181790}
-  - {fileID: 1169473340}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -93703,17 +92986,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 749422198}
-  - {fileID: 1886224852}
-  - {fileID: 2071066983}
-  - {fileID: 125380723}
-  - {fileID: 1417745274}
-  - {fileID: 508733627}
-  - {fileID: 249451872}
-  - {fileID: 801084053}
-  - {fileID: 1301340476}
-  - {fileID: 1612582990}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -94951,11 +94224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 173987880}
-  - {fileID: 1298436758}
-  - {fileID: 1375459101}
-  - {fileID: 994267251}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -95320,14 +94589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1699150998}
-  - {fileID: 1223519626}
-  - {fileID: 2090266243}
-  - {fileID: 1242131955}
-  - {fileID: 1043490465}
-  - {fileID: 475333466}
-  - {fileID: 993112852}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -95657,13 +94919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1738348823}
-  - {fileID: 1934840912}
-  - {fileID: 138748387}
-  - {fileID: 33565172}
-  - {fileID: 244537642}
-  - {fileID: 1545926960}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -95963,17 +95219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 783520289}
-  - {fileID: 871881914}
-  - {fileID: 1347752449}
-  - {fileID: 141052111}
-  - {fileID: 131285338}
-  - {fileID: 1572331213}
-  - {fileID: 822947076}
-  - {fileID: 1591356884}
-  - {fileID: 212521617}
-  - {fileID: 789085133}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -97982,13 +97228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 204249704}
-  - {fileID: 1234086295}
-  - {fileID: 1475779225}
-  - {fileID: 182191260}
-  - {fileID: 483079569}
-  - {fileID: 1625278245}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -98081,14 +97321,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 494505880}
-  - {fileID: 212577378}
-  - {fileID: 1195284389}
-  - {fileID: 991435691}
-  - {fileID: 1313595668}
-  - {fileID: 1785996619}
-  - {fileID: 1691549994}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -98491,12 +97724,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 127666415}
-  - {fileID: 1611245523}
-  - {fileID: 1518038725}
-  - {fileID: 1892813511}
-  - {fileID: 184398318}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -98976,11 +98204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1938936239}
-  - {fileID: 1942018981}
-  - {fileID: 1742961616}
-  - {fileID: 803340913}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -100702,12 +99926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1413507838}
-  - {fileID: 1700292029}
-  - {fileID: 189575725}
-  - {fileID: 673363886}
-  - {fileID: 1300204248}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -101197,9 +100416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1137832941}
-  - {fileID: 552843294}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -101530,13 +100747,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1792260611}
-  - {fileID: 1992565994}
-  - {fileID: 1847309751}
-  - {fileID: 1105732014}
-  - {fileID: 173202236}
-  - {fileID: 1473897431}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -103448,12 +102659,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1498850948}
-  - {fileID: 1604828741}
-  - {fileID: 719786005}
-  - {fileID: 282370559}
-  - {fileID: 227634387}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -103951,11 +103157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1759693877}
-  - {fileID: 673779189}
-  - {fileID: 1259289197}
-  - {fileID: 645154264}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -104462,13 +103664,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1960598449}
-  - {fileID: 337452707}
-  - {fileID: 789859871}
-  - {fileID: 755408550}
-  - {fileID: 1372995309}
-  - {fileID: 1179631531}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -105622,13 +104818,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 800768833}
-  - {fileID: 1694187387}
-  - {fileID: 1807776980}
-  - {fileID: 1252094423}
-  - {fileID: 874508981}
-  - {fileID: 572895787}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -106087,8 +105277,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -311, y: -10}
-  m_SizeDelta: {x: 120, y: 120}
+  m_AnchoredPosition: {x: -272, y: -10}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1854779944
 MonoBehaviour:
@@ -107908,17 +107098,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 270832463}
-  - {fileID: 8989481}
-  - {fileID: 1238466467}
-  - {fileID: 2120467510}
-  - {fileID: 118679024}
-  - {fileID: 2079743202}
-  - {fileID: 1619718634}
-  - {fileID: 2080416019}
-  - {fileID: 175034064}
-  - {fileID: 370257617}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -108011,14 +107191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1845457544}
-  - {fileID: 37649738}
-  - {fileID: 1675919438}
-  - {fileID: 1870546581}
-  - {fileID: 1889792442}
-  - {fileID: 334387892}
-  - {fileID: 1698510191}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -108528,16 +107701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 552719751}
-  - {fileID: 1203131925}
-  - {fileID: 1820081986}
-  - {fileID: 573461434}
-  - {fileID: 280949709}
-  - {fileID: 1904954715}
-  - {fileID: 1073622107}
-  - {fileID: 1059172470}
-  - {fileID: 1932680393}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -108697,13 +107861,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1776468227}
-  - {fileID: 1851409032}
-  - {fileID: 1392065454}
-  - {fileID: 1499992458}
-  - {fileID: 561305983}
-  - {fileID: 1706763419}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -109135,13 +108293,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1698065456}
-  - {fileID: 1548271254}
-  - {fileID: 2110029292}
-  - {fileID: 1015364601}
-  - {fileID: 175535663}
-  - {fileID: 593516969}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -109679,14 +108831,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 941196611}
-  - {fileID: 295180369}
-  - {fileID: 498260901}
-  - {fileID: 2024160070}
-  - {fileID: 236251020}
-  - {fileID: 336791230}
-  - {fileID: 1925379695}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -109991,14 +109136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 455359149}
-  - {fileID: 222098194}
-  - {fileID: 585156532}
-  - {fileID: 419885546}
-  - {fileID: 431013203}
-  - {fileID: 1588476847}
-  - {fileID: 1853741416}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -110226,13 +109364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1597359980}
-  - {fileID: 1553072239}
-  - {fileID: 232801672}
-  - {fileID: 1115524895}
-  - {fileID: 992411775}
-  - {fileID: 102426418}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -111456,7 +110588,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -128.41, y: 41.61}
-  m_SizeDelta: {x: 95.05, y: 51.29}
+  m_SizeDelta: {x: 95.05, y: 48.78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1928693692
 MonoBehaviour:
@@ -111505,7 +110637,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45.9
+  m_fontSize: 43.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -112911,14 +112043,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1893352448}
-  - {fileID: 174433482}
-  - {fileID: 837795893}
-  - {fileID: 1435117720}
-  - {fileID: 94366555}
-  - {fileID: 1885960983}
-  - {fileID: 920275817}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -114806,14 +113931,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 897859659}
-  - {fileID: 674818034}
-  - {fileID: 1707153597}
-  - {fileID: 835604471}
-  - {fileID: 2063395775}
-  - {fileID: 579729190}
-  - {fileID: 936141567}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -115481,17 +114599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 406084109}
-  - {fileID: 1478885880}
-  - {fileID: 73841429}
-  - {fileID: 8254242}
-  - {fileID: 1854266109}
-  - {fileID: 183164625}
-  - {fileID: 610537325}
-  - {fileID: 1967356603}
-  - {fileID: 632829545}
-  - {fileID: 2051710303}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -115939,13 +115047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 618340085}
-  - {fileID: 615937822}
-  - {fileID: 652403784}
-  - {fileID: 205255103}
-  - {fileID: 1982777467}
-  - {fileID: 1704786249}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -116928,13 +116030,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1598905173}
-  - {fileID: 715683333}
-  - {fileID: 634743940}
-  - {fileID: 2001342313}
-  - {fileID: 1536540847}
-  - {fileID: 223364169}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -117095,14 +116191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 499612865}
-  - {fileID: 1897760912}
-  - {fileID: 542228068}
-  - {fileID: 1541916080}
-  - {fileID: 1305750608}
-  - {fileID: 1319368667}
-  - {fileID: 1373979935}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -117329,12 +116418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 520842721}
-  - {fileID: 1951549383}
-  - {fileID: 422188014}
-  - {fileID: 2025946393}
-  - {fileID: 643759626}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -118127,13 +117211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1131993747}
-  - {fileID: 1742059144}
-  - {fileID: 739153407}
-  - {fileID: 1510737903}
-  - {fileID: 717342982}
-  - {fileID: 1562564174}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -119148,7 +118226,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -150.84, y: -471.28003}
+  m_AnchoredPosition: {x: -466, y: -478}
   m_SizeDelta: {x: 565.32, y: 434.96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2061997791
@@ -121269,12 +120347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 321957901}
-  - {fileID: 912359104}
-  - {fileID: 1205226296}
-  - {fileID: 977972258}
-  - {fileID: 835884231}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -121815,14 +120888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1387459209}
-  - {fileID: 734442609}
-  - {fileID: 1551690583}
-  - {fileID: 809747853}
-  - {fileID: 83865168}
-  - {fileID: 1417963838}
-  - {fileID: 944411439}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -121966,17 +121032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 193529558}
-  - {fileID: 1783405813}
-  - {fileID: 1190901027}
-  - {fileID: 312250176}
-  - {fileID: 930794447}
-  - {fileID: 2013954617}
-  - {fileID: 1034757081}
-  - {fileID: 2047600927}
-  - {fileID: 1953986836}
-  - {fileID: 1459772419}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -122071,16 +121127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1871812578}
-  - {fileID: 1938859696}
-  - {fileID: 1652512980}
-  - {fileID: 1794055706}
-  - {fileID: 1980580368}
-  - {fileID: 1255896257}
-  - {fileID: 1057416150}
-  - {fileID: 1406792957}
-  - {fileID: 629353793}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -122254,13 +121301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 1683737168}
-  - {fileID: 2071778460}
-  - {fileID: 466451880}
-  - {fileID: 1079720718}
-  - {fileID: 510671124}
-  - {fileID: 76323760}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -122467,12 +121508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 
   ShowGizmos: 1
-  ControlPoints:
-  - {fileID: 42603701}
-  - {fileID: 875372804}
-  - {fileID: 1998227037}
-  - {fileID: 145125521}
-  - {fileID: 1038079330}
+  ControlPoints: []
   m_Interpolation: 3
   m_RestrictTo2D: 1
   restricted2DPlane: 0
@@ -124295,6 +123331,8 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1571308677}
   - {fileID: 65143893}
+  - {fileID: 747207787}
+  - {fileID: 761553752}
   - {fileID: 120345940}
   - {fileID: 84247399}
   - {fileID: 35651608}

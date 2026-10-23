@@ -9,6 +9,8 @@ public class GunManager : MonoBehaviour
   [SerializeField] private RectTransform bgRect;
   [SerializeField] private Camera worldCamera;
   [SerializeField] private ImageAnimation GunSwitchAnimation;
+  [Tooltip("Moves horizontally to the player's seat on init. Defaults to the parent of the first gun.")]
+  [SerializeField] private Transform seatRoot;
 
   private Coroutine bulletFiringRoutine;
 
@@ -93,7 +95,7 @@ public class GunManager : MonoBehaviour
       }
     }
 
-    Debug.LogError($"Gun of type {typeof(T)} not found");
+    GameLog.Error(LogCategory.Bullet, $"Gun of type {typeof(T)} not found");
   }
 
   internal void ForceStopTorpedoFire(BaseFish killedFish)
@@ -104,4 +106,17 @@ public class GunManager : MonoBehaviour
     }
   }
 
+
+  // Slides the cannon (and the bet UI with it) along its own horizontal axis to the server seat.
+  // Bottom seats only for now; top seats (y = 0) would also need the cannon flipped.
+  internal void PlaceAtSeat(Vector2 serverSeat)
+  {
+    Transform root = seatRoot != null ? seatRoot : (Guns != null && Guns.Length > 0 ? Guns[0].transform.parent : null);
+    if (root == null || root.parent == null || !Playfield.IsReady)
+      return;
+
+    Vector3 seatLocal = root.parent.InverseTransformPoint(Playfield.ServerToWorld(serverSeat));
+    Vector3 current = root.localPosition;
+    root.localPosition = new Vector3(seatLocal.x, current.y, current.z);
+  }
 }

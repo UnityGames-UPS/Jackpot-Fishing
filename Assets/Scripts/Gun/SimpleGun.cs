@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -15,6 +16,7 @@ public class SimpleGun : BaseGun
 
   [Header("Firing")]
   [SerializeField] protected float fireRate = 6f;
+  [SerializeField] private int maxBulletsInFlight = 30;
 
   internal float FireInterval => 1f / fireRate;
   private Image muzzleImage;
@@ -42,14 +44,31 @@ public class SimpleGun : BaseGun
     if (Time.time < nextAllowedFireTime)
       return;
 
-    if (!UIManager.Instance.OnGunFired())
+    var socket = SocketIOManager.Instance;
+    if (socket == null || !socket.CanShoot || !Playfield.IsReady)
       return;
+
+    if (BulletView.InFlight >= maxBulletsInFlight)
+      return;
+
+    string bulletId = "bullet_" + Guid.NewGuid().ToString("N").Substring(0, 12);
+    if (!UIManager.Instance.TryReserveShot(bulletId))
+      return;
+
+    Vector2 origin = socket.SeatOrigin;
+    Vector2 start = Playfield.WorldToServer(muzzle.position);
+    Vector2 direction = Playfield.WorldDirToServer(muzzle.up).normalized;
+    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+    socket.SendFire(bulletId, origin, angle);
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, $"Fire {bulletId} from ({start.x:F0},{start.y:F0}) angle {angle:F1}, {BulletView.InFlight + 1} in flight");
 
     PlayMuzzleFlash();
     PlayRecoil();
     BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
-    bullet.Fire(muzzle.up);
+    bullet.Fire(bulletId, origin, start, direction, socket.MaxBulletBounces);
     nextAllowedFireTime = Time.time + FireInterval;
   }
 

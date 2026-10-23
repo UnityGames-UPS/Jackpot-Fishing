@@ -121,6 +121,10 @@ public class UIManager : MonoBehaviour
   [Header("Close Panel Btn")]
   [SerializeField] private Button CloseRooster;
 
+  [Header("Lifecycle")]
+  [SerializeField] private JSFunctCalls jsFunctCalls;
+  [SerializeField] private AudioController audioController;
+
   private int infoPageIndex = 0;
   private int paytablePageIndex = 0;
   private float slideDistance = 1080f;
@@ -131,14 +135,27 @@ public class UIManager : MonoBehaviour
   private bool isTargetLock = false;
   private bool isTorpedoGun = false;
   private Tween balanceTween;
+  private readonly BalanceLedger balanceLedger = new BalanceLedger();
   internal GunType activeGun = GunType.Simple;
   internal int BetCounter = 0;
   internal bool IsTargetLockEnabled => isTargetLock;
   private bool UserExited = false;
+  private bool isSound = true;
 
   void Awake()
   {
     Instance = this;
+    if (jsFunctCalls != null)
+      jsFunctCalls.RegisterVisibilityListener(gameObject.name);
+  }
+
+  // Called from JS via SendMessage('UIManager', 'OnFocusChanged', '1'|'0'). Must stay public.
+  public void OnFocusChanged(string value)
+  {
+    bool focused = value == "1";
+    GameLog.Info(LogCategory.Lifecycle, "Focus changed: " + (focused ? "focused" : "blurred"));
+    audioController?.SetMuteAll(focused ? !isSound : true);
+    SocketIOManager.Instance?.HandleFocusChange(focused);
   }
 
   void Start()
@@ -304,7 +321,9 @@ public class UIManager : MonoBehaviour
   {
     SetBetText();
     SetTorpedoBulletValue();
-    UpdatePaytableMultipliers(SocketIOManager.Instance?.initFishes);
+    // Paused: old-backend paytable multipliers. ML-FG init doesn't send them yet.
+    // if (SocketIOManager.Instance?.initFishes != null)
+    //   UpdatePaytableMultipliers(SocketIOManager.Instance.initFishes);
   }
 
   void ChangeBet(bool IncDec)
@@ -360,6 +379,78 @@ public class UIManager : MonoBehaviour
     if (BalanceText) BalanceText.text = val.ToString("N2");
   }
 
+  // --------------------------------------------------------
+  // BALANCE (server-authoritative, see BalanceLedger)
+  // --------------------------------------------------------
+
+  // game:init: start from the server balance with nothing in flight.
+  internal void ResetBalance(double balance)
+  {
+    GameLog.Info(LogCategory.Balance, $"Init balance {balance:N2}");
+    balanceLedger.Clear();
+    balanceLedger.SetServerBalance(balance);
+    SnapBalanceDisplay();
+  }
+
+  // Own shot_result: authoritative balance including any payout.
+  internal void ApplyServerBalance(double balance)
+  {
+    GameLog.Info(LogCategory.Balance, $"Shot result balance {balance:N2}");
+    balanceLedger.SetServerBalance(balance);
+    RefreshBalanceDisplay();
+  }
+
+  // balance:sync: an external correction, so snap (no tween) and re-check the fire gate.
+  internal void SyncBalance(double balance)
+  {
+    GameLog.Info(LogCategory.Balance, $"balance:sync {balance:N2}");
+    balanceLedger.SetServerBalance(balance);
+    SnapBalanceDisplay();
+    if (balanceLedger.Available < GetGunCost())
+      ShowLowBalancePopup();
+  }
+
+  // Deducts the shot cost locally until the SHOOT ack arrives. False = can't afford it.
+  internal bool TryReserveShot(string bulletId)
+  {
+    if (!balanceLedger.TryReserve(bulletId, GetGunCost()))
+    {
+      GameLog.Info(LogCategory.Balance, $"Can't afford {GetGunCost():N2} (available {balanceLedger.Available:N2})");
+      ShowLowBalancePopup();
+      return false;
+    }
+
+    RefreshBalanceDisplay();
+    return true;
+  }
+
+  internal void ConfirmShot(string bulletId, double? balance)
+  {
+    balanceLedger.Confirm(bulletId, balance);
+    if (GameLog.IsOn(LogCategory.Balance))
+      GameLog.Info(LogCategory.Balance, $"Ack {bulletId}: server {(balance.HasValue ? balance.Value.ToString("N2") : "n/a")}, available {balanceLedger.Available:N2}, pending {balanceLedger.PendingCount}");
+    RefreshBalanceDisplay();
+  }
+
+  internal void CancelShot(string bulletId)
+  {
+    GameLog.Warn(LogCategory.Balance, $"Shot {bulletId} not charged (no ack / not sent); reservation released");
+    balanceLedger.Cancel(bulletId);
+    RefreshBalanceDisplay();
+  }
+
+  private void RefreshBalanceDisplay()
+  {
+    UpdateBalance((float)balanceLedger.Available);
+  }
+
+  private void SnapBalanceDisplay()
+  {
+    balanceTween?.Kill();
+    currentBalance = (float)balanceLedger.Available;
+    SetBalanceText(currentBalance);
+  }
+
   internal void PlayRefundText(float amount)
   {
     if (amount <= 0f)
@@ -410,7 +501,7 @@ public class UIManager : MonoBehaviour
     var pool = rainbowAnimationPool != null ? rainbowAnimationPool : RainbowAnimationPool.Instance;
     if (pool == null)
     {
-      Debug.LogError("[UIManager] RainbowAnimationPool not found");
+      GameLog.Error(LogCategory.UI, "RainbowAnimationPool not found");
       return;
     }
 
@@ -492,18 +583,11 @@ public class UIManager : MonoBehaviour
       lazerGun.DisableTargetLock();
   }
 
+  // Paused weapons (torpedo, laser): local-only deduction that the ledger releases again
+  // after its timeout, since the ML-FG backend never acknowledges these shots.
   internal bool OnGunFired()
   {
-    float cost = GetGunCost();
-
-    if (currentBalance < cost)
-    {
-      ShowLowBalancePopup();
-      return false;
-    }
-
-    UpdateBalance(currentBalance - cost);
-    return true;
+    return TryReserveShot("legacy_" + Guid.NewGuid().ToString("N"));
   }
 
   internal float GetGunCost()
@@ -605,17 +689,22 @@ public class UIManager : MonoBehaviour
   void OnClickSoundOn()
   {
     // Turn sound OFF mode
-    if (SoundOnBtn) SoundOnBtn.gameObject.SetActive(false);
-    if (SoundOffBtn) SoundOffBtn.gameObject.SetActive(true);
-    Debug.Log("🔇 Sound turned OFF");
+    SetSound(false);
   }
 
   void OnClickSoundOff()
   {
     // Turn sound ON mode
-    if (SoundOffBtn) SoundOffBtn.gameObject.SetActive(false);
-    if (SoundOnBtn) SoundOnBtn.gameObject.SetActive(true);
-    Debug.Log("🔊 Sound turned ON");
+    SetSound(true);
+  }
+
+  private void SetSound(bool soundOn)
+  {
+    isSound = soundOn;
+    GameLog.Info(LogCategory.UI, isSound ? "🔊 Sound on" : "🔇 Sound off");
+    audioController?.SetUserMute(!isSound);
+    if (SoundOnBtn) SoundOnBtn.gameObject.SetActive(isSound);
+    if (SoundOffBtn) SoundOffBtn.gameObject.SetActive(!isSound);
   }
   #endregion
 
@@ -862,7 +951,7 @@ public class UIManager : MonoBehaviour
   {
     if (initFishGroup == null || initFishGroup.Count <= 0)
     {
-      Debug.LogError("Multipliers data is null");
+      GameLog.Error(LogCategory.Legacy, "Multipliers data is null");
       return;
     }
 

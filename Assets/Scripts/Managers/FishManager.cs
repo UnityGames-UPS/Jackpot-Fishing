@@ -55,18 +55,61 @@ internal class FishManager : MonoBehaviour
   [SerializeField] private float effectStarCoinOffsetRadiusMax = 120f;
   private bool starCoinTargetMissingLogged;
   internal Transform AnimParent => animParent;
+
+  [Header("Playfield")]
+  [Tooltip("Fixed 1920x1080 rect (Parent1) that server coordinates map onto.")]
+  [SerializeField] private RectTransform playfieldRect;
+
+  [Header("Server Variant Mapping")]
+  [Tooltip("Maps a server variant (or species type) to a client FishData variant while art is pending.")]
+  [SerializeField] private List<VariantAlias> variantAliases = new();
+  [Tooltip("Client variant used when a server variant has no FishData or alias.")]
+  [SerializeField] private string fallbackVariant;
+
+  [Header("Editor Mock")]
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private int mockFishIndex = 25;
+
   [SerializeField] private List<BaseFish> activeFishes = new();
+  private readonly Dictionary<string, BaseFish> fishById = new();
   private readonly Dictionary<BaseFish, Transform> cachedParents = new();
   private readonly Dictionary<BaseFish, int> cachedSiblingIndices = new();
+  private readonly HashSet<string> warnedVariants = new();
+  private int mockCounter;
+
+  // Where recently released fish were, so a shot_result that arrives after the
+  // fish is gone can still play its payout at the right spot.
+  private const float RecentlyRemovedTtl = 5f;
+  private readonly Dictionary<string, RemovedFish> recentlyRemoved = new();
+  private readonly Queue<(string id, float time)> recentlyRemovedOrder = new();
+
+  private struct RemovedFish
+  {
+    internal Vector3 position;
+    internal FishData data;
+  }
+
+  [Serializable]
+  private class VariantAlias
+  {
+    public string serverVariant;
+    public string clientVariant;
+  }
 
   internal Transform[] RockCrabTorpedoGridTargets => rockCrabTorpedoGridTargets;
   internal int RockCrabTorpedoGridColumns => rockCrabTorpedoGridColumns;
   internal Vector2 RockCrabTorpedoOffsetMin => rockCrabTorpedoOffsetMin;
   internal Vector2 RockCrabTorpedoOffsetMax => rockCrabTorpedoOffsetMax;
 
-  private void Awake() => Instance = this;
+  private void Awake()
+  {
+    Instance = this;
+
+    if (playfieldRect != null)
+      Playfield.Init(playfieldRect);
+    else
+      GameLog.Error(LogCategory.Fish, "FishManager.playfieldRect is not assigned. Server fish can't be positioned.");
+  }
 
 #if UNITY_EDITOR
   private void Update()
@@ -74,69 +117,136 @@ internal class FishManager : MonoBehaviour
     if (!enableMockSpawning)
       return;
 
-    if (Input.GetKeyDown(KeyCode.Space))
-    {
+    if (Input.GetKeyDown(KeyCode.M))
       SpawnMockFish();
-    }
+
+    if (Input.GetKeyDown(KeyCode.K))
+      MockKillRandomFish();
   }
 #endif
-  internal void SpawnMockFish()
+
+  // --------------------------------------------------------
+  // SERVER-DRIVEN FISH (ML-FG)
+  // --------------------------------------------------------
+
+  internal BaseFish SpawnFromServer(SpawnedFish dto)
   {
-    if (fishesData == null || fishesData.Count == 0)
+    if (dto == null || string.IsNullOrEmpty(dto.id))
+      return null;
+
+    if (!Playfield.IsReady)
     {
-      Debug.LogWarning("[FishManager] No fish data for mock spawn");
-      return;
+      GameLog.Error(LogCategory.Fish, "Playfield not initialized; dropping fish " + dto.id);
+      return null;
     }
 
-    // FishData baseData =
-    // fishesData[UnityEngine.Random.Range(0, fishesData.Count)];
+    // init.activeFish and game:fish_spawned can overlap on join.
+    if (fishById.ContainsKey(dto.id))
+      return null;
 
-    FishData baseData =
-      fishesData[mockFishIndex];
+    var path = new ServerPath(dto);
+    if (!path.IsValid)
+    {
+      GameLog.Warn(LogCategory.Fish, $"Fish {dto.id} ({dto.variant}) has no usable path");
+      return null;
+    }
 
-    BaseFish fish = GetFishFromType(baseData.fishType);
+    // Already swam off (stale event or late join).
+    if (path.ProgressAt(ServerClock.NowMs) >= 1.0)
+    {
+      GameLog.Info(LogCategory.Fish, $"Skip expired spawn {dto.id} ({dto.variant})");
+      return null;
+    }
 
+    FishData template = ResolveTemplate(dto.variant, dto.type);
+    if (template == null)
+      return null;
+
+    BaseFish fish = GetFishFromType(template.fishType);
     if (fish == null)
     {
-      Debug.LogError("Fish Not Found! " + baseData.variant);
+      GameLog.Error(LogCategory.Fish, "No pooled fish for type " + template.fishType + " (" + template.variant + ")");
+      return null;
+    }
+
+    fish.InitializeFromServer(CreateRuntimeData(template, dto.id, (int)dto.lifespan), path, dto.hitboxRadius);
+    Track(fish);
+
+    if (GameLog.IsOn(LogCategory.Fish))
+      GameLog.Info(LogCategory.Fish,
+        $"Spawn {dto.id} {dto.variant} -> {template.variant} | r={dto.hitboxRadius} life={dto.lifespan:F0}ms " +
+        $"points={dto.pathParams.points.Count} keyframes={dto.motionKeyframes?.Count ?? 0} progress={path.ProgressAt(ServerClock.NowMs):F2}");
+    return fish;
+  }
+
+  internal bool TryGetFish(string fishId, out BaseFish fish)
+  {
+    fish = null;
+    return !string.IsNullOrEmpty(fishId) && fishById.TryGetValue(fishId, out fish);
+  }
+
+  internal void KillFish(string fishId)
+  {
+    if (!TryGetFish(fishId, out var fish))
+    {
+      GameLog.Info(LogCategory.Fish, $"Kill {fishId}: not on screen");
       return;
     }
 
-    // ✅ Clone data (no backend id)
-    FishData runtimeData = new FishData
-    {
-      variant = baseData.variant,
-      animationFrames = baseData.animationFrames,
-      animationSpeed = baseData.animationSpeed,
-      loop = baseData.loop,
-      spriteSize = baseData.spriteSize,
-      colliderSize = baseData.colliderSize,
-      colliderOffset = baseData.colliderOffset,
-      coinBlastScaleMult = baseData.coinBlastScaleMult,
-      fishType = baseData.fishType,
-
-      fishId = null,                 // 🚫 no backend
-      duration = baseData.duration
-    };
-
-    if (fish is NormalFish nf)
-    {
-      // ✅ NULL CONTEXT → fallback path
-      nf.Initialize(runtimeData, null);
-    }
-    else
-    {
-      fish.Initialize(runtimeData);
-    }
-
-    activeFishes.Add(fish);
+    GameLog.Info(LogCategory.Fish, $"Kill {fishId} ({fish.data?.variant}, state {fish.State})");
+    fish.Kill();
   }
 
-
-  internal void DespawnFish(BaseFish fish)
+  // game:fish_despawned. Expired fish swim off and fade; anything else is treated as killed.
+  internal void RemoveFish(string fishId, string reason)
   {
-    // Debug.Log("Called");
+    if (!TryGetFish(fishId, out var fish))
+      return;
+
+    GameLog.Info(LogCategory.Fish, $"Despawn {fishId} ({fish.data?.variant}) reason={reason ?? "none"} state={fish.State}");
+    if (reason == MLFGDespawnReason.Expired)
+      fish.Leave();
+    else
+      fish.Kill();
+  }
+
+  // Own-shot KILL payout. Works whether the fish is alive, mid-death, or already released.
+  internal void PlayKillPayout(string fishId, float payout)
+  {
+    if (TryGetFish(fishId, out var fish))
+    {
+      PlayStarCoinsForFish(fish);
+      UIManager.Instance?.PlayRainbowWinAnimation(fish, fish.data, payout);
+      fish.AddReleaseCallback(() => UIManager.Instance?.PlayCoinBlastForFish(fish));
+      return;
+    }
+
+    if (!string.IsNullOrEmpty(fishId) && recentlyRemoved.TryGetValue(fishId, out var removed))
+      PlayStarCoinsAtPosition(removed.data, removed.position);
+  }
+
+  // Releases every fish immediately (re-init after a reconnect).
+  internal void ClearAllFish()
+  {
+    var fishes = activeFishes.ToArray();
+    foreach (var fish in fishes)
+      fish.Release();
+  }
+
+  // Called by BaseFish.Release while the fish still has its data and position.
+  internal void OnFishReleased(BaseFish fish)
+  {
     activeFishes.Remove(fish);
+    if (GameLog.IsOn(LogCategory.Fish))
+      GameLog.Info(LogCategory.Fish, $"Release {fish.Id} ({fish.data?.variant}), {activeFishes.Count} on screen");
+
+    string id = fish.Id;
+    if (!string.IsNullOrEmpty(id))
+    {
+      if (fishById.TryGetValue(id, out var tracked) && tracked == fish)
+        fishById.Remove(id);
+      RememberRemoved(id, fish);
+    }
 
     switch (fish)
     {
@@ -148,6 +258,144 @@ internal class FishManager : MonoBehaviour
       case JackpotFish jf: jackpotFishPool.ReturnToPool(jf); break;
       case JackpotDragon jd: jackpotDragonPool.ReturnToPool(jd); break;
     }
+  }
+
+  private void Track(BaseFish fish)
+  {
+    activeFishes.Add(fish);
+    if (!string.IsNullOrEmpty(fish.Id))
+      fishById[fish.Id] = fish;
+  }
+
+  private void RememberRemoved(string id, BaseFish fish)
+  {
+    float now = Time.unscaledTime;
+    while (recentlyRemovedOrder.Count > 0 && now - recentlyRemovedOrder.Peek().time > RecentlyRemovedTtl)
+      recentlyRemoved.Remove(recentlyRemovedOrder.Dequeue().id);
+
+    recentlyRemoved[id] = new RemovedFish { position = fish.ColliderMidPoint, data = fish.data };
+    recentlyRemovedOrder.Enqueue((id, now));
+  }
+
+  // Exact variant -> alias (by variant, then species type) -> fallback variant.
+  private FishData ResolveTemplate(string variant, string type)
+  {
+    FishData template = FindTemplate(variant);
+    if (template != null)
+      return template;
+
+    VariantAlias alias = variantAliases.Find(a => a.serverVariant == variant)
+                         ?? variantAliases.Find(a => a.serverVariant == type);
+    if (alias != null)
+      template = FindTemplate(alias.clientVariant);
+
+    if (template == null && !string.IsNullOrEmpty(fallbackVariant))
+      template = FindTemplate(fallbackVariant);
+
+    if (warnedVariants.Add(variant ?? ""))
+    {
+      if (template == null)
+        GameLog.Error(LogCategory.Fish, $"No FishData for server variant '{variant}' (type '{type}') and no usable alias/fallback");
+      else if (alias == null)
+        GameLog.Warn(LogCategory.Fish, $"Server variant '{variant}' has no art yet, using fallback '{fallbackVariant}'");
+    }
+
+    return template;
+  }
+
+  private FishData FindTemplate(string variant)
+  {
+    if (string.IsNullOrEmpty(variant))
+      return null;
+    return fishesData.Find(t => t != null && t.variant == variant);
+  }
+
+  private FishData CreateRuntimeData(FishData template, string fishId, int duration)
+  {
+    return new FishData
+    {
+      variant = template.variant,
+      animationFrames = template.animationFrames,
+      animationSpeed = template.animationSpeed,
+      loop = template.loop,
+      spriteSize = template.spriteSize,
+      colliderSize = template.colliderSize,
+      colliderOffset = template.colliderOffset,
+      coinBlastScaleMult = template.coinBlastScaleMult,
+      fishType = template.fishType,
+      fishId = fishId,
+      duration = duration
+    };
+  }
+
+  // --------------------------------------------------------
+  // EDITOR MOCK (no backend): same spawn path as the server.
+  // M spawns a fish, K kills a random one with a payout.
+  // --------------------------------------------------------
+
+  internal void SpawnMockFish()
+  {
+    if (fishesData == null || mockFishIndex < 0 || mockFishIndex >= fishesData.Count)
+    {
+      GameLog.Warn(LogCategory.Fish, "mockFishIndex is out of range");
+      return;
+    }
+
+    bool rightToLeft = UnityEngine.Random.value > 0.5f;
+    float baseY = UnityEngine.Random.Range(200f, Playfield.Height - 200f);
+    float amplitude = UnityEngine.Random.Range(40f, 140f);
+
+    var points = new List<MLFGVec3>();
+    const int pointCount = 5;
+    for (int i = 0; i < pointCount; i++)
+    {
+      float t = i / (float)(pointCount - 1);
+      float x = Mathf.Lerp(-100f, Playfield.Width + 100f, rightToLeft ? 1f - t : t);
+      float y = baseY + Mathf.Sin(t * Mathf.PI * 2f) * amplitude;
+      points.Add(new MLFGVec3(new Vector2(x, y)));
+    }
+
+    var dto = new SpawnedFish
+    {
+      id = "mock-" + (++mockCounter),
+      type = "mock",
+      variant = fishesData[mockFishIndex].variant,
+      pathType = "spline",
+      pathParams = new SplinePathParams { points = points },
+      spawnTime = (long)ServerClock.NowMs,
+      lifespan = 12000,
+      hitboxRadius = 50f
+    };
+
+    // Half the mocks pause mid-path, like the server's crab/tortoise speed profiles.
+    if (UnityEngine.Random.value > 0.5f)
+    {
+      float total = 0f;
+      for (int i = 1; i < points.Count; i++)
+        total += Vector2.Distance(points[i - 1].ToVector2(), points[i].ToVector2());
+
+      dto.motionKeyframes = new List<MotionKeyframe>
+      {
+        new MotionKeyframe { t = 0, d = 0 },
+        new MotionKeyframe { t = 5000, d = total * 0.45 },
+        new MotionKeyframe { t = 6500, d = total * 0.45 + 10 },
+        new MotionKeyframe { t = 12000, d = total }
+      };
+    }
+
+    SpawnFromServer(dto);
+  }
+
+  private void MockKillRandomFish()
+  {
+    var alive = activeFishes.FindAll(f => f.State == FishState.Alive);
+    if (alive.Count == 0)
+      return;
+
+    BaseFish fish = alive[UnityEngine.Random.Range(0, alive.Count)];
+    string id = fish.Id;
+    fish.Kill();
+    PlayKillPayout(id, 10f);
   }
 
   internal float GetCoinBlastScale(FishType fishType)
@@ -311,7 +559,7 @@ internal class FishManager : MonoBehaviour
 
     if (!starCoinTargetMissingLogged)
     {
-      Debug.LogWarning("[FishManager] Star coin targets not assigned");
+      GameLog.Warn(LogCategory.UI, "Star coin targets not assigned");
       starCoinTargetMissingLogged = true;
     }
     return false;
@@ -378,30 +626,14 @@ internal class FishManager : MonoBehaviour
     };
   }
 
+  // --------------------------------------------------------
+  // OLD BACKEND (paused): client-picked Curvy paths.
+  // --------------------------------------------------------
+
   internal FishData ToFishData(Fish backendFish)
   {
-    var baseData = fishesData.Find(t => t.variant == backendFish.variant);
-    if (baseData == null)
-      return null;
-
-    FishData runtimeData = new FishData
-    {
-      variant = baseData.variant,
-      animationFrames = baseData.animationFrames,
-      animationSpeed = baseData.animationSpeed,
-      loop = baseData.loop,
-      spriteSize = baseData.spriteSize,
-      colliderSize = baseData.colliderSize,
-      colliderOffset = baseData.colliderOffset,
-      coinBlastScaleMult = baseData.coinBlastScaleMult,
-      fishType = baseData.fishType,
-
-      // backend-specific
-      fishId = backendFish.id,
-      duration = backendFish.lifespan
-    };
-
-    return runtimeData;
+    var baseData = FindTemplate(backendFish.variant);
+    return baseData != null ? CreateRuntimeData(baseData, backendFish.id, backendFish.lifespan) : null;
   }
 
   private FishType ParseFishType(string type)
@@ -425,7 +657,7 @@ internal class FishManager : MonoBehaviour
 
     if (fish == null)
     {
-      Debug.LogError("Fish Not Found! " + data.variant);
+      GameLog.Error(LogCategory.Legacy, "Fish Not Found! " + data.variant);
       return null;
     }
 
@@ -436,7 +668,7 @@ internal class FishManager : MonoBehaviour
     else
       fish.Initialize(data);
 
-    activeFishes.Add(fish);
+    Track(fish);
     return fish;
   }
 

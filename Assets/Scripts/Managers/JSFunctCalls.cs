@@ -5,6 +5,7 @@ public class JSFunctCalls : MonoBehaviour
 {
   [DllImport("__Internal")] private static extern void SendLogToReactNative(string message);
   [DllImport("__Internal")] private static extern void SendPostMessage(string message);
+  [DllImport("__Internal")] private static extern void RegisterVisibilityChangeListener(string gameObjectName);
 
   void OnEnable()
   {
@@ -32,6 +33,16 @@ public class JSFunctCalls : MonoBehaviour
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
     SendPostMessage(message);
+#endif
+  }
+
+  internal void RegisterVisibilityListener(string gameObjectName)
+  {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    GameLog.Info(LogCategory.Lifecycle, $"Registering visibility change listener on '{gameObjectName}'");
+    RegisterVisibilityChangeListener(gameObjectName);
+#else
+    GameLog.Info(LogCategory.Lifecycle, "Visibility listener not registered (editor mode)");
 #endif
   }
 }

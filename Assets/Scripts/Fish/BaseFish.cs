@@ -1,97 +1,118 @@
+using System;
+using System.Collections;
 using UnityEngine;
-using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
-using FluffyUnderware.Curvy;
-using FluffyUnderware.Curvy.Controllers;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+using DG.Tweening;
 
-internal class BaseFish : MonoBehaviour
+internal enum FishState
 {
+  Pooled,  // in the pool, not on screen
+  Alive,   // swimming and hittable
+  Dying,   // server confirmed a kill; playing the death animation
+  Leaving  // left the screen / expired; fading out while still swimming
+}
+
+// Fish lifecycle:  Pooled -> Alive -> (Dying | Leaving) -> Release() -> Pooled
+//
+// - Kill()  : the server said the fish is dead. Only from Alive.
+// - Leave() : the fish expired or swam off. Only from Alive.
+// - Release(): the single, idempotent exit back to the pool. Death/leave tweens call it from
+//   OnKill, which DOTween also fires on completion, so it runs even if a tween is killed early.
+//   A watchdog in Update releases fish whose death animation never reported back.
+//
+// Server-driven fish (ML-FG) position themselves every frame from ServerClock.NowMs and their
+// ServerPath. Old-backend Curvy movement and torpedo bookkeeping live in BaseFish.Legacy.cs.
+internal partial class BaseFish : MonoBehaviour
+{
+  private const double HeadingLookAhead = 0.01; // matches the reference client's heading sample
+
   [SerializeField] internal FishData data;
-  internal bool KillOnTorpedoArrival;
-  internal Transform HitPoint => transform.GetChild(0);
-  internal Vector3 ColliderMidPoint
-  {
-    get
-    {
-      if (boxCollider == null)
-        boxCollider = GetComponent<BoxCollider2D>();
-      return boxCollider.bounds.center;
-    }
-  }
-  internal RectTransform Rect => GetComponent<RectTransform>();
-  internal Action OnFishDespawned;
-  protected Tween movementTween;
-  protected Tween damageTween;
-  protected ImageAnimation imageAnimation;
-  private float baseAnimationSpeed;
-  protected Image fishImage;
-  protected BoxCollider2D boxCollider;
-  protected SplineController splineController;
-  private CurvySpline reservedSpline;
-  protected float baseSpeed;
-  protected float speedMultiplier = 1f;
   [FormerlySerializedAs("torpedoViewportPadding")]
   [SerializeField] private float viewportPadding = 0.0005f;
-  private Coroutine lifeTimeoutRoutine;
-  private Coroutine despawnFinalizeRoutine;
-  private Coroutine visibilityRoutine;
-  internal bool isDespawning;
-  internal bool PendingVisualDeath;
-  internal bool finalized;
-  internal bool IsVisibleInViewport = false;
-  private bool visibilityReady;
-  internal int ActiveTorpedoCount { get; private set; }
-  private readonly List<System.Action> onNextTorpedoImpact = new List<System.Action>();
 
-  internal enum DeathCause
+  [Header("Server Movement")]
+  [SerializeField] private float turnSpeed = 540f;      // deg/s, smooths heading changes at path corners
+  [SerializeField] private float flipThreshold = 0.15f; // |dir.x| needed to flip facing, avoids flapping on vertical runs
+
+  [Header("Despawn")]
+  [SerializeField] private float leaveFadeDuration = 0.25f;
+  [SerializeField] private float deathFadeDuration = 0.15f;
+  [SerializeField] private float maxDeathDuration = 8f; // watchdog for death animations that never complete
+
+  internal FishState State { get; private set; } = FishState.Pooled;
+  internal string Id => data?.fishId;
+  internal ServerPath Path { get; private set; }
+  internal bool IsServerDriven => Path != null;
+  internal float HitboxRadius { get; private set; }
+  internal bool IsVisibleInViewport { get; private set; }
+
+  internal Transform HitPoint => transform.GetChild(0);
+  internal RectTransform Rect => GetComponent<RectTransform>();
+  internal Vector3 ColliderMidPoint =>
+    boxCollider != null ? transform.TransformPoint(boxCollider.offset) : transform.position;
+
+  protected ImageAnimation imageAnimation;
+  protected Image fishImage;
+  protected BoxCollider2D boxCollider;
+  protected Tween damageTween;
+  protected bool movementFrozen;
+
+  private Tween lifecycleTween;
+  private Action released;
+  private float baseAnimationSpeed;
+  private int aliveSinceFrame;
+  private float exitStartedAt;
+  private bool facingRight;
+  private bool hasPose;
+
+  // --------------------------------------------------------
+  // SPAWN
+  // --------------------------------------------------------
+
+  // Server-driven spawn (ML-FG backend). The fish is placed on its path before its first frame.
+  internal void InitializeFromServer(FishData visual, ServerPath path, float hitboxRadius)
   {
-    None,
-    Torpedo,
-    Bullet,
-    Lazer,
-    ServerCleanup
+    Path = path;
+    HitboxRadius = hitboxRadius > 0f ? hitboxRadius : 40f;
+    BeginLife(visual);
+    DisableLegacyMovement();
+    UpdateServerMovement();
+    OnServerSpawned();
   }
 
-  internal DeathCause deathCause = DeathCause.None;
-  internal bool WaitingForKillingTorpedo;
-  private Coroutine killFailSafeRoutine;
+  protected virtual void OnServerSpawned() { }
 
-  void OnEnable()
+  private void BeginLife(FishData visual)
   {
+    data = visual;
+    released = null;
+    State = FishState.Alive;
+    aliveSinceFrame = Time.frameCount;
+    movementFrozen = false;
+    hasPose = false;
     IsVisibleInViewport = false;
+    CacheComponents();
+    ResetLegacyState();
+    SetupVisuals();
   }
 
-  internal virtual void Initialize(FishData data)
+  private void CacheComponents()
   {
-    this.data = data;
-    OnFishDespawned = null;
-
-    finalized = false;
-    IsVisibleInViewport = false;
-    visibilityReady = false;
-    isDespawning = false;
-    PendingVisualDeath = false;
-    KillOnTorpedoArrival = false;
-    ActiveTorpedoCount = 0;
-    onNextTorpedoImpact.Clear();
-
-    splineController = GetComponent<SplineController>();
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
     boxCollider = GetComponent<BoxCollider2D>();
+    CacheLegacyComponents();
+  }
 
-    // Collider & hit point
+  private void SetupVisuals()
+  {
+    // The box collider only serves pointer picking and target lock; hits are tested in server space.
     boxCollider.enabled = true;
     boxCollider.size = data.colliderSize;
     boxCollider.offset = data.colliderOffset;
-
     HitPoint.localPosition = new Vector3(data.colliderOffset.x, data.colliderOffset.y, 0);
 
-    // Animation
     imageAnimation.StopAnimation();
     imageAnimation.SetAnimationData(data.animationFrames, data.animationSpeed, data.loop);
     imageAnimation.StartAnimation();
@@ -99,105 +120,199 @@ internal class BaseFish : MonoBehaviour
 
     Rect.sizeDelta = data.spriteSize;
 
-    // Fade in
-    if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo)
+    if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo && !UIManager.Instance.IsValidTorpedoTarget(this))
     {
-      if (!UIManager.Instance.IsValidTorpedoTarget(this))
-      {
-        SetAlpha(0.25f);
-      }
+      SetAlpha(0.25f);
     }
     else
     {
       fishImage.color = new Color(1, 1, 1, 0);
       fishImage.DOFade(1f, 0.2f).SetUpdate(true);
     }
-
-    BeginViewportVisibilityWarmup();
   }
+
+  // --------------------------------------------------------
+  // PER FRAME
+  // --------------------------------------------------------
 
   private void Update()
   {
+    if (State == FishState.Pooled)
+      return;
+
+    if (IsServerDriven && !movementFrozen && (State == FishState.Alive || State == FishState.Leaving))
+      UpdateServerMovement();
+
+    if ((State == FishState.Dying || State == FishState.Leaving) &&
+        Time.unscaledTime - exitStartedAt > maxDeathDuration)
+    {
+      GameLog.Warn(LogCategory.Fish, $"Exit watchdog released fish | variant={data?.variant} | id={Id} | state={State}");
+      Release();
+      return;
+    }
+
     UpdateViewportVisibility();
     OnCustomUpdate();
   }
 
   protected virtual void OnCustomUpdate() { }
 
-  private void OnTriggerEnter2D(Collider2D other)
+  private void UpdateServerMovement()
   {
-    if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
+    double progress = Path.ProgressAt(ServerClock.NowMs);
+    Vector2 pos = Path.PositionAt(progress);
+    Vector2 ahead = Path.PositionAt(Math.Min(progress + HeadingLookAhead, 1.0));
+
+    transform.position = Playfield.ServerToWorld(pos);
+
+    Vector2 dir = ahead - pos;
+    if (dir.sqrMagnitude > 0.0001f)
+      ApplyHeading(Playfield.ServerDirToLocal(dir.normalized));
+
+    if (State == FishState.Alive && progress >= 1.0)
+      Leave();
+  }
+
+  // Sprites face left natively (see FlipSprite). Facing flips with hysteresis; rotation is
+  // smoothed so the polyline's corners don't snap the fish.
+  private void ApplyHeading(Vector2 localDir)
+  {
+    bool wantRight = facingRight;
+    if (!hasPose)
+      wantRight = localDir.x >= 0f;
+    else if (localDir.x > flipThreshold)
+      wantRight = true;
+    else if (localDir.x < -flipThreshold)
+      wantRight = false;
+
+    float angle = Mathf.Atan2(localDir.y, localDir.x) * Mathf.Rad2Deg;
+    if (!wantRight)
+      angle -= 180f;
+
+    Quaternion target = Quaternion.Euler(0f, 0f, angle);
+    bool snap = !hasPose || wantRight != facingRight;
+
+    facingRight = wantRight;
+    FlipSprite(faceRight: wantRight);
+    transform.localRotation = snap
+      ? target
+      : Quaternion.RotateTowards(transform.localRotation, target, turnSpeed * Time.unscaledDeltaTime);
+    hasPose = true;
+  }
+
+  // --------------------------------------------------------
+  // HIT TESTING (server space, same rule as the server)
+  // --------------------------------------------------------
+
+  internal bool IsHittable(double nowMs) =>
+    State == FishState.Alive && IsServerDriven && !movementFrozen && !Path.IsBeforeSpawn(nowMs);
+
+  internal Vector2 ServerPositionAt(double nowMs) => Path.PositionAtTime(nowMs);
+
+  // --------------------------------------------------------
+  // EXITS
+  // --------------------------------------------------------
+
+  internal void Kill()
+  {
+    if (State != FishState.Alive)
       return;
 
-    if (!other.TryGetComponent<BulletView>(out var bullet))
+    State = FishState.Dying;
+    exitStartedAt = Time.unscaledTime;
+    movementFrozen = true;
+    SetPickable(false);
+    fishImage.DOKill();
+    FishManager.Instance?.MoveToAnimParent(this);
+    PlayDeath(Release);
+  }
+
+  internal void Leave()
+  {
+    if (State != FishState.Alive)
       return;
 
-    bullet.OnFishHit(this);
-    if (data == null || string.IsNullOrEmpty(data.fishId))
+    State = FishState.Leaving;
+    exitStartedAt = Time.unscaledTime;
+    SetPickable(false);
+    fishImage.DOKill();
+    BindLifecycle(fishImage.DOFade(0f, leaveFadeDuration), Release);
+  }
+
+  // Must call onComplete exactly once when the death visuals are done (Release is idempotent,
+  // so calling it twice is harmless; never calling it is caught by the watchdog).
+  protected virtual void PlayDeath(Action onComplete)
+  {
+    BindLifecycle(fishImage.DOFade(0f, deathFadeDuration), onComplete);
+  }
+
+  protected void BindLifecycle(Tween tween, Action onComplete)
+  {
+    lifecycleTween = tween.SetUpdate(true).OnKill(() => onComplete?.Invoke());
+  }
+
+  internal void AddReleaseCallback(Action callback)
+  {
+    released += callback;
+  }
+
+  internal void Release()
+  {
+    if (State == FishState.Pooled)
+      return;
+    State = FishState.Pooled;
+
+    Action callbacks = released;
+    released = null;
+    callbacks?.Invoke(); // still positioned here, e.g. coin blast at the final spot
+
+    OnReleased();
+    FishManager.Instance?.OnFishReleased(this);
+    ResetFish();
+  }
+
+  protected virtual void OnReleased() { }
+
+  // --------------------------------------------------------
+  // RESET (POOL SAFE)
+  // --------------------------------------------------------
+
+  internal virtual void ResetFish()
+  {
+    released = null;
+    StopAllCoroutines();
+    CancelInvoke();
+
+    lifecycleTween?.Kill();
+    lifecycleTween = null;
+    damageTween?.Kill();
+    DOTween.Kill(transform);
+    if (fishImage != null)
     {
-      Debug.LogWarning($"[Fish] Bullet hit missing fishId | variant={data?.variant}");
+      fishImage.DOKill();
+      fishImage.color = Color.white;
     }
 
-    SocketIOManager.Instance.SendHitEvent(data.fishId, "normal", variant: data.variant);
+    if (imageAnimation != null && baseAnimationSpeed > 0f)
+      imageAnimation.SetAnimationSpeed(baseAnimationSpeed);
+
+    ResetLegacyState();
+    FishManager.Instance?.RestoreFromAnimParent(this);
+
+    transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+    transform.localScale = Vector3.one;
+
+    data = null;
+    Path = null;
+    HitboxRadius = 0f;
+    IsVisibleInViewport = false;
+    movementFrozen = false;
+    hasPose = false;
   }
 
-  protected void SetupFallbackMovement()
-  {
-    bool rtl = UnityEngine.Random.value > 0.5f;
-    FlipSprite(faceRight: !rtl);
-
-    var provider = CurvyPathProvider.Instance;
-    var splines = data != null && data.fishType == FishType.Jackpot_Dragon
-      ? provider.GetJackpotDragonSplines(rtl)
-      : provider.GetFallbackSplines(rtl);
-    if (splines == null || splines.Count == 0)
-      return;
-
-    CurvySpline spline = provider.ReserveUniqueSpline(splines);
-
-    ApplySpline(spline, rtl);
-  }
-
-  protected void ApplySpline(CurvySpline spline, bool rtl)
-  {
-    if (spline == null)
-    {
-      Debug.LogWarning("[Fish] ApplySpline called with null spline");
-      return;
-    }
-
-    if (reservedSpline != null && reservedSpline != spline)
-      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
-
-    reservedSpline = spline;
-    CurvyPathProvider.Instance?.ReserveSpline(spline);
-
-    splineController.Stop();
-    splineController.Spline = spline;
-    splineController.Position = 0;
-    splineController.Speed = 0;
-
-    splineController.MoveMode = CurvyController.MoveModeEnum.AbsolutePrecise;
-    splineController.OrientationMode = OrientationModeEnum.Tangent;
-    splineController.Clamping = CurvyClamping.Clamp;
-    splineController.PlayAutomatically = true;
-    splineController.OrientationAxis = rtl ? OrientationAxisEnum.Left : OrientationAxisEnum.Right;
-
-    float visibleTimeSec = data.duration / 1000f;
-    baseSpeed = spline.Length / visibleTimeSec;
-    ApplySpeed();
-
-    splineController.OnEndReached.RemoveListener(OnPathComplete);
-    splineController.OnEndReached.AddListener(OnPathComplete);
-
-    splineController.Play();
-  }
-
-  protected void ApplySpeed()
-  {
-    if (splineController != null)
-      splineController.Speed = baseSpeed * speedMultiplier;
-  }
+  // --------------------------------------------------------
+  // VISUAL HELPERS
+  // --------------------------------------------------------
 
   protected void FlipSprite(bool faceRight)
   {
@@ -206,260 +321,41 @@ internal class BaseFish : MonoBehaviour
     transform.localScale = scale;
   }
 
-  internal void SetSpeedMultiplier(float multiplier)
+  private void SetPickable(bool pickable)
   {
-    speedMultiplier = multiplier;
-    ApplySpeed();
-  }
-
-  private void OnPathComplete(CurvySplineMoveEventArgs args)
-  {
-    DespawnFish();
+    if (boxCollider != null)
+      boxCollider.enabled = pickable;
   }
 
   internal virtual IEnumerator DamageAnimation(Color damageColor)
   {
     if (fishImage == null)
     {
-      Debug.LogError("fishImage not found for " + data.variant);
+      GameLog.Error(LogCategory.Fish, "fishImage not found for " + data?.variant);
       yield break;
     }
 
     if (damageTween != null && damageTween.IsPlaying())
       yield return damageTween.WaitForCompletion();
 
-    damageTween?.Kill();
+    if (State != FishState.Alive)
+      yield break;
 
+    damageTween?.Kill();
     damageTween = DOTween.Sequence()
-          .Append(fishImage.DOColor(damageColor, 0.06f).SetEase(Ease.OutQuad))
-          .AppendInterval(0.08f).SetEase(Ease.OutQuad)
-          .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
+      .Append(fishImage.DOColor(damageColor, 0.06f).SetEase(Ease.OutQuad))
+      .AppendInterval(0.08f)
+      .Append(fishImage.DOColor(Color.white, 0.08f).SetEase(Ease.OutQuad));
   }
 
-  protected bool BeginDeath()
+  internal void SetAlpha(float alpha)
   {
-    if (isDespawning)
-      return false;
-
-    if (KillOnTorpedoArrival)
-      return false;
-
-    PendingVisualDeath = false;
-
-    if (WaitingForKillingTorpedo)
-      return false;
-
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-    if (boxCollider != null)
-      boxCollider.enabled = false;
-    if (splineController != null)
-    {
-      splineController.PlayAutomatically = false;
-      splineController.Pause();
-    }
-
-    return true;
-  }
-
-  internal void StopPathMovement()
-  {
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-    if (boxCollider != null)
-      boxCollider.enabled = false;
-
-    movementTween?.Kill();
-
-    if (splineController != null)
-    {
-      splineController.PlayAutomatically = false;
-      splineController.Pause();
-      splineController.enabled = false;
-      splineController.Speed = 0f;
-    }
-  }
-
-  internal void ForceDespawn()
-  {
-    DespawnFish();
-  }
-
-  internal virtual void OnTorpedoImpact()
-  {
-    if (onNextTorpedoImpact.Count == 0)
+    if (fishImage == null)
       return;
 
-    var callbacks = onNextTorpedoImpact.ToArray();
-    onNextTorpedoImpact.Clear();
-    for (int i = 0; i < callbacks.Length; i++)
-      callbacks[i]?.Invoke();
-  }
-
-  internal void RegisterIncomingTorpedo()
-  {
-    ActiveTorpedoCount++;
-  }
-
-  internal void UnregisterIncomingTorpedo()
-  {
-    if (ActiveTorpedoCount > 0)
-      ActiveTorpedoCount--;
-  }
-
-  internal void WaitForLastTorpedo(System.Action onReady, float timeout)
-  {
-    if (onReady == null)
-      return;
-
-    if (ActiveTorpedoCount <= 0)
-    {
-      onReady.Invoke();
-      return;
-    }
-
-    onNextTorpedoImpact.Add(onReady);
-  }
-
-  internal virtual void Die()
-  {
-    if (!BeginDeath())
-      return;
-
-    DespawnFish();
-  }
-
-  // --------------------------------------------------------
-  // DESPAWN LOGIC (IDEMPOTENT)
-  // --------------------------------------------------------
-  protected virtual void DespawnFish()
-  {
-    if (isDespawning || finalized)
-      return;
-
-    FishManager.Instance?.MoveToAnimParent(this);
-
-    if (PendingVisualDeath)
-    {
-      Debug.LogWarning(
-        $"[Fish] Despawn while pending | " +
-        $"variant={data?.variant} | id={data?.fishId}"
-      );
-    }
-
-    isDespawning = true;
-    // Debug.Log("Despawning fish : " + data?.variant + " " + data?.fishId);
-
-    movementTween?.Kill();
-    damageTween?.Kill();
-
-    DOTween.Kill(transform);
-    DOTween.Kill(fishImage);
-
-    // Visual fade is optional, logic must NOT depend on it
-    fishImage.DOFade(0f, 0.15f)
-             .SetUpdate(true)
-             .OnComplete(FinalizeDespawn);
-
-    if (despawnFinalizeRoutine == null && gameObject.activeInHierarchy)
-      despawnFinalizeRoutine = StartCoroutine(DespawnFinalizeFallback(0.5f));
-  }
-
-  private void FinalizeDespawn()
-  {
-    if (finalized)
-      return;
-    finalized = true;
-    if (lifeTimeoutRoutine != null)
-    {
-      StopCoroutine(lifeTimeoutRoutine);
-      lifeTimeoutRoutine = null;
-    }
-    if (killFailSafeRoutine != null)
-    {
-      StopCoroutine(killFailSafeRoutine);
-      killFailSafeRoutine = null;
-    }
-    if (despawnFinalizeRoutine != null)
-    {
-      StopCoroutine(despawnFinalizeRoutine);
-      despawnFinalizeRoutine = null;
-    }
-
-    OnFishDespawned?.Invoke();
-    OnFishDespawned = null;
-
-    FishManager.Instance.DespawnFish(this);
-    ResetFish();
-  }
-
-  private bool IsFishStillValid()
-  {
-    return data != null && data.fishId != null && !isDespawning;
-  }
-
-  // --------------------------------------------------------
-  // RESET (POOL SAFE)
-  // --------------------------------------------------------
-  internal virtual void ResetFish()
-  {
-    OnFishDespawned = null;
-    data = null;
-    movementTween?.Kill();
-    damageTween?.Kill();
-
-    isDespawning = false;
-    PendingVisualDeath = false;
-    KillOnTorpedoArrival = false;
-
-    WaitingForKillingTorpedo = false;
-    deathCause = DeathCause.None;
-    IsVisibleInViewport = false;
-    visibilityReady = false;
-    ActiveTorpedoCount = 0;
-    onNextTorpedoImpact.Clear();
-    if (visibilityRoutine != null)
-    {
-      StopCoroutine(visibilityRoutine);
-      visibilityRoutine = null;
-    }
-    if (killFailSafeRoutine != null)
-    {
-      StopCoroutine(killFailSafeRoutine);
-      killFailSafeRoutine = null;
-    }
-    if (despawnFinalizeRoutine != null)
-    {
-      StopCoroutine(despawnFinalizeRoutine);
-      despawnFinalizeRoutine = null;
-    }
-
-    if (fishImage != null)
-      fishImage.color = Color.white;
-
-    if (imageAnimation != null && baseAnimationSpeed > 0f)
-      imageAnimation.SetAnimationSpeed(baseAnimationSpeed);
-
-    if (reservedSpline != null)
-    {
-      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
-      reservedSpline = null;
-    }
-
-    FishManager.Instance?.RestoreFromAnimParent(this);
-
-    transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-    transform.localScale = Vector3.one;
-
-    if (splineController != null)
-    {
-      splineController.enabled = true;
-      splineController.Stop();
-      splineController.Position = 0;
-      splineController.Speed = 0;
-    }
-
-    speedMultiplier = 1f;
+    Color c = fishImage.color;
+    c.a = alpha;
+    fishImage.color = c;
   }
 
   internal void SetAnimationSpeedMultiplier(float multiplier)
@@ -471,199 +367,29 @@ internal class BaseFish : MonoBehaviour
     imageAnimation.SetAnimationSpeed(speed * Mathf.Max(0.01f, multiplier));
   }
 
+  // Any part of the collider overlapping the viewport. Skips the first two frames so a
+  // freshly pooled fish isn't reported at its pre-spawn position.
   private void UpdateViewportVisibility()
   {
-    if (!visibilityReady)
-    {
-      IsVisibleInViewport = false;
-      return;
-    }
+    IsVisibleInViewport = false;
 
-    if (isDespawning || PendingVisualDeath || !gameObject.activeInHierarchy)
-    {
-      IsVisibleInViewport = false;
+    if (State != FishState.Alive || PendingVisualDeath || Time.frameCount - aliveSinceFrame < 2)
       return;
-    }
 
     var cam = Camera.main;
-    if (cam == null)
-    {
-      IsVisibleInViewport = false;
+    if (cam == null || boxCollider == null)
       return;
-    }
-
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-
-    if (boxCollider == null)
-    {
-      IsVisibleInViewport = false;
-      return;
-    }
 
     var bounds = boxCollider.bounds;
     Vector3 min = cam.WorldToViewportPoint(bounds.min);
     Vector3 max = cam.WorldToViewportPoint(bounds.max);
-
     if (max.z <= 0)
-    {
-      IsVisibleInViewport = false;
       return;
-    }
 
-    // Consider visible if any part of the collider overlaps the viewport.
     IsVisibleInViewport =
       max.x >= viewportPadding &&
       min.x <= 1f - viewportPadding &&
       max.y >= viewportPadding &&
       min.y <= 1f - viewportPadding;
-  }
-
-  private void BeginViewportVisibilityWarmup()
-  {
-    if (visibilityRoutine != null)
-      StopCoroutine(visibilityRoutine);
-
-    visibilityRoutine = StartCoroutine(ViewportVisibilityWarmup());
-  }
-
-  private IEnumerator ViewportVisibilityWarmup()
-  {
-    visibilityReady = false;
-    yield return null;
-    yield return null;
-    visibilityReady = true;
-    visibilityRoutine = null;
-  }
-  internal void SetAlpha(float alpha)
-  {
-    if (fishImage == null)
-      return;
-
-    Color c = fishImage.color;
-    c.a = alpha;
-    fishImage.color = c;
-  }
-  internal void MarkPendingDeath()
-  {
-    PendingVisualDeath = true;
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-    // if (boxCollider != null)
-    //   boxCollider.enabled = false;
-  }
-  internal void WaitForTorpedoKill(float timeout = 10f)
-  {
-    WaitingForKillingTorpedo = true;
-
-    if (killFailSafeRoutine != null)
-      StopCoroutine(killFailSafeRoutine);
-
-    killFailSafeRoutine = StartCoroutine(KillFailSafe(timeout));
-  }
-
-  private IEnumerator KillFailSafe(float t)
-  {
-    yield return new WaitForSecondsRealtime(t);
-
-    if (WaitingForKillingTorpedo)
-    {
-      LogDeath("TORPEDO_FAILSAFE");
-
-      WaitingForKillingTorpedo = false;
-      KillOnTorpedoArrival = false;
-      Die();
-    }
-  }
-
-  internal void OnKillingTorpedoArrived()
-  {
-    LogDeath("TORPEDO_ARRIVAL");
-
-    if (!WaitingForKillingTorpedo)
-      return;
-
-    WaitingForKillingTorpedo = false;
-
-    if (killFailSafeRoutine != null)
-    {
-      StopCoroutine(killFailSafeRoutine);
-      killFailSafeRoutine = null;
-    }
-    KillOnTorpedoArrival = false;
-    Die();
-  }
-
-  private IEnumerator DespawnFinalizeFallback(float t)
-  {
-    yield return new WaitForSecondsRealtime(t);
-
-    despawnFinalizeRoutine = null;
-
-    if (finalized)
-      yield break;
-
-    Debug.LogWarning(
-      $"[Fish] Despawn finalize fallback | " +
-      $"variant={data?.variant} | id={data?.fishId}"
-    );
-    FinalizeDespawn();
-  }
-
-  private void LogDeath(string source)
-  {
-    Debug.Log(
-      $"☠️ FISH DEATH | " +
-      $"source={source} | " +
-      $"variant={data?.variant} | " +
-      $"id={data?.fishId} | " +
-      $"PendingVisualDeath={PendingVisualDeath} | " +
-      $"WaitingForTorpedo={WaitingForKillingTorpedo} | " +
-      $"KillOnArrival={KillOnTorpedoArrival} | " +
-      $"deathCause={deathCause}"
-    );
-  }
-
-
-  internal void PlayLaserImpact() { }
-  internal void StopLaserImpact() { }
-
-  internal Vector3 GetAimPoint(Camera cam)
-  {
-    if (data == null || data.fishType != FishType.Jackpot_Dragon)
-      return ColliderMidPoint;
-
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-    if (boxCollider == null)
-      return HitPoint.position;
-
-    Bounds bounds = boxCollider.bounds;
-    Vector3 center = bounds.center;
-    const float inwardOffset = 1f;
-    float halfWidth = Mathf.Abs(boxCollider.size.x * transform.lossyScale.x) * 0.5f;
-    float edgeOffset = Mathf.Max(halfWidth - inwardOffset, 0f);
-    Vector3 right = center + transform.right * edgeOffset;
-    Vector3 left = center - transform.right * edgeOffset;
-
-    if (cam == null)
-      return center;
-
-    if (IsPointVisible(cam, center, 0f))
-      return center;
-    if (IsPointVisible(cam, left, 0f))
-      return left;
-    if (IsPointVisible(cam, right, 0f))
-      return right;
-
-    return center;
-  }
-
-  private bool IsPointVisible(Camera cam, Vector3 worldPoint, float padding)
-  {
-    Vector3 vp = cam.WorldToViewportPoint(worldPoint);
-    return vp.z > 0f &&
-           vp.x >= padding && vp.x <= 1f - padding &&
-           vp.y >= padding && vp.y <= 1f - padding;
   }
 }

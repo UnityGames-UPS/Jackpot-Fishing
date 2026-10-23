@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -9,6 +10,7 @@ internal class NormalFish : BaseFish
 
   private Coroutine segmentedSpeedRoutine;
 
+  // Old backend: client-picked Curvy paths. Server-driven fish use InitializeFromServer.
   internal void Initialize(FishData data, SpawnBatchContext context)
   {
     base.Initialize(data);
@@ -46,7 +48,7 @@ internal class NormalFish : BaseFish
 
         if (pathSets != null && pathSets.Count > 0)
           batch.chosenPathSet =
-            pathSets[Random.Range(0, pathSets.Count)];
+            pathSets[UnityEngine.Random.Range(0, pathSets.Count)];
       }
 
       chosenSet = batch.chosenPathSet;
@@ -84,7 +86,7 @@ internal class NormalFish : BaseFish
     }
 
     if (chosenSpline == null)
-      chosenSpline = splines[Random.Range(0, splines.Count)];
+      chosenSpline = splines[UnityEngine.Random.Range(0, splines.Count)];
 
     ApplySpline(chosenSpline, moveRightToLeft);
   }
@@ -124,12 +126,12 @@ internal class NormalFish : BaseFish
     float remainingDistance = pathLength;
     while (remainingDistance > 0f)
     {
-      float segmentDistance = Random.Range(minSegmentDistance, maxSegmentDistance);
+      float segmentDistance = UnityEngine.Random.Range(minSegmentDistance, maxSegmentDistance);
       if (segmentDistance > remainingDistance)
         segmentDistance = remainingDistance;
 
       segmentDistances.Add(segmentDistance);
-      segmentMultipliers.Add(Random.Range(minSpeedMultiplier, maxSpeedMultiplier));
+      segmentMultipliers.Add(UnityEngine.Random.Range(minSpeedMultiplier, maxSpeedMultiplier));
       remainingDistance -= segmentDistance;
     }
 
@@ -159,24 +161,17 @@ internal class NormalFish : BaseFish
     SetSpeedMultiplier(1f);
   }
 
-  internal override void Die()
+  protected override void PlayDeath(Action onComplete)
   {
-    if (!BeginDeath())
-      return;
-
-    Sequence dieSeq = DOTween.Sequence();
-    dieSeq.AppendInterval(0.1f);
-
     float currentY = transform.localPosition.y;
-    float jumpHeight = 100f;
+    const float jumpHeight = 100f;
 
-    dieSeq.Append(transform.DOLocalMoveY(currentY + jumpHeight, 0.15f).SetEase(Ease.OutQuad));
-    dieSeq.Append(transform.DOLocalMoveY(currentY, 0.15f).SetEase(Ease.InQuad));
+    Sequence dieSeq = DOTween.Sequence()
+      .AppendInterval(0.1f)
+      .Append(transform.DOLocalMoveY(currentY + jumpHeight, 0.15f).SetEase(Ease.OutQuad))
+      .Append(transform.DOLocalMoveY(currentY, 0.15f).SetEase(Ease.InQuad))
+      .Append(fishImage.DOFade(0f, 0.15f));
 
-    dieSeq.OnComplete(() =>
-    {
-      if (!PendingVisualDeath)
-        DespawnFish();
-    });
+    BindLifecycle(dieSeq, onComplete);
   }
 }
