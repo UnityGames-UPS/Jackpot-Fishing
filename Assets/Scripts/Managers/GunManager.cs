@@ -1,18 +1,23 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GunManager : MonoBehaviour
 {
+  private const float SeatMatchTolerance = 2f; // server px, when matching a shot origin to a seat
+
   internal static GunManager Instance;
-  [SerializeField] internal BaseGun currentGun;
-  [SerializeField] internal BaseGun[] Guns;
   [SerializeField] private RectTransform bgRect;
   [SerializeField] private Camera worldCamera;
-  [SerializeField] private ImageAnimation GunSwitchAnimation;
-  [Tooltip("Moves horizontally to the player's seat on init. Defaults to the parent of the first gun.")]
-  [SerializeField] private Transform seatRoot;
+  [Tooltip("One rig per server seat, in seat order (index = seatIndex).")]
+  [SerializeField] private SeatRig[] seatRigs;
+
+  // Always the local player's rig, taken from its SeatRig on init. Null until then.
+  internal BaseGun currentGun { get; private set; }
+  internal BaseGun[] Guns { get; private set; }
 
   private Coroutine bulletFiringRoutine;
+  private SeatRig localRig;
 
   void Awake()
   {
@@ -21,6 +26,8 @@ public class GunManager : MonoBehaviour
 
   internal void UpdateAim(Vector3 screenPos)
   {
+    if (currentGun == null)
+      return;
     if (!RectTransformUtility.RectangleContainsScreenPoint(bgRect, screenPos, worldCamera))
       return;
 
@@ -67,25 +74,20 @@ public class GunManager : MonoBehaviour
 
     SetBulletFiring(false);
 
-    if (currentGun != null)
-    {
-      if (currentGun is LazerGun)
-        currentGun.transform.parent.gameObject.SetActive(false);
-      else
-        currentGun.gameObject.SetActive(false);
-    }
+    SeatRig.SetGunVisible(currentGun, false);
 
-    GunSwitchAnimation.StartAnimation();
+    if (localRig != null && localRig.gunSwitchAnimation)
+      localRig.gunSwitchAnimation.StartAnimation();
     currentGun = newGun;
 
-    if (currentGun is LazerGun)
-      currentGun.transform.parent.gameObject.SetActive(true);
-    else
-      currentGun.gameObject.SetActive(true);
+    SeatRig.SetGunVisible(currentGun, true);
   }
 
   internal void SwitchGun<T>() where T : BaseGun
   {
+    if (Guns == null)
+      return;
+
     foreach (var gun in Guns)
     {
       if (gun is T)
@@ -106,17 +108,166 @@ public class GunManager : MonoBehaviour
     }
   }
 
+  // --------------------------------------------------------
+  // SEATS
+  // --------------------------------------------------------
 
-  // Slides the cannon (and the bet UI with it) along its own horizontal axis to the server seat.
-  // Bottom seats only for now; top seats (y = 0) would also need the cannon flipped.
-  internal void PlaceAtSeat(Vector2 serverSeat)
+  // game:init (and every re-init): place all rigs, take over ours, show the room's opponents.
+  internal void SetupSeats(List<MLFGVec3> seats, int localSeat, Dictionary<string, int> roomSeats, string userId, string username)
   {
-    Transform root = seatRoot != null ? seatRoot : (Guns != null && Guns.Length > 0 ? Guns[0].transform.parent : null);
-    if (root == null || root.parent == null || !Playfield.IsReady)
+    if (seatRigs == null || seatRigs.Length == 0 || !Playfield.IsReady)
+    {
+      GameLog.Warn(LogCategory.Socket, "No seat rigs or playfield; seats not set up");
+      return;
+    }
+
+    SetBulletFiring(false);
+    localRig = null;
+
+    for (int i = 0; i < seatRigs.Length; i++)
+    {
+      SeatRig rig = seatRigs[i];
+      if (rig == null)
+        continue;
+
+      rig.Clear();
+      if (seats != null && i < seats.Count && seats[i] != null)
+        rig.PlaceAt(i, seats[i].ToVector2());
+    }
+
+    SeatRig mine = RigAt(localSeat, seats);
+    if (mine != null)
+    {
+      mine.SetLocal(userId, username);
+      TakeOver(mine);
+    }
+    else
+    {
+      GameLog.Error(LogCategory.Socket, $"No rig for local seat {localSeat}");
+    }
+
+    if (roomSeats != null)
+    {
+      foreach (var entry in roomSeats)
+      {
+        if (entry.Key != userId)
+          OccupySeat(entry.Key, null, entry.Value);
+      }
+    }
+  }
+
+  private SeatRig RigAt(int seatIndex, List<MLFGVec3> seats)
+  {
+    if (seatIndex < 0 || seatIndex >= seatRigs.Length)
+      return null;
+    if (seats == null || seatIndex >= seats.Count || seats[seatIndex] == null)
+      return null;
+    return seatRigs[seatIndex];
+  }
+
+  private void TakeOver(SeatRig rig)
+  {
+    localRig = rig;
+    Guns = rig.guns;
+    currentGun = rig.defaultGun;
+    UIManager.Instance.BindGunPanel(rig);
+  }
+
+  // game:init roster, game:player_joined, or an unknown shooter's first shot.
+  internal void OccupySeat(string userId, string username, int seatIndex)
+  {
+    if (string.IsNullOrEmpty(userId) || seatIndex < 0 || seatIndex >= seatRigs.Length)
       return;
 
-    Vector3 seatLocal = root.parent.InverseTransformPoint(Playfield.ServerToWorld(serverSeat));
-    Vector3 current = root.localPosition;
-    root.localPosition = new Vector3(seatLocal.x, current.y, current.z);
+    SeatRig rig = seatRigs[seatIndex];
+    if (rig == null || rig == localRig || rig.SeatIndex < 0)
+      return;
+
+    VacateSeat(userId); // a player can only hold one seat
+    rig.SetOpponent(userId, username);
+    GameLog.Info(LogCategory.Socket, $"Seat {seatIndex}: opponent {userId}");
+  }
+
+  internal void VacateSeat(string userId)
+  {
+    SeatRig rig = FindOpponentRig(userId);
+    if (rig != null)
+      rig.Clear();
+  }
+
+  private SeatRig FindOpponentRig(string userId)
+  {
+    foreach (var rig in seatRigs)
+    {
+      if (rig != null && rig != localRig && rig.OccupantId == userId)
+        return rig;
+    }
+    return null;
+  }
+
+  // No join events yet, so an unknown shooter claims the seat their shot came from.
+  private SeatRig ResolveOpponentRig(string shooterId, MLFGVec3 origin)
+  {
+    if (seatRigs == null || string.IsNullOrEmpty(shooterId))
+      return null;
+
+    SeatRig known = FindOpponentRig(shooterId);
+    if (known != null)
+      return known;
+
+    if (origin != null)
+    {
+      Vector2 o = origin.ToVector2();
+      foreach (var rig in seatRigs)
+      {
+        if (rig == null || rig == localRig || rig.SeatIndex < 0)
+          continue;
+        if ((rig.ServerSeat - o).sqrMagnitude <= SeatMatchTolerance * SeatMatchTolerance)
+        {
+          OccupySeat(shooterId, null, rig.SeatIndex);
+          return rig;
+        }
+      }
+    }
+
+    GameLog.Warn(LogCategory.Bullet, SocketIOManager.Instance.WithInboundJson($"No seat for shooter {shooterId} at ({origin?.x},{origin?.y})"));
+    return null;
+  }
+
+  internal void HandleRemoteFire(BulletFiredPayload fired)
+  {
+    SeatRig rig = ResolveOpponentRig(fired.shooterId, fired.origin);
+    if (rig == null)
+      return;
+
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, SocketIOManager.Instance.WithInboundJson($"Opponent fire {fired.bulletId} by {fired.shooterId} seat {rig.SeatIndex} from ({fired.origin?.x:F0},{fired.origin?.y:F0}) angle {fired.angle:F1} bet #{fired.betIndex?.ToString() ?? "-"}"));
+    ApplyOpponentBet(rig, fired.betIndex);
+    if (fired.shooterBalance.HasValue)
+      rig.SetBalance(fired.shooterBalance.Value);
+    rig.PlayRemoteFire(fired);
+  }
+
+  internal void HandleRemoteShot(ShotResultPayload result)
+  {
+    SeatRig rig = ResolveOpponentRig(result.shooterId, result.origin);
+    if (rig == null)
+      return;
+
+    // Aim comes from bullet_fired only: aimTarget is where the bullet ended up (after bounces),
+    // not where the cannon pointed, so turning toward it swings the barrel sideways.
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, SocketIOManager.Instance.WithInboundJson($"Opponent shot {result.shotId} by {result.shooterId} seat {rig.SeatIndex}: {result.outcome} at ({result.aimTarget?.x:F0},{result.aimTarget?.y:F0})"));
+    ApplyOpponentBet(rig, result.betIndex);
+    if (result.shooterBalance.HasValue)
+      rig.SetBalance(result.shooterBalance.Value);
+  }
+
+  // betIndex points into the current hall's bets, which every player in the room shares.
+  private static void ApplyOpponentBet(SeatRig rig, int? betIndex)
+  {
+    var bets = SocketIOManager.Instance?.bets;
+    if (betIndex.HasValue && bets != null && betIndex.Value >= 0 && betIndex.Value < bets.Count)
+      rig.SetBet(bets[betIndex.Value]);
   }
 }

@@ -10,11 +10,6 @@ internal class JackpotDragon : BaseFish
   private float pendingWinAmount;
   private bool playLegacyRewards;
 
-  internal override void Initialize(FishData data)
-  {
-    base.Initialize(data);
-    SetupFallbackMovement();
-  }
 
   // Old backend: the hit handler drove the death and its rewards from here.
   internal void TriggerDeathSequence(float winAmount)

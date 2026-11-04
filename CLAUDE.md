@@ -12,7 +12,9 @@ The current client was written against an **old backend**. The plan:
 
 Some art and animation assets are still **pending**, so work with what exists and leave clear hooks where assets are missing.
 
-`Assets/Scripts/MD/FIshLatest.md` (untracked) is a draft integration guide for the new "ML-FG" server-authoritative backend. It covers `game:action` FIRE/SHOOT, `game:fish_spawned` with spline points, `game:shot_result`, clock sync and more. Read it before backend work, but treat whatever spec the user provides as authoritative.
+The new backend is **ML-JF** (server-authoritative). Its live config is `Assets/Scripts/JSONS/Config.json`, and its docs are in `Assets/Scripts/MD/` (`JackpotFishing_IntegrationGuide.md`, `moreFeat.md`, `NewNewNewJFMD.md`). When they disagree, the config wins, but treat whatever the user provides as authoritative.
+
+**`BACKEND_PORT.md` (repo root) tracks what is done, what is left and open backend questions.** Read it before backend work, and update it at the end of every session: move finished items, add new ones, and add a line to its session log.
 
 ## Edit permissions
 
@@ -21,7 +23,7 @@ Some art and animation assets are still **pending**, so work with what exists an
 | `Assets/Scripts/**`, `Assets/HttpServices/**` | Free to read and edit |
 | `Assets/Plugins/WebGL/CustomJsLib.jslib`, any `index.html` / WebGL template files | Free to read and edit |
 | Prefabs (`Assets/Prefabs/**`) and `Assets/Scenes/MainScene.unity` | **Read only. Ask before modifying** |
-| `Assets/Plugins/**` (DOTween, Curvy, Best HTTP/SocketIO, etc.) | Read only |
+| `Assets/Plugins/**` (DOTween, Best HTTP/SocketIO, etc.) | Read only |
 | Everything else (folders, ProjectSettings, Packages) | Read to understand structure; ask before changing |
 
 If a script change needs a new serialized field to be wired up in a prefab or scene, make the script change and tell the user what to hook up in the Inspector. Don't edit the YAML yourself.
@@ -35,7 +37,7 @@ This is a Unity project with no CLI build scripts, linter or test suite. Builds 
 **Compile checks:** don't try to compile from the CLI. After making script changes, ask the user to check compilation in the Unity Editor and wait for them to confirm (or paste errors) before moving on.
 
 Editor-only testing paths:
-- `FishManager` has mock spawning in `#if UNITY_EDITOR`: press **Space** to spawn `fishesData[mockFishIndex]` on a fallback path, with no backend needed.
+- `FishManager` has mock spawning in `#if UNITY_EDITOR`: press **M** to spawn `fishesData[mockFishIndex]` on a mock server path and **K** to kill a random fish, with no backend needed.
 - In the Editor, `SocketIOManager` connects to `TestSocketURI` with the `testToken` serialized field. In a WebGL build it requests the URL and token from the host page instead (see below).
 
 ## Architecture
@@ -43,18 +45,18 @@ Editor-only testing paths:
 ### Singletons and the scene
 Everything lives in `MainScene.unity`. Managers are MonoBehaviours with `internal static X Instance` set in `Awake`, and they call each other directly through those singletons:
 - `SocketIOManager`: networking, response parsing, and the orchestration of hit and kill results. This is where most backend porting work will happen.
-- `FishManager`: per-type fish pools, `FishData` templates keyed by `variant`, active fish list, and coin and star-coin effect scaling.
+- `FishManager`: per-type fish pools, `FishData` templates keyed by `variant` (which must equal the server's fish `type`), active fish list, and coin and star-coin effect scaling.
 - `UIManager`: balance, bet index (`BetCounter`), gun selection buttons, popups (reconnect, disconnect, low balance) and win animations.
 - `GunManager`: owns `BaseGun[] Guns` and `currentGun`; does aiming and firing toggles.
 - `InputManagerView`: pointer events → aim and fire, plus picking the fish under the pointer for target lock.
-- `CurvyPathProvider`: Curvy splines grouped by `FishType`, plus fallback and JackpotDragon left-to-right and right-to-left sets; does spline reservation so fish don't share a path.
 - `JSFunctCalls`: C# side of the JS bridge.
 
-### Network flow (old backend)
+### Network flow (old backend, paused)
+The legacy code lives in `Assets/Scripts/Network/Legacy/` and `BaseFish.Legacy.cs`. The ML-JF flow is in `SocketIOManager` and `Network/MLFGDtos.cs`; see `BACKEND_PORT.md`.
 Uses Best.SocketIO (`Assets/Plugins`, `com.Tivadar.Best.*`) over WebSocket on namespace `/playground`, with token auth.
 - Inbound events are `game:init` and `result`, both routed to `ParseResponse`, which switches on `root.id`: `initdata` / `spawnresult` / `hitresult`. There is also `pong`.
 - Outbound events are `request` (spawn request and hit events via `SendHitEvent(fishId, weaponType, variant)`) and `ping`, all sent through `SendDataWithNamespace`.
-- `HandleSpawnResult` maps the backend `Fish` → `FishManager.ToFishData` (the variant lookup in `fishesData`; `lifespan` becomes `duration`) → `SpawnFishFromBackend`. **The client picks the paths**: fish follow local Curvy splines. The new backend sends spline points from the server, so this part has to change.
+- `HandleSpawnResult` maps the backend `Fish` → `FishManager.ToFishData` (the variant lookup in `fishesData`; `lifespan` becomes `duration`) → `SpawnFishFromBackend`. The old client-side Curvy paths have been removed, so legacy-spawned fish don't move. Fish move only on the server's `ServerPath`.
 - `HandleHitResult` holds most of the game feel: weapon-specific branches (`"torpedo"`, `"lazer"`), effect-fish chains (bubble crab, blue fish, rock crab), immortal fish bucket animations, rainbow and star-coin wins, and refunds. It decides on variant string literals like `immo_turtle_fish` and `effect_rockcrab_fish`.
 - DTOs (`Root`, `GameData`, `Fish`, `HitPayload`, ...) are at the bottom of `SocketIOManager.cs` and use Newtonsoft JSON.
 - Ping and pong do the heartbeat: 15 missed pongs → disconnect popup. Losing app focus starts a 180 s disconnect timer.
@@ -67,10 +69,10 @@ Uses Best.SocketIO (`Assets/Plugins`, `com.Tivadar.Best.*`) over WebSocket on na
 - In WebGL builds, every Unity log is forwarded to RN through `SendLogToReactNative`.
 
 ### Fish
-`BaseFish` handles spline movement (Curvy), sprite-frame animation, viewport checks, death and despawn, and torpedo bookkeeping: incoming-torpedo counts and pending death until the killing torpedo arrives. Subclasses map one-to-one to `FishType`: `NormalFish` (takes a `SpawnBatchContext` for group spawns), `GoldenFish`, `SpecialFish`, `EffectFish` (large, holds the chain and area effects), `ImmortalFish`, `JackpotFish` and `JackpotDragon`. `FishData` assets (sprites, sizes, collider) are serialized on `FishManager` and matched by `variant`.
+`BaseFish` handles server-path movement (`ServerPath`), sprite-frame animation, viewport checks, death and despawn, and torpedo bookkeeping: incoming-torpedo counts and pending death until the killing torpedo arrives. Subclasses map one-to-one to `FishType`: `NormalFish`, `GoldenFish`, `SpecialFish`, `EffectFish` (large, holds the chain and area effects), `ImmortalFish`, `JackpotFish` and `JackpotDragon`. `FishData` assets (sprites, sizes, collider) are serialized on `FishManager` and matched by `variant`, which is the server's fish `type` (e.g. `king_squid`). Code that branches on a fish uses these names too.
 
 ### Guns
-`BaseGun` (abstract `Fire()`, `UpdateAim`) → `SimpleGun` (normal bullets that bounce), `TorpedoGun` (lock-on, plus `ForceStopTorpedoFire` when the target dies), `LazerGun` (continuous electric hit at `ElectricHitInterval`). `UIManager.GunType` and `SocketIOManager.GunCosts` (index 0 normal, 1 torpedo, 2 electric) must stay in sync with the server's weapon costs.
+`BaseGun` (abstract `Fire()`, `UpdateAim`) → `SimpleGun` (normal bullets that bounce), `TorpedoGun` (lock-on; FIRE on launch, SHOOT on impact through `TorpedoShot`), `LazerGun` (continuous beam; one FIRE + SHOOT per tick). All three use `SocketIOManager.SendFire` / `SendShoot` with their `weaponType` (`MLFGWeaponIds`), and each waits `FireIntervalFor(weapon)` (config `fireIntervalMs`, which the server enforces) between shots. `SocketIOManager.GunCosts` (index 0 normal, 1 torpedo, 2 laser) holds bet multipliers and is overwritten from `weapons.*.cost` on init. Opponent shots (`game:bullet_fired`) are visual only: `SeatRig.PlayRemoteFire` switches to the fired gun, and torpedo/laser aim at `targetFishId`.
 
 ### Pooling
 Every spawnable thing (fish of each type, bullets, VFX, popups) goes through `GenericObjectPool<T>`. Because Unity can't serialize generic MonoBehaviours, each type has a one-line concrete wrapper in `Assets/Scripts/Util/WrapperPoolScripts/`, for example `internal class NormalFishPool : GenericObjectPool<NormalFish> { }`. Add a new wrapper for each new pooled type, and return objects with `ReturnToPool` rather than `Destroy`.

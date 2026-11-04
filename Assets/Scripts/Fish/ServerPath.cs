@@ -13,7 +13,7 @@ internal sealed class ServerPath
   private readonly MotionKeyframe[] keyframes;
   private readonly float totalLength;
 
-  internal long SpawnTime { get; }
+  internal double SpawnTime { get; }
   internal double Lifespan { get; }
 
   internal ServerPath(SpawnedFish dto)

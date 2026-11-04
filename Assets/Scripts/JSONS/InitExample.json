@@ -1,0 +1,552 @@
+{
+  "id": "f8cd80d3-76c6-4361-92f1-dd2c9f3ffe6a",
+  "gameData": {
+    "weapons": {
+      "laser": {
+        "cost": 1,
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 300,
+        "bulletSpeed": 0,
+        "maxBounces": 0,
+        "maxBulletBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "normal": {
+        "cost": 1,
+        "targetingMode": "raycast",
+        "fireIntervalMs": 250,
+        "bulletSpeed": 1200,
+        "maxBounces": 3,
+        "maxBulletBounces": 3,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "torpedo": {
+        "cost": 4,
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 600,
+        "bulletSpeed": 800,
+        "maxBounces": 0,
+        "maxBulletBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      }
+    },
+    "fishes": [
+      {
+        "type": "flying_fish",
+        "variants": [
+          "flying_fish"
+        ]
+      },
+      {
+        "type": "clownfish",
+        "variants": [
+          "clownfish"
+        ]
+      },
+      {
+        "type": "angelfish",
+        "variants": [
+          "angelfish"
+        ]
+      },
+      {
+        "type": "blowfish",
+        "variants": [
+          "blowfish"
+        ]
+      },
+      {
+        "type": "pufferfish",
+        "variants": [
+          "pufferfish"
+        ]
+      },
+      {
+        "type": "sea_turtle",
+        "variants": [
+          "sea_turtle"
+        ]
+      },
+      {
+        "type": "jellyfish",
+        "variants": [
+          "jellyfish"
+        ]
+      },
+      {
+        "type": "lobster",
+        "variants": [
+          "lobster"
+        ]
+      },
+      {
+        "type": "hermit_crab",
+        "variants": [
+          "hermit_crab"
+        ]
+      },
+      {
+        "type": "octopus",
+        "variants": [
+          "octopus"
+        ]
+      },
+      {
+        "type": "lanternfish",
+        "variants": [
+          "lanternfish"
+        ]
+      },
+      {
+        "type": "manta_ray",
+        "variants": [
+          "manta_ray"
+        ]
+      },
+      {
+        "type": "hammerhead_shark",
+        "variants": [
+          "hammerhead_shark"
+        ]
+      },
+      {
+        "type": "golden_angelfish",
+        "variants": [
+          "golden_angelfish"
+        ]
+      },
+      {
+        "type": "golden_clownfish",
+        "variants": [
+          "golden_clownfish"
+        ]
+      },
+      {
+        "type": "golden_manta_ray",
+        "variants": [
+          "golden_manta_ray"
+        ]
+      },
+      {
+        "type": "armored_fish",
+        "variants": [
+          "armored_fish"
+        ]
+      },
+      {
+        "type": "anglerfish",
+        "variants": [
+          "anglerfish"
+        ]
+      },
+      {
+        "type": "fortune_terrapin",
+        "variants": [
+          "fortune_terrapin"
+        ]
+      },
+      {
+        "type": "thunder_shark",
+        "variants": [
+          "thunder_shark"
+        ]
+      },
+      {
+        "type": "torpedo_crab",
+        "variants": [
+          "torpedo_crab"
+        ]
+      },
+      {
+        "type": "sea_anemone",
+        "variants": [
+          "sea_anemone"
+        ]
+      },
+      {
+        "type": "king_squid",
+        "variants": [
+          "king_squid"
+        ]
+      },
+      {
+        "type": "golden_shark",
+        "variants": [
+          "golden_shark"
+        ]
+      },
+      {
+        "type": "treasure_bowl",
+        "variants": [
+          "treasure_bowl"
+        ]
+      },
+      {
+        "type": "jackpot_fish",
+        "variants": [
+          "jackpot_fish"
+        ]
+      },
+      {
+        "type": "jackpot_dragon",
+        "variants": [
+          "jackpot_dragon"
+        ]
+      }
+    ],
+    "spawnInterval": 1500,
+    "maxConcurrentFish": 25,
+    "seats": [
+      {
+        "x": 370,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 960,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 1550,
+        "y": 1080,
+        "z": 0
+      }
+    ],
+    "bets": [
+      0.1,
+      0.2,
+      0.5,
+      1,
+      2,
+      5,
+      10
+    ],
+    "levels": [
+      "joy",
+      "regal",
+      "regal_single"
+    ],
+    "capabilities": {
+      "freeze": {
+        "cost": 30,
+        "durationMs": 30000
+      },
+      "energyBoost": {
+        "enabled": true,
+        "referenceBet": 1,
+        "baseChargePerShot": 1,
+        "chargeThreshold": 100,
+        "hitChanceMultiplier": 2,
+        "maxTargets": 15,
+        "currentCharge": 3287.4,
+        "maxCharge": 100,
+        "isReady": true,
+        "accumulatedTurnover": 3287.4,
+        "shotsCount": 1788
+      }
+    }
+  },
+  "activeFish": [
+    {
+      "id": "17a5eb62-6a37-4d94-b25f-792ab7d363e5",
+      "type": "lanternfish",
+      "variant": "lanternfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": 2068,
+        "y": 668,
+        "z": 0
+      },
+      "endPosition": {
+        "x": -148,
+        "y": 420,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": 2068,
+            "y": 668,
+            "z": 0
+          },
+          {
+            "x": 1957.2,
+            "y": 655.5999999999999,
+            "z": 0
+          },
+          {
+            "x": 1846.4,
+            "y": 643.2,
+            "z": 0
+          },
+          {
+            "x": 1735.6,
+            "y": 630.8,
+            "z": 0
+          },
+          {
+            "x": 1624.8000000000002,
+            "y": 618.4000000000001,
+            "z": 0
+          },
+          {
+            "x": 1514,
+            "y": 606,
+            "z": 0
+          },
+          {
+            "x": 1403.1999999999998,
+            "y": 593.5999999999999,
+            "z": 0
+          },
+          {
+            "x": 1292.4,
+            "y": 581.2,
+            "z": 0
+          },
+          {
+            "x": 1181.6,
+            "y": 568.8000000000001,
+            "z": 0
+          },
+          {
+            "x": 1070.8,
+            "y": 556.4000000000001,
+            "z": 0
+          },
+          {
+            "x": 960,
+            "y": 544,
+            "z": 0
+          },
+          {
+            "x": 849.1999999999999,
+            "y": 531.6,
+            "z": 0
+          },
+          {
+            "x": 738.4000000000001,
+            "y": 519.2,
+            "z": 0
+          },
+          {
+            "x": 627.5999999999999,
+            "y": 506.79999999999995,
+            "z": 0
+          },
+          {
+            "x": 516.8000000000002,
+            "y": 494.4,
+            "z": 0
+          },
+          {
+            "x": 406,
+            "y": 482,
+            "z": 0
+          },
+          {
+            "x": 295.1999999999999,
+            "y": 469.6,
+            "z": 0
+          },
+          {
+            "x": 184.40000000000003,
+            "y": 457.2,
+            "z": 0
+          },
+          {
+            "x": 73.59999999999992,
+            "y": 444.8,
+            "z": 0
+          },
+          {
+            "x": -37.1999999999999,
+            "y": 432.4000000000001,
+            "z": 0
+          },
+          {
+            "x": -148,
+            "y": 420,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          111.49170372722803,
+          222.98340745445603,
+          334.47511118168427,
+          445.96681490891206,
+          557.4585186361403,
+          668.9502223633685,
+          780.4419260905963,
+          891.9336298178246,
+          1003.4253335450526,
+          1114.9170372722806,
+          1226.4087409995088,
+          1337.9004447267366,
+          1449.3921484539649,
+          1560.8838521811927,
+          1672.375555908421,
+          1783.8672596356491,
+          1895.3589633628771,
+          2006.8506670901054,
+          2118.342370817333,
+          2229.834074544561
+        ]
+      },
+      "speed": 130.64249,
+      "spawnTime": 1793777059522,
+      "lifespan": 17068,
+      "hitboxRadius": 60,
+      "multiplier": 25,
+      "category": "normal",
+      "name": "Lanternfish"
+    },
+    {
+      "id": "2cb4fe89-c983-48e6-8326-f333dc58f640",
+      "type": "jackpot_dragon",
+      "variant": "jackpot_dragon",
+      "pathType": "spline",
+      "startPosition": {
+        "x": 2465,
+        "y": 619,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 641,
+        "y": -545,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": 2465,
+            "y": 619,
+            "z": 0
+          },
+          {
+            "x": 641,
+            "y": -545,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2163.763388173485
+        ]
+      },
+      "speed": 113.0652,
+      "spawnTime": 1793777061020,
+      "lifespan": 19137,
+      "hitboxRadius": 75,
+      "multiplier": 1,
+      "multipliers": [
+        160,
+        240,
+        320
+      ],
+      "multiplierWeights": [
+        60,
+        30,
+        10
+      ],
+      "rewardLabel": "Jackpot Dragon Win",
+      "criticalLabel": "Jackpot Dragon Mega Win",
+      "criticalThresholdMultiplier": 320,
+      "category": "jackpot",
+      "name": "Jackpot Dragon",
+      "segments": [
+        {
+          "offset": 0,
+          "radius": 75
+        },
+        {
+          "offset": 90,
+          "radius": 70
+        },
+        {
+          "offset": 180,
+          "radius": 65
+        },
+        {
+          "offset": 270,
+          "radius": 60
+        },
+        {
+          "offset": 360,
+          "radius": 55
+        },
+        {
+          "offset": 450,
+          "radius": 45
+        }
+      ]
+    }
+  ],
+  "seatIndex": 1,
+  "roomSeats": {
+    "68943f9e78b78d29628836fd": 0,
+    "a56d1a11-e499-42ec-9713-6716b261e6e7": 1
+  },
+  "player": {
+    "balance": 7742.49,
+    "username": "maahul",
+    "userId": "a56d1a11-e499-42ec-9713-6716b261e6e7",
+    "betIndex": 0
+  },
+  "activeFreeze": null,
+  "currentHall": "joy",
+  "halls": {
+    "joy": {
+      "bets": [
+        0.1,
+        0.2,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "mode": "multiplayer",
+      "name": "Joy Hall",
+      "roomLimit": 3
+    },
+    "regal": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "multiplayer",
+      "name": "Regal Hall",
+      "roomLimit": 3
+    },
+    "regal_single": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "single",
+      "name": "Regal Hall (Single)",
+      "roomLimit": 1
+    }
+  },
+  "jackpotPools": {
+    "speed": 63.2556,
+    "lucky": 209.9417,
+    "jili": 1009.9417000000001
+  }
+}

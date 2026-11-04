@@ -42,16 +42,8 @@ internal class LegacyHitResultHandler
       yield break;
     }
 
-    SpawnBatchContext context = new SpawnBatchContext
-    {
-      moveRightToLeft = UnityEngine.Random.value > 0.5f,
-      usePathSet = UnityEngine.Random.value > 0.25f   // ← your new requirement
-    };
-
     foreach (FishData data in fishesData)
-    {
-      BaseFish fish = FishManager.Instance.SpawnFishFromBackend(data, context);
-    }
+      FishManager.Instance.SpawnFishFromBackend(data);
   }
 
   internal void HandleHitResult(Root root)
@@ -145,8 +137,8 @@ internal class LegacyHitResultHandler
       }
 
       if (targetFish is ImmortalFish immortalFish &&
-          (targetFish.data.variant == "immo_shark_fish" ||
-           targetFish.data.variant == "immo_squid_fish"))
+          (targetFish.data.variant == "golden_shark" ||
+           targetFish.data.variant == "king_squid"))
       {
         immortalFish.TriggerWinAnimSpeedBoost();
       }
@@ -154,7 +146,7 @@ internal class LegacyHitResultHandler
 
     if (hitResult.winAmount > 0 &&
         hitResult.hitFish != null &&
-        hitResult.hitFish.variant == "immo_turtle_fish" &&
+        hitResult.hitFish.variant == "treasure_bowl" &&
         FishManager.Instance != null)
     {
       BaseFish turtleFish = FishManager.Instance
@@ -196,13 +188,13 @@ internal class LegacyHitResultHandler
       EffectFish effectFish = fish as EffectFish;
       bool isBubbleCrab = effectFish != null &&
         fish.data != null &&
-        fish.data.variant == "effect_bubblecrab_fish";
+        fish.data.variant == "sea_anemone";
       bool isBlueFish = effectFish != null &&
         fish.data != null &&
-        fish.data.variant == "effect_blue_fish";
+        fish.data.variant == "thunder_shark";
       bool isRockCrab = effectFish != null &&
         fish.data != null &&
-        fish.data.variant == "effect_rockcrab_fish";
+        fish.data.variant == "torpedo_crab";
 
       if (effectFish != null)
         effectFish.SetPendingEffectBonusWins(hitResult.effectTriggered?.bonusWins, hitResult.totalBet);

@@ -17,23 +17,16 @@ internal class ImmortalFish : BaseFish
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
-    SetupFallbackMovement();
-    if (data.variant == "immo_squid_fish")
-    {
+    if (data.variant == "king_squid")
       speedPulseRoutine = StartCoroutine(OctopusSpeedPulse());
-      SetSpeedMultiplier(1.6f);
-    }
   }
 
 private IEnumerator OctopusSpeedPulse()
 {
   while (true)
   {
-    yield return new WaitForSecondsRealtime(0.8f);
-    SetSpeedMultiplier(0.6f);   // glide
-
-    yield return new WaitForSecondsRealtime(0.7f);
-    SetSpeedMultiplier(1.8f);   // push
+    // The glide/push speed changes drove Curvy movement; only the bubble spread remains.
+    yield return new WaitForSecondsRealtime(1.5f);
     PlayBubbleSpread();
   }
 }

@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using FluffyUnderware.Curvy;
-using FluffyUnderware.Curvy.Controllers;
 
-// PAUSED FEATURES (old backend). Client-picked Curvy paths, torpedo bookkeeping, and the old
+// PAUSED FEATURES (old backend). Torpedo bookkeeping, and the old
 // death/despawn API used by EffectFish, TorpedoGun, LazerGun, TorpedoBulletView and the old
 // hit-result handler. Kept compiling on top of the new lifecycle in BaseFish.cs so those
 // features can be re-enabled once the ML-FG backend supports them. The server-driven
@@ -28,12 +26,6 @@ internal partial class BaseFish
   internal bool WaitingForKillingTorpedo;
   internal int ActiveTorpedoCount { get; private set; }
 
-  protected SplineController splineController;
-  protected Tween movementTween;
-  protected float baseSpeed;
-  protected float speedMultiplier = 1f;
-
-  private CurvySpline reservedSpline;
   private readonly List<Action> onNextTorpedoImpact = new List<Action>();
   private Coroutine killFailSafeRoutine;
 
@@ -48,26 +40,13 @@ internal partial class BaseFish
     set => released = value;
   }
 
-  // Old-backend spawn: visuals only; subclasses add Curvy movement via SetupFallbackMovement.
+  // Old-backend spawn: visuals only. The old client-picked Curvy paths are gone, so a fish
+  // spawned this way does not move; movement comes from a ServerPath (InitializeFromServer).
   internal virtual void Initialize(FishData data)
   {
     Path = null;
     HitboxRadius = 0f;
     BeginLife(data);
-  }
-
-  private void CacheLegacyComponents()
-  {
-    splineController = GetComponent<SplineController>();
-  }
-
-  private void DisableLegacyMovement()
-  {
-    if (splineController == null)
-      return;
-
-    splineController.Stop();
-    splineController.enabled = false;
   }
 
   private void ResetLegacyState()
@@ -79,23 +58,6 @@ internal partial class BaseFish
     ActiveTorpedoCount = 0;
     onNextTorpedoImpact.Clear();
     killFailSafeRoutine = null;
-
-    movementTween?.Kill();
-    speedMultiplier = 1f;
-
-    if (reservedSpline != null)
-    {
-      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
-      reservedSpline = null;
-    }
-
-    if (splineController != null)
-    {
-      splineController.enabled = true;
-      splineController.Stop();
-      splineController.Position = 0;
-      splineController.Speed = 0;
-    }
   }
 
   // Old bullets (physics triggers). Server-driven fish are hit-tested in server space instead.
@@ -111,91 +73,10 @@ internal partial class BaseFish
     SocketIOManager.Instance.SendHitEvent(data?.fishId, "normal", variant: data?.variant);
   }
 
-  // --------------------------------------------------------
-  // CURVY MOVEMENT
-  // --------------------------------------------------------
-
-  protected void SetupFallbackMovement()
-  {
-    bool rtl = UnityEngine.Random.value > 0.5f;
-    FlipSprite(faceRight: !rtl);
-
-    var provider = CurvyPathProvider.Instance;
-    var splines = data != null && data.fishType == FishType.Jackpot_Dragon
-      ? provider.GetJackpotDragonSplines(rtl)
-      : provider.GetFallbackSplines(rtl);
-    if (splines == null || splines.Count == 0)
-      return;
-
-    ApplySpline(provider.ReserveUniqueSpline(splines), rtl);
-  }
-
-  protected void ApplySpline(CurvySpline spline, bool rtl)
-  {
-    if (spline == null)
-    {
-      GameLog.Warn(LogCategory.Legacy, "ApplySpline called with null spline");
-      return;
-    }
-
-    if (reservedSpline != null && reservedSpline != spline)
-      CurvyPathProvider.Instance?.ReleaseSpline(reservedSpline);
-
-    reservedSpline = spline;
-    CurvyPathProvider.Instance?.ReserveSpline(spline);
-
-    splineController.Stop();
-    splineController.Spline = spline;
-    splineController.Position = 0;
-    splineController.Speed = 0;
-
-    splineController.MoveMode = CurvyController.MoveModeEnum.AbsolutePrecise;
-    splineController.OrientationMode = OrientationModeEnum.Tangent;
-    splineController.Clamping = CurvyClamping.Clamp;
-    splineController.PlayAutomatically = true;
-    splineController.OrientationAxis = rtl ? OrientationAxisEnum.Left : OrientationAxisEnum.Right;
-
-    float visibleTimeSec = data.duration / 1000f;
-    baseSpeed = spline.Length / visibleTimeSec;
-    ApplySpeed();
-
-    splineController.OnEndReached.RemoveListener(OnPathComplete);
-    splineController.OnEndReached.AddListener(OnPathComplete);
-
-    splineController.Play();
-  }
-
-  protected void ApplySpeed()
-  {
-    if (splineController != null)
-      splineController.Speed = baseSpeed * speedMultiplier;
-  }
-
-  // Curvy fish only. Server-driven fish speed is owned by the server (motionKeyframes).
-  internal void SetSpeedMultiplier(float multiplier)
-  {
-    speedMultiplier = multiplier;
-    ApplySpeed();
-  }
-
-  private void OnPathComplete(CurvySplineMoveEventArgs args)
-  {
-    Leave();
-  }
-
   internal void StopPathMovement()
   {
     SetPickable(false);
     movementFrozen = true;
-    movementTween?.Kill();
-
-    if (splineController != null)
-    {
-      splineController.PlayAutomatically = false;
-      splineController.Pause();
-      splineController.enabled = false;
-      splineController.Speed = 0f;
-    }
   }
 
   // --------------------------------------------------------

@@ -1,0 +1,1271 @@
+{
+  "id": "f8cd80d3-76c6-4361-92f1-dd2c9f3ffe6a",
+  "gameData": {
+    "weapons": {
+      "laser": {
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 33,
+        "bulletSpeed": 0,
+        "maxBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "normal": {
+        "targetingMode": "raycast",
+        "fireIntervalMs": 33,
+        "bulletSpeed": 1200,
+        "maxBounces": 3,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "torpedo": {
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 100,
+        "bulletSpeed": 800,
+        "maxBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      }
+    },
+    "fishes": [
+      {
+        "type": "flying_fish",
+        "variants": [
+          "flying_fish"
+        ]
+      },
+      {
+        "type": "clownfish",
+        "variants": [
+          "clownfish"
+        ]
+      },
+      {
+        "type": "angelfish",
+        "variants": [
+          "angelfish"
+        ]
+      },
+      {
+        "type": "blowfish",
+        "variants": [
+          "blowfish"
+        ]
+      },
+      {
+        "type": "pufferfish",
+        "variants": [
+          "pufferfish"
+        ]
+      },
+      {
+        "type": "sea_turtle",
+        "variants": [
+          "sea_turtle"
+        ]
+      },
+      {
+        "type": "jellyfish",
+        "variants": [
+          "jellyfish"
+        ]
+      },
+      {
+        "type": "lobster",
+        "variants": [
+          "lobster"
+        ]
+      },
+      {
+        "type": "hermit_crab",
+        "variants": [
+          "hermit_crab"
+        ]
+      },
+      {
+        "type": "octopus",
+        "variants": [
+          "octopus"
+        ]
+      },
+      {
+        "type": "lanternfish",
+        "variants": [
+          "lanternfish"
+        ]
+      },
+      {
+        "type": "manta_ray",
+        "variants": [
+          "manta_ray"
+        ]
+      },
+      {
+        "type": "hammerhead_shark",
+        "variants": [
+          "hammerhead_shark"
+        ]
+      },
+      {
+        "type": "golden_angelfish",
+        "variants": [
+          "golden_angelfish"
+        ]
+      },
+      {
+        "type": "golden_clownfish",
+        "variants": [
+          "golden_clownfish"
+        ]
+      },
+      {
+        "type": "golden_manta_ray",
+        "variants": [
+          "golden_manta_ray"
+        ]
+      },
+      {
+        "type": "armored_fish",
+        "variants": [
+          "armored_fish"
+        ]
+      },
+      {
+        "type": "anglerfish",
+        "variants": [
+          "anglerfish"
+        ]
+      },
+      {
+        "type": "fortune_terrapin",
+        "variants": [
+          "fortune_terrapin"
+        ]
+      },
+      {
+        "type": "thunder_shark",
+        "variants": [
+          "thunder_shark"
+        ]
+      },
+      {
+        "type": "torpedo_crab",
+        "variants": [
+          "torpedo_crab"
+        ]
+      },
+      {
+        "type": "sea_anemone",
+        "variants": [
+          "sea_anemone"
+        ]
+      },
+      {
+        "type": "king_squid",
+        "variants": [
+          "king_squid"
+        ]
+      },
+      {
+        "type": "golden_shark",
+        "variants": [
+          "golden_shark"
+        ]
+      },
+      {
+        "type": "treasure_bowl",
+        "variants": [
+          "treasure_bowl"
+        ]
+      },
+      {
+        "type": "jackpot_fish",
+        "variants": [
+          "jackpot_fish"
+        ]
+      },
+      {
+        "type": "jackpot_dragon",
+        "variants": [
+          "jackpot_dragon"
+        ]
+      }
+    ],
+    "spawnInterval": 1500,
+    "maxConcurrentFish": 25,
+    "seats": [
+      {
+        "x": 480,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 960,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 1440,
+        "y": 1080,
+        "z": 0
+      }
+    ],
+    "bets": [
+      0.1,
+      0.2,
+      0.5,
+      1,
+      2,
+      5,
+      10
+    ],
+    "maxBulletBounces": 3,
+    "levels": [
+      "joy",
+      "regal",
+      "regal_single"
+    ],
+    "capabilities": {
+      "freeze": {
+        "cost": 30,
+        "durationMs": 30000
+      },
+      "energyBoost": {
+        "enabled": true,
+        "referenceBet": 1,
+        "baseChargePerShot": 1,
+        "chargeThreshold": 100,
+        "hitChanceMultiplier": 2,
+        "maxTargets": 15,
+        "currentCharge": 3.8,
+        "maxCharge": 100,
+        "isReady": false,
+        "accumulatedTurnover": 3.8,
+        "shotsCount": 38
+      }
+    }
+  },
+  "activeFish": [
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 324,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 324,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 324,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 324,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614121626.8572,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "e68c44c9-6f5e-42c8-92d2-7a2e1b2c9823"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 756,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 756,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 756,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 756,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614121626.8572,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "503f4ba3-6799-4b98-92f2-2d05a1054931"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 864,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 864,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 864,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 864,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614122398.2856,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "4bd81e47-7a50-4b1b-bfb5-c57a761bff92"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 324,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 324,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 324,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 324,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614130815,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "c12f837a-38e6-496e-bd3c-c0548ca0f7a9"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 864,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 864,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 864,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 864,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614131679,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "3d867ac8-cc53-4b0b-89bd-793afc249607"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 107.99999999999997,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 107.99999999999997,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 107.99999999999997,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 107.99999999999997,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614132543,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "80f7d399-535f-4888-8c11-34a27865be4a"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 0,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 0,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 0,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614133407,
+      "lifespan": 20160,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "f782f070-75cd-4cfc-87a9-4660fe20ce9c"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 1080,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 1080,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 1080,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 1080,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614133407,
+      "lifespan": 20160,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "d570569b-bad7-4e24-8405-9c657fb7455c"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 648,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 648,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 648,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 648,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614129951,
+      "lifespan": 20160,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "890e1749-238e-4f36-b456-0501ad041fb2"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 540,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 540,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 540,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 540,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614120084,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "2e1c9965-0fb1-4df2-a0e9-db8909f25729"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 648,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 648,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 648,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 648,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614120855.4285,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "394ca9a4-3217-4b87-896a-950f36c2c6b6"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 972,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 972,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 972,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 972,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614123169.7144,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "5575b52c-0f5a-4262-b963-c1709ae790a6"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 1080,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 1080,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 1080,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 1080,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614123941.1428,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "1b4b1818-ac27-4e9a-9a67-634afa17e7cf"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": -108.0000000000001,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": -108.0000000000001,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": -108.0000000000001,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": -108.0000000000001,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614124712.5715,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "01693ccd-f6b5-4ecd-bc8e-a93698a99af4"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 540,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 540,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 540,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 540,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614129087,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "f9fc068b-c637-43ed-86fb-4dcdee1ac061"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 756,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 756,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 756,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 756,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614130815,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "110147fc-2ee4-4c06-8311-29f4336decd9"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 972,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 972,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 972,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 972,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614132543,
+      "lifespan": 20160,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "fe28c60f-7d6e-4550-919c-c1d3f1684fab"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": -108.0000000000001,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": -108.0000000000001,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": -108.0000000000001,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": -108.0000000000001,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614134271,
+      "lifespan": 20160,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "b628894c-1a3f-495a-870b-b120beea0ba7"
+    },
+    {
+      "type": "clownfish",
+      "variant": "clownfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 215.99999999999994,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 215.99999999999994,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 215.99999999999994,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 215.99999999999994,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614122398.2856,
+      "lifespan": 18000,
+      "hitboxRadius": 40,
+      "multiplier": 3,
+      "category": "normal",
+      "id": "229f7e65-ecdc-42e4-8d92-dc6d3aaa2ab0"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 0,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 0,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 0,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 0,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614123941.1428,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "0100473e-83dc-4f91-9ec7-2ddb714b1ecc"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 215.99999999999994,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 215.99999999999994,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 215.99999999999994,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 215.99999999999994,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614131679,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "e8c9711f-5ab0-4b04-aee3-05a326005055"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 107.99999999999997,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 107.99999999999997,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 107.99999999999997,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 107.99999999999997,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614123169.7144,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "42e933ab-e55d-4014-81f0-d27420f6bd6f"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 432,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 432,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 432,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 432,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 140,
+      "spawnTime": 1793614120855.4285,
+      "lifespan": 18000,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "7493daf3-b1e1-49e1-b50b-c680fdc22752"
+    },
+    {
+      "type": "angelfish",
+      "variant": "angelfish",
+      "pathType": "spline",
+      "startPosition": {
+        "x": -300,
+        "y": 432,
+        "z": 0
+      },
+      "endPosition": {
+        "x": 2220,
+        "y": 432,
+        "z": 0
+      },
+      "pathParams": {
+        "points": [
+          {
+            "x": -300,
+            "y": 432,
+            "z": 0
+          },
+          {
+            "x": 2220,
+            "y": 432,
+            "z": 0
+          }
+        ],
+        "cumulativeLengths": [
+          0,
+          2520
+        ]
+      },
+      "speed": 125,
+      "spawnTime": 1793614129951,
+      "lifespan": 20160,
+      "hitboxRadius": 45,
+      "multiplier": 4,
+      "category": "normal",
+      "id": "7e9af455-d02d-45df-b1d2-b5ed6151558a"
+    }
+  ],
+  "seatIndex": 0,
+  "roomSeats": {
+    "68943f9e78b78d29628836fd": 1,
+    "a56d1a11-e499-42ec-9713-6716b261e6e7": 0
+  },
+  "player": {
+    "balance": 7909.19,
+    "username": "maahul",
+    "userId": "a56d1a11-e499-42ec-9713-6716b261e6e7"
+  },
+  "activeFreeze": null,
+  "currentHall": "joy",
+  "halls": {
+    "joy": {
+      "bets": [
+        0.1,
+        0.2,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "mode": "multiplayer",
+      "name": "Joy Hall",
+      "roomLimit": 3
+    },
+    "regal": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "multiplayer",
+      "name": "Regal Hall",
+      "roomLimit": 3
+    },
+    "regal_single": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "single",
+      "name": "Regal Hall (Single)",
+      "roomLimit": 1
+    }
+  },
+  "jackpotPools": {
+    "speed": 50.0764,
+    "lucky": 200.0573,
+    "jili": 1000.0573
+  }
+}

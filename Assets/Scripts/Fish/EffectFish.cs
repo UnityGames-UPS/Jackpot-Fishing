@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 internal class EffectFish : BaseFish
 {
-  [SerializeField, Range(0f, 0.49f)] private float crabEdgePercentMin = 0.25f;
-  [SerializeField, Range(0f, 0.49f)] private float crabEdgePercentMax = 0.4f;
   [SerializeField] private BubbleWhirlpoolController bubbleWhirlpool;
   [Header("Effect Fish Shared")]
   [SerializeField] private Vector3 blueBlastLocalOffset = Vector3.zero;
@@ -44,7 +42,6 @@ internal class EffectFish : BaseFish
   [SerializeField] private float rockCrabPreFireDelay = 0.4f;
   [SerializeField] private float rockCrabTorpedoInterval = 0.08f;
   [SerializeField] private float rockCrabTorpedoHitTimeout = 2f;
-  [SerializeField] private float rockCrabEscapeSpeedMultiplier = 8f;
   [SerializeField] private float rockCrabEscapeScaleMultiplier = 1.15f;
   [SerializeField] private float rockCrabEscapeScaleDuration = 0.2f;
   [SerializeField] private float rockCrabTorpedoCoinBlastScaleMultiplier = 1.2f;
@@ -65,9 +62,6 @@ internal class EffectFish : BaseFish
   [SerializeField] private float electricBallTargetSizeMultiplier = 1.5f;
   [SerializeField] private float electricBallScaleDownDuration = 0.25f;
   [SerializeField] private float blueFishChainExtraDelayBuffer = 0.15f;
-  private const float MinSpeedMultiplier = 0.6f;
-  private const float MaxSpeedMultiplier = 1.6f;
-  private Coroutine segmentedSpeedRoutine;
   private Coroutine bubbleCrabShakeRoutine;
   private Coroutine bubbleCrabEffectRoutine;
   private Coroutine blueFishShakeRoutine;
@@ -88,9 +82,9 @@ internal class EffectFish : BaseFish
   private bool rockCrabEscaping;
   private bool rockCrabFinishing;
   private int rockCrabPendingTorpedos;
-  private const string BubbleCrabVariant = "effect_bubblecrab_fish";
-  private const string BlueFishVariant = "effect_blue_fish";
-  private const string RockCrabVariant = "effect_rockcrab_fish";
+  private const string BubbleCrabVariant = "sea_anemone";
+  private const string BlueFishVariant = "thunder_shark";
+  private const string RockCrabVariant = "torpedo_crab";
   private bool blueFishDeathActive;
   private float pendingWinAmount;
   private enum EffectKind
@@ -136,9 +130,7 @@ internal class EffectFish : BaseFish
     pendingEffectTotalBet = 0f;
     rockCrabBonusWinIndex = 0;
     rockCrabTorpedoFiredCount = 0;
-    UpdateRockCrabTorpedoVisual(data.variant == "effect_rockcrab_fish");
-    SetupFallbackMovement();
-    StartRockCrabSpeedVariation();
+    UpdateRockCrabTorpedoVisual(data.variant == "torpedo_crab");
     StartBubbleCrabWhirlpool();
   }
 
@@ -187,11 +179,6 @@ internal class EffectFish : BaseFish
       bubbleWhirlpool.ResetAngularSpeed();
     }
     bubbleWhirlpool?.StopAndClear();
-    if (segmentedSpeedRoutine != null)
-    {
-      StopCoroutine(segmentedSpeedRoutine);
-      segmentedSpeedRoutine = null;
-    }
     UpdateRockCrabTorpedoVisual(false);
     pendingWinAmount = 0f;
     pendingEffectBonusWins.Clear();
@@ -199,17 +186,6 @@ internal class EffectFish : BaseFish
     rockCrabBonusWinIndex = 0;
     rockCrabTorpedoFiredCount = 0;
     base.ResetFish();
-  }
-
-  private void StartRockCrabSpeedVariation()
-  {
-    if (data == null || data.variant != RockCrabVariant)
-      return;
-
-    if (segmentedSpeedRoutine != null)
-      StopCoroutine(segmentedSpeedRoutine);
-
-    segmentedSpeedRoutine = StartCoroutine(CrabSegmentedSpeedRoutine());
   }
 
   private void UpdateRockCrabTorpedoVisual(bool setActive)
@@ -303,12 +279,6 @@ internal class EffectFish : BaseFish
     StopPathMovement();
     FishManager.Instance?.MoveToAnimParent(this);
     StopRockCrabTorpedoRocking();
-
-    if (segmentedSpeedRoutine != null)
-    {
-      StopCoroutine(segmentedSpeedRoutine);
-      segmentedSpeedRoutine = null;
-    }
 
     if (rockCrabEffectRoutine != null)
       StopCoroutine(rockCrabEffectRoutine);
@@ -757,17 +727,13 @@ internal class EffectFish : BaseFish
     };
   }
 
+  // The old escape was a Curvy speed burst off the end of the path; now the crab just fades out.
+  // TODO: replace with an escape animation once the torpedo_crab killEffect is wired up.
   private void StartRockCrabEscape()
   {
-    if (splineController == null)
-      return;
-
     rockCrabEscaping = true;
     rockCrabFinishing = false;
-    splineController.enabled = true;
-    splineController.PlayAutomatically = true;
-    SetSpeedMultiplier(rockCrabEscapeSpeedMultiplier);
-    splineController.Play();
+    Leave();
   }
 
   internal bool IsTorpedoTargetable =>
@@ -1537,68 +1503,5 @@ internal class EffectFish : BaseFish
 
     bubbleCrabWhirlpoolImage.rectTransform.localRotation = Quaternion.identity;
     bubbleCrabWhirlpoolImage.gameObject.SetActive(false);
-  }
-
-  private IEnumerator CrabSegmentedSpeedRoutine()
-  {
-    yield return null;
-
-    if (splineController == null || splineController.Spline == null)
-      yield break;
-
-    float pathLength = splineController.Length;
-    if (pathLength <= Mathf.Epsilon)
-      yield break;
-
-    float minEdge = Mathf.Min(crabEdgePercentMin, crabEdgePercentMax);
-    float maxEdge = Mathf.Max(crabEdgePercentMin, crabEdgePercentMax);
-    float edgePercent = Random.Range(minEdge, maxEdge);
-    edgePercent = Mathf.Clamp(edgePercent, 0f, 0.49f);
-    float middlePercent = 1f - (edgePercent * 2f);
-    if (middlePercent <= Mathf.Epsilon)
-      yield break;
-
-    float[] segmentDistances = new float[3]
-    {
-      edgePercent * pathLength,
-      middlePercent * pathLength,
-      edgePercent * pathLength
-    };
-
-    float speed1 = Random.Range(MinSpeedMultiplier, MaxSpeedMultiplier);
-    float speed2 = speed1 < 1f
-      ? Random.Range(1f, MaxSpeedMultiplier)
-      : Random.Range(MinSpeedMultiplier, 1f);
-    float speed3 = speed2 < 1f
-      ? Random.Range(1f, MaxSpeedMultiplier)
-      : Random.Range(MinSpeedMultiplier, 1f);
-
-    float[] segmentSpeeds = new float[3] { speed1, speed2, speed3 };
-
-    float weightedTimeSum = 0f;
-    for (int i = 0; i < segmentDistances.Length; i++)
-      weightedTimeSum += segmentDistances[i] / segmentSpeeds[i];
-
-    float scaleFactor = weightedTimeSum > Mathf.Epsilon
-      ? weightedTimeSum / pathLength
-      : 1f;
-
-    float targetPos = splineController.Position;
-    for (int i = 0; i < segmentDistances.Length; i++)
-    {
-      if (splineController == null)
-        break;
-
-      targetPos = Mathf.Min(targetPos + segmentDistances[i], splineController.Length);
-      SetSpeedMultiplier(segmentSpeeds[i] * scaleFactor);
-
-      yield return new WaitUntil(() =>
-        splineController == null ||
-        splineController.Position >= targetPos ||
-        splineController.Position >= splineController.Length
-      );
-    }
-
-    SetSpeedMultiplier(1f);
   }
 }

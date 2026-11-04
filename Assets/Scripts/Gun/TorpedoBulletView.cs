@@ -1,6 +1,67 @@
 using System.Collections;
 using UnityEngine;
 
+// One torpedo's FIRE/SHOOT state. Lives apart from the pooled view, because the FIRE ack can
+// arrive after the view has finished and been reused. SHOOT goes out once both the FIRE ack
+// and the impact have happened, stamped with the impact time.
+internal class TorpedoShot
+{
+  internal readonly string BulletId;
+  internal readonly string FishId;
+  internal readonly Vector2 Origin;
+  internal readonly int BetIndex;
+
+  internal bool Rejected { get; private set; }
+  private bool accepted;
+  private bool impacted;
+  private bool settled;
+  private double impactTs;
+  private Vector2 aimTarget;
+  private string hitFishId;
+
+  internal TorpedoShot(string bulletId, string fishId, Vector2 origin, int betIndex)
+  {
+    BulletId = bulletId;
+    FishId = fishId;
+    Origin = origin;
+    BetIndex = betIndex;
+  }
+
+  internal void OnFireAccepted()
+  {
+    accepted = true;
+    TrySettle();
+  }
+
+  internal void OnFireRejected()
+  {
+    Rejected = true;
+  }
+
+  // hitFishId is null when the target died or left before the torpedo got there (a miss).
+  internal void OnImpact(double ts, Vector2 serverAimTarget, string fishId)
+  {
+    if (impacted)
+      return;
+    impacted = true;
+    impactTs = ts;
+    aimTarget = serverAimTarget;
+    hitFishId = fishId;
+    TrySettle();
+  }
+
+  private void TrySettle()
+  {
+    if (settled || Rejected || !accepted || !impacted)
+      return;
+    settled = true;
+
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, $"Torpedo {BulletId} impact -> {hitFishId ?? "miss"} at ({aimTarget.x:F0},{aimTarget.y:F0})");
+    SocketIOManager.Instance?.SendShoot(MLFGWeaponIds.Torpedo, BulletId, Origin, Origin, aimTarget, 0, BetIndex, hitFishId, impactTs);
+  }
+}
+
 [RequireComponent(typeof(ImageAnimation))]
 public class TorpedoBulletView : MonoBehaviour
 {
@@ -43,6 +104,7 @@ public class TorpedoBulletView : MonoBehaviour
   private float timer;
   private Phase phase;
   private bool finished;
+  private TorpedoShot shot;
 
   // ---------------- INIT ----------------
 
@@ -53,11 +115,12 @@ public class TorpedoBulletView : MonoBehaviour
       initialHeight = rectTransform.sizeDelta.y;
   }
 
-  internal void Init(BaseFish fish)
+  internal void Init(BaseFish fish, TorpedoShot torpedoShot)
   {
     anim = GetComponent<ImageAnimation>();
     anim.OnAnimationComplete = null;
 
+    shot = torpedoShot;
     target = fish;
     target?.RegisterIncomingTorpedo();
     startPos = transform.position;
@@ -88,6 +151,13 @@ public class TorpedoBulletView : MonoBehaviour
   void Update()
   {
     if (finished) return;
+
+    // FIRE refused: nothing was charged, so the torpedo just disappears.
+    if (shot != null && shot.Rejected)
+    {
+      Finish();
+      return;
+    }
 
     if (phase == Phase.Phase1)
       UpdatePhase1();
@@ -165,6 +235,7 @@ public class TorpedoBulletView : MonoBehaviour
 
     if (timer >= maxLifetime)
     {
+      ReportImpact();
       Explode(transform.position);
       Finish();
       return;
@@ -179,6 +250,7 @@ public class TorpedoBulletView : MonoBehaviour
 
     if (dist <= hitDistance)
     {
+      ReportImpact();
       if (target != null)
       {
         target.OnTorpedoImpact();
@@ -241,6 +313,20 @@ public class TorpedoBulletView : MonoBehaviour
 
   // ---------------- HELPERS ----------------
 
+  // Settles the shot: a hit if the target fish is still alive (and still the same fish, since
+  // fish are pooled), otherwise a miss at the torpedo's aim point.
+  void ReportImpact()
+  {
+    if (shot == null)
+      return;
+
+    double now = ServerClock.NowMs;
+    bool hit = target != null && target.Id == shot.FishId && target.IsHittable(now);
+    Vector2 aim = hit ? target.ServerPositionAt(now) : Playfield.WorldToServer(lastKnownTargetPos);
+    shot.OnImpact(now, aim, hit ? shot.FishId : null);
+    shot = null;
+  }
+
   Vector3 GetEdgeClampedTargetPos(BaseFish fish)
   {
     Camera cam = Camera.main;
@@ -272,6 +358,7 @@ public class TorpedoBulletView : MonoBehaviour
     anim.StopAnimation();
     target?.UnregisterIncomingTorpedo();
     target = null;
+    shot = null;
     SetHeight(0f);
 
     StartCoroutine(ReturnNextFrame());

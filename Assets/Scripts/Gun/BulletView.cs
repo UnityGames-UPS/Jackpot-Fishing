@@ -4,8 +4,9 @@ using UnityEngine;
 // constant speed, bounces off the 1920x1080 edges (each axis hit counts as one bounce),
 // circle hit test against each fish's server position and hitboxRadius.
 //
-// Every bullet resolves exactly once and sends exactly one SHOOT, which is what charges
-// the bet: on a hit, when it bounces more than maxBulletBounces, or when its lifetime ends.
+// Every bullet resolves exactly once and sends exactly one SHOOT, which settles the shot
+// FIRE charged for: on a hit, when it bounces more than maxBulletBounces, or when its lifetime ends.
+// Remote (opponent) bullets run the same simulation for show and never send anything.
 public class BulletView : MonoBehaviour
 {
   private const float MaxStep = 1f / 60f; // substep long frames so bullets can't tunnel through fish
@@ -16,16 +17,20 @@ public class BulletView : MonoBehaviour
   [Header("On Fish Hit")]
   [SerializeField] private Color fishDamageColor;
 
-  internal static int InFlight { get; private set; }
+  internal static int InFlight { get; private set; } // own bullets only
+  internal static int RemoteInFlight { get; private set; }
 
   private string bulletId;
   private Vector2 origin;   // the seat, as reported to the server
+  private Vector2 lastBouncePoint; // where the server raycasts from; the seat until the first bounce
+  private int betIndex;     // the bet this bullet was fired with
   private Vector2 position; // server px
   private Vector2 velocity; // server px/s
   private int bounceCount;
   private int maxBounces;
   private float age;
   private bool active;
+  private bool remote;
 
   void Awake()
   {
@@ -36,17 +41,34 @@ public class BulletView : MonoBehaviour
       rb.bodyType = RigidbodyType2D.Kinematic;
   }
 
-  internal void Fire(string id, Vector2 serverOrigin, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces)
+  internal void Fire(string id, Vector2 serverOrigin, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed, int firedBetIndex)
+  {
+    remote = false;
+    origin = serverOrigin;
+    lastBouncePoint = serverOrigin;
+    betIndex = firedBetIndex;
+    Launch(id, serverStart, serverDirection, maxBulletBounces, speed);
+    InFlight++;
+  }
+
+  internal void FireRemote(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed)
+  {
+    remote = true;
+    origin = serverStart;
+    Launch(id, serverStart, serverDirection, maxBulletBounces, speed);
+    RemoteInFlight++;
+  }
+
+  // speed: the weapon's server px/s, or null for the serialized default.
+  private void Launch(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed)
   {
     bulletId = id;
-    origin = serverOrigin;
     position = serverStart;
-    velocity = serverDirection.normalized * serverSpeed;
+    velocity = serverDirection.normalized * (speed ?? serverSpeed);
     bounceCount = 0;
     maxBounces = maxBulletBounces;
     age = 0f;
     active = true;
-    InFlight++;
 
     Render();
   }
@@ -94,6 +116,8 @@ public class BulletView : MonoBehaviour
 
   private void Bounce()
   {
+    int bouncesBefore = bounceCount;
+
     if (position.x <= 0f)
     {
       position.x = 0f;
@@ -119,6 +143,9 @@ public class BulletView : MonoBehaviour
       velocity.y = -velocity.y;
       bounceCount++;
     }
+
+    if (bounceCount != bouncesBefore)
+      lastBouncePoint = position;
   }
 
   // First fish (in spawn order) whose server hitbox contains the bullet, like the server.
@@ -140,9 +167,12 @@ public class BulletView : MonoBehaviour
 
   private void ResolveHit(BaseFish fish, double now)
   {
-    if (GameLog.IsOn(LogCategory.Bullet))
-      GameLog.Info(LogCategory.Bullet, $"Hit {bulletId} -> {fish.Id} ({fish.data?.variant}) at ({position.x:F0},{position.y:F0}) bounces={bounceCount}");
-    SocketIOManager.Instance.SendShoot(bulletId, origin, position, bounceCount, now);
+    if (!remote)
+    {
+      if (GameLog.IsOn(LogCategory.Bullet))
+        GameLog.Info(LogCategory.Bullet, $"Hit {bulletId} -> {fish.Id} ({fish.data?.variant}) at ({position.x:F0},{position.y:F0}) bounces={bounceCount}");
+      SocketIOManager.Instance.SendShoot(SocketIOManager.Instance.NormalWeaponId, bulletId, origin, lastBouncePoint, position, bounceCount, betIndex, fish.Id, now);
+    }
 
     Vector3 world = Playfield.ServerToWorld(position);
     HitMarkerPool.Instance.GetFromPool().Play(world);
@@ -152,10 +182,23 @@ public class BulletView : MonoBehaviour
 
   private void ResolveMiss()
   {
+    if (remote)
+    {
+      Finish();
+      return;
+    }
+
     if (GameLog.IsOn(LogCategory.Bullet))
       GameLog.Info(LogCategory.Bullet, $"Miss {bulletId} at ({position.x:F0},{position.y:F0}) bounces={bounceCount} age={age:F1}s");
-    SocketIOManager.Instance.SendShoot(bulletId, origin, position, bounceCount, ServerClock.NowMs);
+    SocketIOManager.Instance.SendShoot(SocketIOManager.Instance.NormalWeaponId, bulletId, origin, lastBouncePoint, position, bounceCount, betIndex, null, ServerClock.NowMs);
     Finish();
+  }
+
+  // FIRE was refused. The pooled bullet may already be flying as a different shot, so match the id.
+  internal void CancelShot(string id)
+  {
+    if (active && !remote && bulletId == id)
+      Finish();
   }
 
   private void Finish()
@@ -164,8 +207,16 @@ public class BulletView : MonoBehaviour
       return;
 
     active = false;
-    InFlight = Mathf.Max(0, InFlight - 1);
+    ReleaseCount();
     BulletPool.Instance.ReturnToPool(this);
+  }
+
+  private void ReleaseCount()
+  {
+    if (remote)
+      RemoteInFlight = Mathf.Max(0, RemoteInFlight - 1);
+    else
+      InFlight = Mathf.Max(0, InFlight - 1);
   }
 
   private void Render()
@@ -181,13 +232,14 @@ public class BulletView : MonoBehaviour
     if (!active)
       return;
 
-    // Should never happen; the ledger releases the reservation after its timeout.
-    GameLog.Warn(LogCategory.Bullet, $"{bulletId} disabled before resolving; no SHOOT was sent");
+    // Should never happen.
+    if (!remote)
+      GameLog.Warn(LogCategory.Bullet, $"{bulletId} disabled before resolving; no SHOOT was sent");
     active = false;
-    InFlight = Mathf.Max(0, InFlight - 1);
+    ReleaseCount();
   }
 
-  // Old-backend physics hit (Curvy fish only). Server-driven fish never reach this.
+  // Old-backend physics hit (legacy-spawned fish only). Server-driven fish never reach this.
   internal void OnFishHit(BaseFish fish)
   {
     if (!active)

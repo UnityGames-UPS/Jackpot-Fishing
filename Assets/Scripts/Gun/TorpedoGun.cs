@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -23,7 +24,8 @@ public class TorpedoGun : BaseGun
   // 🔑 Instance-level lock (per shot)
   private BaseFish currentTarget;
   [Header("Torpedo Fire Intervals")]
-  [SerializeField] private float minFireCooldown = 0.25f; // tweak feel
+  [Tooltip("Seconds between torpedoes, used only until init sends the weapon's fireIntervalMs.")]
+  [SerializeField] private float minFireCooldown = 0.25f;
   [SerializeField] private float variantSwitchCooldown = 0.35f;
   private float nextAllowedFireTime;
   private float nextAllowedVariantSwitchTime;
@@ -155,6 +157,10 @@ public class TorpedoGun : BaseGun
       return;
     }
 
+    var socket = SocketIOManager.Instance;
+    if (socket == null || !socket.CanShoot || !Playfield.IsReady)
+      return;
+
     if (!UIManager.Instance.OnGunFired())
       return;
 
@@ -162,6 +168,12 @@ public class TorpedoGun : BaseGun
     PlayRecoil();
 
     BaseFish fish = currentTarget;
+    string bulletId = "torpedo_" + Guid.NewGuid().ToString("N").Substring(0, 12);
+    int betIndex = UIManager.Instance.BetCounter;
+    Vector2 origin = socket.SeatOrigin;
+    Vector2 direction = (fish.ServerPositionAt(ServerClock.NowMs) - origin).normalized;
+    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    var shot = new TorpedoShot(bulletId, fish.Id, origin, betIndex);
 
     TorpedoBulletView torpedo =
       TorpedoPool.Instance.GetFromPool();
@@ -171,23 +183,46 @@ public class TorpedoGun : BaseGun
       Quaternion.identity
     );
 
-    torpedo.Init(fish);
+    torpedo.Init(fish, shot);
 
-    SocketIOManager.Instance.SendHitEvent(
-      fish.data.fishId,
-      "torpedo",
-      fish.data.variant
-    );
+    if (GameLog.IsOn(LogCategory.Bullet))
+      GameLog.Info(LogCategory.Bullet, $"Torpedo {bulletId} -> {fish.Id} ({fish.data?.variant}) angle {angle:F1}");
+    socket.SendFire(MLFGWeaponIds.Torpedo, bulletId, origin, angle, betIndex, shot.OnFireAccepted, shot.OnFireRejected);
 
-    // 🆕 prevent rapid refire
-    nextAllowedFireTime = Time.time + minFireCooldown;
+    // The server rejects a FIRE sooner than fireIntervalMs.
+    nextAllowedFireTime = Time.time + socket.FireIntervalFor(MLFGWeaponIds.Torpedo, minFireCooldown);
+  }
+
+  // Opponent's torpedo (bullet_fired): visual only, never sends FIRE or SHOOT. With no live target
+  // (already dead or off screen) it just turns and flashes.
+  internal void PlayRemoteShot(BaseFish fish, float serverAngle)
+  {
+    bool hasTarget = IsFishValidForShot(fish);
+    if (hasTarget)
+    {
+      RotateGun(fish.GetAimPoint(Camera.main));
+    }
+    else if (Playfield.IsReady)
+    {
+      float rad = serverAngle * Mathf.Deg2Rad;
+      RotateGun(transform.position + Playfield.ServerDirToWorld(new Vector2(Mathf.Cos(rad), Mathf.Sin(rad))));
+    }
+
+    PlayMuzzleFlash();
+    PlayRecoil();
+    if (!hasTarget)
+      return;
+
+    TorpedoBulletView torpedo = TorpedoPool.Instance.GetFromPool();
+    torpedo.transform.SetPositionAndRotation(torpedoSpawnPoint.position, Quaternion.identity);
+    torpedo.Init(fish, null); // no TorpedoShot, so no SHOOT on impact
   }
 
   private void PlayRecoil()
   {
     recoilTween?.Kill();
 
-    Vector3 recoilDir = -transform.up; // opposite of firing direction
+    Vector3 recoilDir = transform.localRotation * Vector3.down; // opposite of firing direction, in parent space
 
     recoilTween = transform
       .DOLocalMove(initialLocalPos + recoilDir * recoilDistance, recoilDuration)

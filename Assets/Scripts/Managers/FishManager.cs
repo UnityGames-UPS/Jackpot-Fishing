@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 internal class FishManager : MonoBehaviour
 {
@@ -60,12 +61,6 @@ internal class FishManager : MonoBehaviour
   [Tooltip("Fixed 1920x1080 rect (Parent1) that server coordinates map onto.")]
   [SerializeField] private RectTransform playfieldRect;
 
-  [Header("Server Variant Mapping")]
-  [Tooltip("Maps a server variant (or species type) to a client FishData variant while art is pending.")]
-  [SerializeField] private List<VariantAlias> variantAliases = new();
-  [Tooltip("Client variant used when a server variant has no FishData or alias.")]
-  [SerializeField] private string fallbackVariant;
-
   [Header("Editor Mock")]
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private int mockFishIndex = 25;
@@ -87,13 +82,6 @@ internal class FishManager : MonoBehaviour
   {
     internal Vector3 position;
     internal FishData data;
-  }
-
-  [Serializable]
-  private class VariantAlias
-  {
-    public string serverVariant;
-    public string clientVariant;
   }
 
   internal Transform[] RockCrabTorpedoGridTargets => rockCrabTorpedoGridTargets;
@@ -136,7 +124,7 @@ internal class FishManager : MonoBehaviour
 
     if (!Playfield.IsReady)
     {
-      GameLog.Error(LogCategory.Fish, "Playfield not initialized; dropping fish " + dto.id);
+      GameLog.Error(LogCategory.Fish, WithFishJson("Playfield not initialized; dropping fish " + dto.id, dto));
       return null;
     }
 
@@ -147,25 +135,25 @@ internal class FishManager : MonoBehaviour
     var path = new ServerPath(dto);
     if (!path.IsValid)
     {
-      GameLog.Warn(LogCategory.Fish, $"Fish {dto.id} ({dto.variant}) has no usable path");
+      GameLog.Warn(LogCategory.Fish, WithFishJson($"Fish {dto.id} ({dto.type}) has no usable path", dto));
       return null;
     }
 
     // Already swam off (stale event or late join).
     if (path.ProgressAt(ServerClock.NowMs) >= 1.0)
     {
-      GameLog.Info(LogCategory.Fish, $"Skip expired spawn {dto.id} ({dto.variant})");
+      GameLog.Info(LogCategory.Fish, WithFishJson($"Skip expired spawn {dto.id} ({dto.type})", dto));
       return null;
     }
 
-    FishData template = ResolveTemplate(dto.variant, dto.type);
+    FishData template = ResolveTemplate(dto.type, dto.variant);
     if (template == null)
       return null;
 
     BaseFish fish = GetFishFromType(template.fishType);
     if (fish == null)
     {
-      GameLog.Error(LogCategory.Fish, "No pooled fish for type " + template.fishType + " (" + template.variant + ")");
+      GameLog.Error(LogCategory.Fish, WithFishJson("No pooled fish for type " + template.fishType + " (" + template.variant + ")", dto));
       return null;
     }
 
@@ -173,11 +161,19 @@ internal class FishManager : MonoBehaviour
     Track(fish);
 
     if (GameLog.IsOn(LogCategory.Fish))
-      GameLog.Info(LogCategory.Fish,
-        $"Spawn {dto.id} {dto.variant} -> {template.variant} | r={dto.hitboxRadius} life={dto.lifespan:F0}ms " +
-        $"points={dto.pathParams.points.Count} keyframes={dto.motionKeyframes?.Count ?? 0} progress={path.ProgressAt(ServerClock.NowMs):F2}");
+      GameLog.Info(LogCategory.Fish, WithFishJson(
+        $"Spawn {dto.id} {dto.type} -> {template.variant} | r={dto.hitboxRadius} life={dto.lifespan:F0}ms " +
+        $"points={dto.pathParams.points.Count} keyframes={dto.motionKeyframes?.Count ?? 0} progress={path.ProgressAt(ServerClock.NowMs):F2}", dto));
     return fish;
   }
+
+  // The fish's own JSON, not the whole event: game:init carries every active fish.
+  private static string WithFishJson(string summary, SpawnedFish dto) =>
+    summary + "\n" + JsonConvert.SerializeObject(dto, Formatting.None);
+
+  // Kills and despawns come from socket events; mock kills have no JSON.
+  private static string WithEventJson(string summary) =>
+    SocketIOManager.Instance != null ? SocketIOManager.Instance.WithInboundJson(summary) : summary;
 
   internal bool TryGetFish(string fishId, out BaseFish fish)
   {
@@ -189,11 +185,11 @@ internal class FishManager : MonoBehaviour
   {
     if (!TryGetFish(fishId, out var fish))
     {
-      GameLog.Info(LogCategory.Fish, $"Kill {fishId}: not on screen");
+      GameLog.Info(LogCategory.Fish, WithEventJson($"Kill {fishId}: not on screen"));
       return;
     }
 
-    GameLog.Info(LogCategory.Fish, $"Kill {fishId} ({fish.data?.variant}, state {fish.State})");
+    GameLog.Info(LogCategory.Fish, WithEventJson($"Kill {fishId} ({fish.data?.variant}, state {fish.State})"));
     fish.Kill();
   }
 
@@ -203,7 +199,7 @@ internal class FishManager : MonoBehaviour
     if (!TryGetFish(fishId, out var fish))
       return;
 
-    GameLog.Info(LogCategory.Fish, $"Despawn {fishId} ({fish.data?.variant}) reason={reason ?? "none"} state={fish.State}");
+    GameLog.Info(LogCategory.Fish, WithEventJson($"Despawn {fishId} ({fish.data?.variant}) reason={reason ?? "none"} state={fish.State}"));
     if (reason == MLFGDespawnReason.Expired)
       fish.Leave();
     else
@@ -223,6 +219,19 @@ internal class FishManager : MonoBehaviour
 
     if (!string.IsNullOrEmpty(fishId) && recentlyRemoved.TryGetValue(fishId, out var removed))
       PlayStarCoinsAtPosition(removed.data, removed.position);
+  }
+
+  // Own-shot REWARD: the fish stays alive. Coins on every paid hit, the big win only on a critical.
+  internal void PlayRewardPayout(string fishId, float payout, bool isCritical)
+  {
+    if (!TryGetFish(fishId, out var fish))
+      return;
+
+    PlayStarCoinsAtPosition(fish.data, fish.ColliderMidPoint);
+    if (fish is ImmortalFish immortal)
+      immortal.TriggerWinAnimSpeedBoost();
+    if (isCritical)
+      UIManager.Instance?.PlayRainbowWinAnimation(fish, fish.data, payout);
   }
 
   // Releases every fish immediately (re-init after a reconnect).
@@ -277,29 +286,13 @@ internal class FishManager : MonoBehaviour
     recentlyRemovedOrder.Enqueue((id, now));
   }
 
-  // Exact variant -> alias (by variant, then species type) -> fallback variant.
-  private FishData ResolveTemplate(string variant, string type)
+  // fishesData is the source of truth: each FishData.variant is the server's species type.
+  // The server's variant field is only a fallback for older payloads.
+  private FishData ResolveTemplate(string type, string variant)
   {
-    FishData template = FindTemplate(variant);
-    if (template != null)
-      return template;
-
-    VariantAlias alias = variantAliases.Find(a => a.serverVariant == variant)
-                         ?? variantAliases.Find(a => a.serverVariant == type);
-    if (alias != null)
-      template = FindTemplate(alias.clientVariant);
-
-    if (template == null && !string.IsNullOrEmpty(fallbackVariant))
-      template = FindTemplate(fallbackVariant);
-
-    if (warnedVariants.Add(variant ?? ""))
-    {
-      if (template == null)
-        GameLog.Error(LogCategory.Fish, $"No FishData for server variant '{variant}' (type '{type}') and no usable alias/fallback");
-      else if (alias == null)
-        GameLog.Warn(LogCategory.Fish, $"Server variant '{variant}' has no art yet, using fallback '{fallbackVariant}'");
-    }
-
+    FishData template = FindTemplate(type) ?? FindTemplate(variant);
+    if (template == null && warnedVariants.Add(type ?? variant ?? ""))
+      GameLog.Error(LogCategory.Fish, $"No FishData for server type '{type}' (variant '{variant}')");
     return template;
   }
 
@@ -358,8 +351,7 @@ internal class FishManager : MonoBehaviour
     var dto = new SpawnedFish
     {
       id = "mock-" + (++mockCounter),
-      type = "mock",
-      variant = fishesData[mockFishIndex].variant,
+      type = fishesData[mockFishIndex].variant,
       pathType = "spline",
       pathParams = new SplinePathParams { points = points },
       spawnTime = (long)ServerClock.NowMs,
@@ -627,7 +619,7 @@ internal class FishManager : MonoBehaviour
   }
 
   // --------------------------------------------------------
-  // OLD BACKEND (paused): client-picked Curvy paths.
+  // OLD BACKEND (paused): spawns without a server path (fish do not move).
   // --------------------------------------------------------
 
   internal FishData ToFishData(Fish backendFish)
@@ -651,7 +643,7 @@ internal class FishManager : MonoBehaviour
     };
   }
 
-  internal BaseFish SpawnFishFromBackend(FishData data, SpawnBatchContext context)
+  internal BaseFish SpawnFishFromBackend(FishData data)
   {
     BaseFish fish = GetFishFromType(data.fishType);
 
@@ -661,12 +653,7 @@ internal class FishManager : MonoBehaviour
       return null;
     }
 
-    if (fish is NormalFish nf)
-    {
-      nf.Initialize(data, context);
-    }
-    else
-      fish.Initialize(data);
+    fish.Initialize(data);
 
     Track(fish);
     return fish;

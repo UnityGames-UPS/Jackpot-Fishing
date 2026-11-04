@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3094875922638566168}
   - component: {fileID: -2460441940274482521}
   - component: {fileID: 1897645829412585457}
-  - component: {fileID: 1274565845795068339}
   - component: {fileID: 2685932790664071423}
   m_Layer: 5
   m_Name: GoldenFish
@@ -145,60 +144,6 @@ MonoBehaviour:
   AnimationSpeed: 5
   delayBetweenLoop: 0
   PlayOnAwake: 0
---- !u!114 &1274565845795068339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2170773242253955616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dacc8a2ff207fca49bdaf5d45a943d80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 
-  UpdateIn: 0
-  targetComponent: 0
-  m_PositionMode: 1
-  m_Position: 0
-  m_MoveMode: 1
-  m_Speed: 0
-  m_Direction: 0
-  m_Clamping: 1
-  motionConstraints: 0
-  m_PlayAutomatically: 0
-  m_OrientationMode: 1
-  m_LockRotation: 1
-  m_OrientationAxis: 0
-  m_IgnoreDirection: 0
-  m_DampingDirection: 0
-  m_DampingUp: 0
-  m_OffsetAngle: 0
-  m_OffsetRadius: 0
-  m_OffsetCompensation: 1
-  onInitialized:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ForceFrequentUpdates: 0
-  m_Spline: {fileID: 0}
-  m_UseCache: 0
-  connectionBehavior: 0
-  allowDirectionChange: 1
-  rejectCurrentSpline: 1
-  rejectTooDivergentSplines: 0
-  maxAllowedDivergenceAngle: 90
-  connectionCustomSelector: {fileID: 0}
-  onPositionReachedList: []
-  m_OnControlPointReached:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnEndReached:
-    m_PersistentCalls:
-      m_Calls: []
-  m_OnSwitch:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &2685932790664071423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,10 +165,15 @@ MonoBehaviour:
     spriteSize: {x: 0, y: 0}
     colliderSize: {x: 0, y: 0}
     colliderOffset: {x: 0, y: 0}
-    laserImpactScaleFactor: 0.7
+    coinBlastScaleMult: 1.8
     duration: 10000
     fishType: 0
-  torpedoViewportPadding: 0.0005
+  viewportPadding: 0.0005
+  turnSpeed: 540
+  flipThreshold: 0.15
+  leaveFadeDuration: 0.25
+  deathFadeDuration: 0.15
+  maxDeathDuration: 8
 --- !u!1 &5852206723132477086
 GameObject:
   m_ObjectHideFlags: 0

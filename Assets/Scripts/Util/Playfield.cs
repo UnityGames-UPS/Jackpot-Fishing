@@ -29,6 +29,9 @@ internal static class Playfield
   internal static Vector3 ServerToWorld(Vector2 server) =>
     space.TransformPoint(ServerToLocal(server));
 
+  internal static Vector3 ServerDirToWorld(Vector2 dir) =>
+    space.TransformDirection(ServerDirToLocal(dir));
+
   internal static Vector2 WorldToServer(Vector3 world) =>
     LocalToServer(space.InverseTransformPoint(world));
 

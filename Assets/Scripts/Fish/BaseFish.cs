@@ -22,7 +22,7 @@ internal enum FishState
 //   A watchdog in Update releases fish whose death animation never reported back.
 //
 // Server-driven fish (ML-FG) position themselves every frame from ServerClock.NowMs and their
-// ServerPath. Old-backend Curvy movement and torpedo bookkeeping live in BaseFish.Legacy.cs.
+// ServerPath. Old-backend torpedo bookkeeping lives in BaseFish.Legacy.cs.
 internal partial class BaseFish : MonoBehaviour
 {
   private const double HeadingLookAhead = 0.01; // matches the reference client's heading sample
@@ -76,7 +76,6 @@ internal partial class BaseFish : MonoBehaviour
     Path = path;
     HitboxRadius = hitboxRadius > 0f ? hitboxRadius : 40f;
     BeginLife(visual);
-    DisableLegacyMovement();
     UpdateServerMovement();
     OnServerSpawned();
   }
@@ -102,7 +101,6 @@ internal partial class BaseFish : MonoBehaviour
     imageAnimation = GetComponent<ImageAnimation>();
     fishImage = GetComponent<Image>();
     boxCollider = GetComponent<BoxCollider2D>();
-    CacheLegacyComponents();
   }
 
   private void SetupVisuals()

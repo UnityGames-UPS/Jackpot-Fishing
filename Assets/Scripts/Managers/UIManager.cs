@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
   private bool isTargetLock = false;
   private bool isTorpedoGun = false;
   private Tween balanceTween;
-  private readonly BalanceLedger balanceLedger = new BalanceLedger();
+  private double serverBalance;
   internal GunType activeGun = GunType.Simple;
   internal int BetCounter = 0;
   internal bool IsTargetLockEnabled => isTargetLock;
@@ -317,10 +317,37 @@ public class UIManager : MonoBehaviour
     }
   }
 
+  // The local player's seat rig owns the gun panel; rebind to it on every init.
+  internal void BindGunPanel(SeatRig rig)
+  {
+    if (rig == null)
+      return;
+
+    if (rig.plusBetButton) PlusBetButton = rig.plusBetButton;
+    if (rig.minusBetButton) MinusBetButton = rig.minusBetButton;
+    if (rig.betText) TotalBetText = rig.betText;
+    if (rig.balanceText) BalanceText = rig.balanceText;
+
+    if (PlusBetButton)
+    {
+      PlusBetButton.onClick.RemoveAllListeners();
+      PlusBetButton.onClick.AddListener(() => ChangeBet(true));
+    }
+
+    if (MinusBetButton)
+    {
+      MinusBetButton.onClick.RemoveAllListeners();
+      MinusBetButton.onClick.AddListener(() => ChangeBet(false));
+    }
+
+    SetBetText();
+    SnapBalanceDisplay();
+  }
+
   internal void HandeGameInit()
   {
-    SetBetText();
-    SetTorpedoBulletValue();
+    // Each hall has its own bet list, so an index from the last init may not exist.
+    OnBetChanged(0);
     // Paused: old-backend paytable multipliers. ML-FG init doesn't send them yet.
     // if (SocketIOManager.Instance?.initFishes != null)
     //   UpdatePaytableMultipliers(SocketIOManager.Instance.initFishes);
@@ -344,6 +371,14 @@ public class UIManager : MonoBehaviour
         BetCounter = SocketIOManager.Instance?.bets.Count - 1 ?? 0; // Loop to the last bet
       }
     }
+    OnBetChanged(BetCounter);
+  }
+
+  // Every change of the local bet goes through here.
+  // TODO: swap the gun, bullet and crosshair art for the bet (art pending).
+  private void OnBetChanged(int betIndex)
+  {
+    BetCounter = betIndex;
     SetBetText();
     SetTorpedoBulletValue();
   }
@@ -380,74 +415,56 @@ public class UIManager : MonoBehaviour
   }
 
   // --------------------------------------------------------
-  // BALANCE (server-authoritative, see BalanceLedger)
+  // BALANCE: always the last value the server sent, never calculated here.
   // --------------------------------------------------------
 
-  // game:init: start from the server balance with nothing in flight.
+  // game:init
   internal void ResetBalance(double balance)
   {
     GameLog.Info(LogCategory.Balance, $"Init balance {balance:N2}");
-    balanceLedger.Clear();
-    balanceLedger.SetServerBalance(balance);
+    serverBalance = balance;
     SnapBalanceDisplay();
   }
 
-  // Own shot_result: authoritative balance including any payout.
+  // FIRE ack, SHOOT ack or own shot_result.
   internal void ApplyServerBalance(double balance)
   {
-    GameLog.Info(LogCategory.Balance, $"Shot result balance {balance:N2}");
-    balanceLedger.SetServerBalance(balance);
-    RefreshBalanceDisplay();
+    GameLog.Info(LogCategory.Balance, $"Server balance {balance:N2}");
+    serverBalance = balance;
+    UpdateBalance((float)serverBalance);
   }
 
   // balance:sync: an external correction, so snap (no tween) and re-check the fire gate.
   internal void SyncBalance(double balance)
   {
     GameLog.Info(LogCategory.Balance, $"balance:sync {balance:N2}");
-    balanceLedger.SetServerBalance(balance);
+    serverBalance = balance;
     SnapBalanceDisplay();
-    if (balanceLedger.Available < GetGunCost())
+    if (serverBalance < GetGunCost())
       ShowLowBalancePopup();
   }
 
-  // Deducts the shot cost locally until the SHOOT ack arrives. False = can't afford it.
-  internal bool TryReserveShot(string bulletId)
+  // Fire gate only; the server makes the final call and sends the new balance in the FIRE ack.
+  internal bool CanAffordShot()
   {
-    if (!balanceLedger.TryReserve(bulletId, GetGunCost()))
-    {
-      GameLog.Info(LogCategory.Balance, $"Can't afford {GetGunCost():N2} (available {balanceLedger.Available:N2})");
+    if (serverBalance >= GetGunCost())
+      return true;
+
+    GameLog.Info(LogCategory.Balance, $"Can't afford {GetGunCost():N2} (balance {serverBalance:N2})");
+    ShowLowBalancePopup();
+    return false;
+  }
+
+  internal void OnFireRejected(string message)
+  {
+    if (!string.IsNullOrEmpty(message) && message.Contains("Insufficient balance"))
       ShowLowBalancePopup();
-      return false;
-    }
-
-    RefreshBalanceDisplay();
-    return true;
-  }
-
-  internal void ConfirmShot(string bulletId, double? balance)
-  {
-    balanceLedger.Confirm(bulletId, balance);
-    if (GameLog.IsOn(LogCategory.Balance))
-      GameLog.Info(LogCategory.Balance, $"Ack {bulletId}: server {(balance.HasValue ? balance.Value.ToString("N2") : "n/a")}, available {balanceLedger.Available:N2}, pending {balanceLedger.PendingCount}");
-    RefreshBalanceDisplay();
-  }
-
-  internal void CancelShot(string bulletId)
-  {
-    GameLog.Warn(LogCategory.Balance, $"Shot {bulletId} not charged (no ack / not sent); reservation released");
-    balanceLedger.Cancel(bulletId);
-    RefreshBalanceDisplay();
-  }
-
-  private void RefreshBalanceDisplay()
-  {
-    UpdateBalance((float)balanceLedger.Available);
   }
 
   private void SnapBalanceDisplay()
   {
     balanceTween?.Kill();
-    currentBalance = (float)balanceLedger.Available;
+    currentBalance = (float)serverBalance;
     SetBalanceText(currentBalance);
   }
 
@@ -583,11 +600,10 @@ public class UIManager : MonoBehaviour
       lazerGun.DisableTargetLock();
   }
 
-  // Paused weapons (torpedo, laser): local-only deduction that the ledger releases again
-  // after its timeout, since the ML-FG backend never acknowledges these shots.
+  // Torpedo and laser fire gate; the server charges the shot in the FIRE ack.
   internal bool OnGunFired()
   {
-    return TryReserveShot("legacy_" + Guid.NewGuid().ToString("N"));
+    return CanAffordShot();
   }
 
   internal float GetGunCost()
@@ -931,15 +947,15 @@ public class UIManager : MonoBehaviour
     // ❌ Variant blacklist (fine-grained control)
     switch (fish.data.variant)
     {
-      case "small_dragon_fish":
-      case "orange_fish":
-      case "angel_fish":
-      case "pinecone_fish":
-      case "puffer_fish":
-      case "turtle_fish":
-      case "jelly_fish":
-      case "lion_fish":
-      case "babyocto_fish":
+      case "flying_fish":
+      case "clownfish":
+      case "angelfish":
+      case "blowfish":
+      case "pufferfish":
+      case "sea_turtle":
+      case "jellyfish":
+      case "hermit_crab":
+      case "octopus":
         return false;
     }
 

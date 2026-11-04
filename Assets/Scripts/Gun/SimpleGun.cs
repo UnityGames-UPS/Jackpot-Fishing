@@ -15,10 +15,14 @@ public class SimpleGun : BaseGun
   [SerializeField] private float muzzleFadeOut = 0.08f;
 
   [Header("Firing")]
+  [Tooltip("Shots per second, used only until init sends the weapon's fireIntervalMs.")]
   [SerializeField] protected float fireRate = 6f;
   [SerializeField] private int maxBulletsInFlight = 30;
 
-  internal float FireInterval => 1f / fireRate;
+  internal float FireInterval =>
+    SocketIOManager.Instance != null
+      ? SocketIOManager.Instance.FireIntervalFor(SocketIOManager.Instance.NormalWeaponId, 1f / fireRate)
+      : 1f / fireRate;
   private Image muzzleImage;
   private Tween recoilTween;
   private Tween muzzleTween;
@@ -51,16 +55,17 @@ public class SimpleGun : BaseGun
     if (BulletView.InFlight >= maxBulletsInFlight)
       return;
 
-    string bulletId = "bullet_" + Guid.NewGuid().ToString("N").Substring(0, 12);
-    if (!UIManager.Instance.TryReserveShot(bulletId))
+    if (!UIManager.Instance.CanAffordShot())
       return;
+
+    string bulletId = "bullet_" + Guid.NewGuid().ToString("N").Substring(0, 12);
+    int betIndex = UIManager.Instance.BetCounter;
 
     Vector2 origin = socket.SeatOrigin;
     Vector2 start = Playfield.WorldToServer(muzzle.position);
     Vector2 direction = Playfield.WorldDirToServer(muzzle.up).normalized;
     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-    socket.SendFire(bulletId, origin, angle);
     if (GameLog.IsOn(LogCategory.Bullet))
       GameLog.Info(LogCategory.Bullet, $"Fire {bulletId} from ({start.x:F0},{start.y:F0}) angle {angle:F1}, {BulletView.InFlight + 1} in flight");
 
@@ -68,15 +73,37 @@ public class SimpleGun : BaseGun
     PlayRecoil();
     BulletView bullet = BulletPool.Instance.GetFromPool();
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
-    bullet.Fire(bulletId, origin, start, direction, socket.MaxBulletBounces);
+    string weapon = socket.NormalWeaponId;
+    bullet.Fire(bulletId, origin, start, direction, socket.BouncesFor(weapon), socket.BulletSpeedFor(weapon), betIndex);
+    socket.SendFire(weapon, bulletId, origin, angle, betIndex, null, () => bullet.CancelShot(bulletId));
     nextAllowedFireTime = Time.time + FireInterval;
+  }
+
+  // Opponent's bullet_fired: visual only. No balance reservation, FIRE or SHOOT.
+  internal void PlayRemoteShot(string bulletId, string weaponType, float serverAngle)
+  {
+    var socket = SocketIOManager.Instance;
+    if (socket == null || !Playfield.IsReady)
+      return;
+
+    float rad = serverAngle * Mathf.Deg2Rad;
+    Vector2 direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+    RotateGun(transform.position + Playfield.ServerDirToWorld(direction));
+
+    PlayMuzzleFlash();
+    PlayRecoil();
+    BulletView bullet = BulletPool.Instance.GetFromPool();
+    bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
+    // Simulated with the shooter's weapon settings, so it bounces like it does on their screen.
+    string weapon = string.IsNullOrEmpty(weaponType) ? socket.NormalWeaponId : weaponType;
+    bullet.FireRemote(bulletId, Playfield.WorldToServer(muzzle.position), direction, socket.BouncesFor(weapon), socket.BulletSpeedFor(weapon));
   }
 
   void PlayRecoil()
   {
     recoilTween?.Kill();
 
-    Vector3 recoilDir = -transform.up; // opposite of firing direction
+    Vector3 recoilDir = transform.localRotation * Vector3.down; // opposite of firing direction, in parent space
 
     recoilTween = transform
         .DOLocalMove(initialLocalPos + recoilDir * recoilDistance, recoilDuration)

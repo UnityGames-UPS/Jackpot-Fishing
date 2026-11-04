@@ -1,0 +1,90 @@
+{
+  "id": "f8cd80d3-76c6-4361-92f1-dd2c9f3ffe6a",
+  "gameData": {
+    "weapons": {
+      "normal": {
+        "cost": 1
+      }
+    },
+    "fishes": [
+      {
+        "type": "sardine",
+        "variants": [
+          "sardine_a",
+          "sardine_b"
+        ]
+      },
+      {
+        "type": "clownfish",
+        "variants": [
+          "clownfish_a"
+        ]
+      },
+      {
+        "type": "angelfish",
+        "variants": [
+          "angelfish_a"
+        ]
+      },
+      {
+        "type": "shark",
+        "variants": [
+          "shark_a"
+        ]
+      },
+      {
+        "type": "golden_dragon",
+        "variants": [
+          "golden_dragon_a"
+        ]
+      },
+      {
+        "type": "crab",
+        "variants": [
+          "crab_a"
+        ]
+      },
+      {
+        "type": "tortoise",
+        "variants": [
+          "tortoise_a"
+        ]
+      }
+    ],
+    "spawnInterval": 1500,
+    "maxConcurrentFish": 25,
+    "seats": [
+      {
+        "x": 480,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 1440,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 480,
+        "y": 0,
+        "z": 0
+      },
+      {
+        "x": 1440,
+        "y": 0,
+        "z": 0
+      }
+    ],
+    "maxBulletBounces": 3
+  },
+  "activeFish": [],
+  "seatIndex": 0,
+  "roomSeats": {
+    "a56d1a11-e499-42ec-9713-6716b261e6e7": 0
+  },
+  "player": {
+    "balance": 5897.94,
+    "username": "maahul",
+    "userId": "a56d1a11-e499-42ec-9713-6716b261e6e7"
+  }
+}

@@ -8,7 +8,6 @@ internal class SpecialFish : BaseFish
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
-    SetupFallbackMovement();
     Invoke(nameof(AttachRing), 0.1f);
   }
 
