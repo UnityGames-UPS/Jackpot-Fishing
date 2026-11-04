@@ -136,6 +136,7 @@ How joining works now: the client sends no join request. On connect the server p
 | jackpot | `jackpot_fish` (jackpot_rainbow_fish), `jackpot_dragon` (jackpot_dragon_fish) |
 
 ## Session log
+- **2026-11-04 (2)**: `EffectFish` setup (torpedo_crab back torpedoes, sea_anemone whirlpool) only ran in legacy `Initialize`, so ML-JF spawns skipped it. Now also runs from `OnServerSpawned`. `ImmortalFish` king_squid bubble-spread pulse fixed the same way.
 - **2026-11-04**: Removed the Curvy dependency from all scripts ahead of deleting the plugin. Scene/prefab cleanup (SplineController on fish prefabs, `CurvyPathManager`, `_CurvyGlobal_`, `CURVY_SPLINES` define) is left to the user.
 - **2026-10-30**: Ported normal gun FIRE/SHOOT to two-phase billing, server-only balance, weapon costs from config, REWARD handling.
 - **2026-11-03 (5)**: Measured the request limit (~6/s, see question 13). Pause after the limit doubles per repeat (max 12 s) and resets on the next ack. The error log shows the recent request history.

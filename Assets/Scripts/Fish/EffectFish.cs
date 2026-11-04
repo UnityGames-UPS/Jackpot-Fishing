@@ -124,13 +124,24 @@ internal class EffectFish : BaseFish
 
   internal override void Initialize(FishData data)
   {
-    pendingWinAmount=0;
     base.Initialize(data);
+    SetupEffectVisuals();
+  }
+
+  // ML-JF spawns go through InitializeFromServer, which never calls Initialize.
+  protected override void OnServerSpawned()
+  {
+    SetupEffectVisuals();
+  }
+
+  private void SetupEffectVisuals()
+  {
+    pendingWinAmount = 0f;
     pendingEffectBonusWins.Clear();
     pendingEffectTotalBet = 0f;
     rockCrabBonusWinIndex = 0;
     rockCrabTorpedoFiredCount = 0;
-    UpdateRockCrabTorpedoVisual(data.variant == "torpedo_crab");
+    UpdateRockCrabTorpedoVisual(data.variant == RockCrabVariant);
     StartBubbleCrabWhirlpool();
   }
 

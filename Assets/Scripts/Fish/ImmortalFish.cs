@@ -17,6 +17,17 @@ internal class ImmortalFish : BaseFish
   internal override void Initialize(FishData data)
   {
     base.Initialize(data);
+    StartSquidPulse();
+  }
+
+  // ML-JF spawns go through InitializeFromServer, which never calls Initialize.
+  protected override void OnServerSpawned()
+  {
+    StartSquidPulse();
+  }
+
+  private void StartSquidPulse()
+  {
     if (data.variant == "king_squid")
       speedPulseRoutine = StartCoroutine(OctopusSpeedPulse());
   }
@@ -66,6 +77,7 @@ private IEnumerator OctopusSpeedPulse()
     if(speedPulseRoutine != null)
     {
       StopCoroutine(speedPulseRoutine);
+      speedPulseRoutine = null;
     }
     BucketAnimPlaying = false;
     bubbleSpreadAnim.OnAnimationComplete = null;
