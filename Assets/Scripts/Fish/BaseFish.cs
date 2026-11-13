@@ -1,9 +1,17 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 using DG.Tweening;
+
+// A server hit circle in server px (point-in-circle, same test as the backend).
+internal struct HitCircle
+{
+  internal Vector2 center;
+  internal float radius;
+}
 
 internal enum FishState
 {
@@ -28,6 +36,14 @@ internal partial class BaseFish : MonoBehaviour
   private const double HeadingLookAhead = 0.01; // matches the reference client's heading sample
 
   [SerializeField] internal FishData data;
+
+  // Wire these on the prefab. Missing ones are filled from this object in Awake/OnValidate.
+  [Header("References")]
+  [SerializeField] protected Image fishImage;
+  [SerializeField] protected ImageAnimation imageAnimation;
+  [SerializeField] private RectTransform rect;
+  [Tooltip("Hit circles; the dragon needs one per segment. Missing ones are added at spawn.")]
+  [SerializeField] private List<CircleCollider2D> hitColliders = new List<CircleCollider2D>();
   [FormerlySerializedAs("torpedoViewportPadding")]
   [SerializeField] private float viewportPadding = 0.0005f;
 
@@ -44,17 +60,27 @@ internal partial class BaseFish : MonoBehaviour
   internal string Id => data?.fishId;
   internal ServerPath Path { get; private set; }
   internal bool IsServerDriven => Path != null;
-  internal float HitboxRadius { get; private set; }
+  internal float HitboxRadius { get; private set; } // head radius, server px
+  // A hit circle overlaps the 1920x1080 playfield (server space, same as the server and bullets).
   internal bool IsVisibleInViewport { get; private set; }
 
-  internal Transform HitPoint => transform.GetChild(0);
-  internal RectTransform Rect => GetComponent<RectTransform>();
-  internal Vector3 ColliderMidPoint =>
-    boxCollider != null ? transform.TransformPoint(boxCollider.offset) : transform.position;
+  internal RectTransform Rect => rect;
 
-  protected ImageAnimation imageAnimation;
-  protected Image fishImage;
-  protected BoxCollider2D boxCollider;
+  // Center of the hit circles as last placed (the pivot for single-circle fish). Uses the
+  // colliders, not the path, so it stays put once the fish is frozen by a kill.
+  internal Vector3 ColliderMidPoint
+  {
+    get
+    {
+      if (activeColliderCount <= 1)
+        return transform.position;
+      Vector3 sum = Vector3.zero;
+      for (int i = 0; i < activeColliderCount; i++)
+        sum += transform.TransformPoint(hitColliders[i].offset);
+      return sum / activeColliderCount;
+    }
+  }
+
   protected Tween damageTween;
   protected bool movementFrozen;
 
@@ -66,15 +92,48 @@ internal partial class BaseFish : MonoBehaviour
   private bool facingRight;
   private bool hasPose;
 
+  // Hitboxes come from the spawn (hitboxRadius, or segments for the dragon). One
+  // CircleCollider2D per circle, used for pointer picking and target lock; bullets test
+  // the same circles in server space via GetHitCircles.
+  private const float DefaultHitboxRadius = 40f; // mock client's fallback
+  private static readonly List<HitCircle> circleScratch = new List<HitCircle>(8);
+  private HitSegment[] segments;
+  private int activeColliderCount;
+
+  protected virtual void Awake()
+  {
+    ResolveReferences();
+    // The old hand-sized box doesn't match the server hitbox; keep it out of picking.
+    if (TryGetComponent<BoxCollider2D>(out var legacyBox))
+      legacyBox.enabled = false;
+  }
+
+#if UNITY_EDITOR
+  protected virtual void OnValidate() => ResolveReferences();
+#endif
+
+  // Fallbacks for references not wired on the prefab (null-checked, never per spawn).
+  private void ResolveReferences()
+  {
+    if (fishImage == null)
+      fishImage = GetComponent<Image>();
+    if (imageAnimation == null)
+      imageAnimation = GetComponent<ImageAnimation>();
+    if (rect == null)
+      rect = GetComponent<RectTransform>();
+    if (hitColliders.Count == 0)
+      GetComponents(hitColliders);
+  }
+
   // --------------------------------------------------------
   // SPAWN
   // --------------------------------------------------------
 
   // Server-driven spawn (ML-FG backend). The fish is placed on its path before its first frame.
-  internal void InitializeFromServer(FishData visual, ServerPath path, float hitboxRadius)
+  internal void InitializeFromServer(FishData visual, ServerPath path, float hitboxRadius, List<HitSegment> serverSegments)
   {
     Path = path;
-    HitboxRadius = hitboxRadius > 0f ? hitboxRadius : 40f;
+    SetSegments(hitboxRadius, serverSegments);
     BeginLife(visual);
     UpdateServerMovement();
     OnServerSpawned();
@@ -91,32 +150,21 @@ internal partial class BaseFish : MonoBehaviour
     movementFrozen = false;
     hasPose = false;
     IsVisibleInViewport = false;
-    CacheComponents();
+    PrepareColliders();
     ResetLegacyState();
     SetupVisuals();
   }
 
-  private void CacheComponents()
-  {
-    imageAnimation = GetComponent<ImageAnimation>();
-    fishImage = GetComponent<Image>();
-    boxCollider = GetComponent<BoxCollider2D>();
-  }
-
   private void SetupVisuals()
   {
-    // The box collider only serves pointer picking and target lock; hits are tested in server space.
-    boxCollider.enabled = true;
-    boxCollider.size = data.colliderSize;
-    boxCollider.offset = data.colliderOffset;
-    HitPoint.localPosition = new Vector3(data.colliderOffset.x, data.colliderOffset.y, 0);
-
     imageAnimation.StopAnimation();
     imageAnimation.SetAnimationData(data.animationFrames, data.animationSpeed, data.loop);
     imageAnimation.StartAnimation();
     baseAnimationSpeed = data.animationSpeed;
 
-    Rect.sizeDelta = data.spriteSize;
+    // The pivot moves the art relative to the path point; the hit circles stay on it.
+    rect.pivot = data.pivot;
+    rect.sizeDelta = data.spriteSize;
 
     if (UIManager.Instance.activeGun == UIManager.GunType.Torpedo && !UIManager.Instance.IsValidTorpedoTarget(this))
     {
@@ -159,13 +207,19 @@ internal partial class BaseFish : MonoBehaviour
   {
     double progress = Path.ProgressAt(ServerClock.NowMs);
     Vector2 pos = Path.PositionAt(progress);
-    Vector2 ahead = Path.PositionAt(Math.Min(progress + HeadingLookAhead, 1.0));
 
     transform.position = Playfield.ServerToWorld(pos);
 
-    Vector2 dir = ahead - pos;
+    // Near/past the end a clamped look-ahead lands behind the (extrapolated) position and
+    // reverses the heading, so sample backwards there instead.
+    Vector2 dir = progress >= 1.0 - HeadingLookAhead
+      ? pos - Path.PositionAt(progress - HeadingLookAhead)
+      : Path.PositionAt(progress + HeadingLookAhead) - pos;
     if (dir.sqrMagnitude > 0.0001f)
       ApplyHeading(Playfield.ServerDirToLocal(dir.normalized));
+
+    // After the pose is applied, so the collider offsets account for rotation and flip.
+    PlaceColliders();
 
     if (State == FishState.Alive && progress >= 1.0)
       Leave();
@@ -205,7 +259,119 @@ internal partial class BaseFish : MonoBehaviour
   internal bool IsHittable(double nowMs) =>
     State == FishState.Alive && IsServerDriven && !movementFrozen && !Path.IsBeforeSpawn(nowMs);
 
-  internal Vector2 ServerPositionAt(double nowMs) => Path.PositionAtTime(nowMs);
+  // The fish's hit circles at nowMs in server px. segments[0] (offset 0) is the head at the
+  // path position; each other circle sits `offset` px behind it along the path (extrapolated
+  // before the path start, so the tail trails the head even off-screen).
+  internal int GetHitCircles(double nowMs, List<HitCircle> into)
+  {
+    into.Clear();
+    if (Path == null || segments == null)
+      return 0;
+
+    if (segments.Length == 1 && segments[0].offset == 0f)
+    {
+      into.Add(new HitCircle { center = Path.PositionAtTime(nowMs), radius = segments[0].radius });
+      return 1;
+    }
+
+    double head = Path.DistanceAt(nowMs);
+    for (int i = 0; i < segments.Length; i++)
+      into.Add(new HitCircle { center = Path.PositionAtDistance(head - segments[i].offset), radius = segments[i].radius });
+    return into.Count;
+  }
+
+  // Point-in-circle against every hit circle, like the server.
+  internal bool ContainsServerPoint(Vector2 point, double nowMs)
+  {
+    int count = GetHitCircles(nowMs, circleScratch);
+    for (int i = 0; i < count; i++)
+    {
+      HitCircle c = circleScratch[i];
+      if ((point - c.center).sqrMagnitude <= c.radius * c.radius)
+        return true;
+    }
+    return false;
+  }
+
+  // --------------------------------------------------------
+  // HITBOX COLLIDERS (pointer picking / target lock)
+  // --------------------------------------------------------
+
+  private void SetSegments(float hitboxRadius, List<HitSegment> serverSegments)
+  {
+    float headRadius = hitboxRadius > 0f ? hitboxRadius : DefaultHitboxRadius;
+
+    if (serverSegments != null && serverSegments.Count > 0)
+    {
+      segments = new HitSegment[serverSegments.Count];
+      for (int i = 0; i < segments.Length; i++)
+      {
+        HitSegment src = serverSegments[i];
+        segments[i] = new HitSegment
+        {
+          offset = src?.offset ?? 0f,
+          radius = src != null && src.radius > 0f ? src.radius : headRadius
+        };
+      }
+      HitboxRadius = segments[0].radius;
+    }
+    else
+    {
+      segments = new[] { new HitSegment { offset = 0f, radius = headRadius } };
+      HitboxRadius = headRadius;
+    }
+  }
+
+  private void PrepareColliders()
+  {
+    hitColliders.RemoveAll(c => c == null);
+
+    // Only fish with more circles than the prefab holds (the dragon) add any, once per instance.
+    int needed = segments?.Length ?? 0;
+    while (hitColliders.Count < needed)
+    {
+      var col = gameObject.AddComponent<CircleCollider2D>();
+      col.isTrigger = true;
+      hitColliders.Add(col);
+    }
+
+    activeColliderCount = needed;
+    for (int i = 0; i < hitColliders.Count; i++)
+    {
+      hitColliders[i].enabled = i < needed;
+      hitColliders[i].offset = Vector2.zero;
+    }
+  }
+
+  // Server px -> this fish's collider units. Goes through the playfield and the fish's own
+  // scale, so canvas scaling, portrait rotation and the facing flip can't distort it.
+  private float PxToColliderUnits()
+  {
+    float worldPerPx = (Playfield.ServerToWorld(Vector2.right) - Playfield.ServerToWorld(Vector2.zero)).magnitude;
+    Vector3 s = transform.lossyScale;
+    float scale = Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y)); // CircleCollider2D scales by the larger axis
+    return scale > 0f ? worldPerPx / scale : worldPerPx;
+  }
+
+  private void PlaceColliders()
+  {
+    if (activeColliderCount == 0)
+      return;
+
+    float pxToUnits = PxToColliderUnits();
+    int count = GetHitCircles(ServerClock.NowMs, circleScratch);
+    for (int i = 0; i < count && i < activeColliderCount; i++)
+    {
+      CircleCollider2D col = hitColliders[i];
+      float radius = circleScratch[i].radius * pxToUnits;
+      if (!Mathf.Approximately(col.radius, radius))
+        col.radius = radius;
+
+      // The head sits on the pivot; only trailing segments need an offset.
+      if (segments[i].offset != 0f)
+        col.offset = transform.InverseTransformPoint(Playfield.ServerToWorld(circleScratch[i].center));
+    }
+  }
 
   // --------------------------------------------------------
   // EXITS
@@ -303,6 +469,13 @@ internal partial class BaseFish : MonoBehaviour
     data = null;
     Path = null;
     HitboxRadius = 0f;
+    segments = null;
+    for (int i = 0; i < hitColliders.Count; i++)
+    {
+      hitColliders[i].enabled = false;
+      hitColliders[i].offset = Vector2.zero;
+    }
+    activeColliderCount = 0;
     IsVisibleInViewport = false;
     movementFrozen = false;
     hasPose = false;
@@ -321,8 +494,8 @@ internal partial class BaseFish : MonoBehaviour
 
   private void SetPickable(bool pickable)
   {
-    if (boxCollider != null)
-      boxCollider.enabled = pickable;
+    for (int i = 0; i < activeColliderCount; i++)
+      hitColliders[i].enabled = pickable;
   }
 
   internal virtual IEnumerator DamageAnimation(Color damageColor)
@@ -365,29 +538,66 @@ internal partial class BaseFish : MonoBehaviour
     imageAnimation.SetAnimationSpeed(speed * Mathf.Max(0.01f, multiplier));
   }
 
-  // Any part of the collider overlapping the viewport. Skips the first two frames so a
-  // freshly pooled fish isn't reported at its pre-spawn position.
+  // Targetable (torpedo/laser lock) when a hit circle's center is inside the 1920x1080
+  // playfield, tested in server px like the server and bullets, independent of the camera.
+  // viewportPadding is a fraction of the playfield. Skips the first two frames so a freshly
+  // pooled fish isn't reported at its pre-spawn position.
   private void UpdateViewportVisibility()
   {
     IsVisibleInViewport = false;
 
-    if (State != FishState.Alive || PendingVisualDeath || Time.frameCount - aliveSinceFrame < 2)
+    if (State != FishState.Alive || PendingVisualDeath || !IsServerDriven || Time.frameCount - aliveSinceFrame < 2)
       return;
 
-    var cam = Camera.main;
-    if (cam == null || boxCollider == null)
-      return;
-
-    var bounds = boxCollider.bounds;
-    Vector3 min = cam.WorldToViewportPoint(bounds.min);
-    Vector3 max = cam.WorldToViewportPoint(bounds.max);
-    if (max.z <= 0)
-      return;
-
-    IsVisibleInViewport =
-      max.x >= viewportPadding &&
-      min.x <= 1f - viewportPadding &&
-      max.y >= viewportPadding &&
-      min.y <= 1f - viewportPadding;
+    IsVisibleInViewport = TryGetAimServerPoint(ServerClock.NowMs, out _);
   }
+
+  // Torpedo/laser aim point in server px: the center of the first hit circle (config order)
+  // that is inside the playfield. False when none is; `point` is then the first circle's center.
+  // Frozen or dying fish use the circles as last placed, since their path keeps advancing.
+  internal bool TryGetAimServerPoint(double nowMs, out Vector2 point)
+  {
+    int count;
+    if (IsServerDriven && !movementFrozen)
+    {
+      count = GetHitCircles(nowMs, circleScratch);
+    }
+    else
+    {
+      circleScratch.Clear();
+      for (int i = 0; i < activeColliderCount; i++)
+        circleScratch.Add(new HitCircle { center = Playfield.WorldToServer(transform.TransformPoint(hitColliders[i].offset)) });
+      count = circleScratch.Count;
+    }
+
+    if (count == 0)
+    {
+      point = Playfield.WorldToServer(transform.position);
+      return false;
+    }
+
+    float padX = viewportPadding * Playfield.Width;
+    float padY = viewportPadding * Playfield.Height;
+    for (int i = 0; i < count; i++)
+    {
+      Vector2 c = circleScratch[i].center;
+      if (c.x >= padX && c.x <= Playfield.Width - padX && c.y >= padY && c.y <= Playfield.Height - padY)
+      {
+        point = c;
+        return true;
+      }
+    }
+
+    point = circleScratch[0].center;
+    return false;
+  }
+
+  internal Vector2 AimServerPointAt(double nowMs)
+  {
+    TryGetAimServerPoint(nowMs, out Vector2 point);
+    return point;
+  }
+
+  // World-space aim point for torpedo/laser visuals (same point the SHOOT reports).
+  internal Vector3 GetAimPoint() => Playfield.ServerToWorld(AimServerPointAt(ServerClock.NowMs));
 }

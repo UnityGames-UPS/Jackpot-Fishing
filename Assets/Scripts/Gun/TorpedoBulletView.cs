@@ -92,6 +92,7 @@ public class TorpedoBulletView : MonoBehaviour
   private RectTransform rectTransform;
   private float initialHeight;
   private BaseFish target;
+  private string targetFishId; // fish are pooled: target may be reused for another fish mid-flight
   private Vector3 lastKnownTargetPos;
   private Vector3 startPos;
   private Vector3 phase1End;
@@ -122,10 +123,11 @@ public class TorpedoBulletView : MonoBehaviour
 
     shot = torpedoShot;
     target = fish;
+    targetFishId = fish != null ? fish.Id : null;
     target?.RegisterIncomingTorpedo();
     startPos = transform.position;
 
-    lastKnownTargetPos = fish.GetAimPoint(Camera.main);
+    lastKnownTargetPos = fish.GetAimPoint();
     fireDir = (lastKnownTargetPos - startPos).normalized;
 
     float dist = Vector3.Distance(startPos, lastKnownTargetPos);
@@ -241,8 +243,9 @@ public class TorpedoBulletView : MonoBehaviour
       return;
     }
 
-    // 🔑 Update last known position if fish still exists
-    if (target != null && target.gameObject.activeInHierarchy)
+    // Follow the fish while it lives. Once it dies, the last position is where it died, and the
+    // torpedo flies there and explodes.
+    if (IsSameLiveTarget())
       lastKnownTargetPos = GetEdgeClampedTargetPos(target);
 
     Vector3 toTarget = lastKnownTargetPos - transform.position;
@@ -251,13 +254,14 @@ public class TorpedoBulletView : MonoBehaviour
     if (dist <= hitDistance)
     {
       ReportImpact();
-      if (target != null)
+      bool sameFish = IsSameFish();
+      if (sameFish)
       {
         target.OnTorpedoImpact();
         StartCoroutine(target.DamageAnimation(fishDamageColor));
       }
 
-      if (target != null && target.KillOnTorpedoArrival)
+      if (sameFish && target.KillOnTorpedoArrival)
       {
         target.KillOnTorpedoArrival = false;
         target.OnKillingTorpedoArrived();
@@ -313,6 +317,11 @@ public class TorpedoBulletView : MonoBehaviour
 
   // ---------------- HELPERS ----------------
 
+  // Still the fish this torpedo was fired at (not a pooled object reused for a new spawn).
+  bool IsSameFish() => target != null && target.Id == targetFishId;
+
+  bool IsSameLiveTarget() => IsSameFish() && target.State == FishState.Alive;
+
   // Settles the shot: a hit if the target fish is still alive (and still the same fish, since
   // fish are pooled), otherwise a miss at the torpedo's aim point.
   void ReportImpact()
@@ -322,7 +331,7 @@ public class TorpedoBulletView : MonoBehaviour
 
     double now = ServerClock.NowMs;
     bool hit = target != null && target.Id == shot.FishId && target.IsHittable(now);
-    Vector2 aim = hit ? target.ServerPositionAt(now) : Playfield.WorldToServer(lastKnownTargetPos);
+    Vector2 aim = hit ? target.AimServerPointAt(now) : Playfield.WorldToServer(lastKnownTargetPos);
     shot.OnImpact(now, aim, hit ? shot.FishId : null);
     shot = null;
   }
@@ -330,7 +339,7 @@ public class TorpedoBulletView : MonoBehaviour
   Vector3 GetEdgeClampedTargetPos(BaseFish fish)
   {
     Camera cam = Camera.main;
-    Vector3 vp = cam.WorldToViewportPoint(fish.GetAimPoint(cam));
+    Vector3 vp = cam.WorldToViewportPoint(fish.GetAimPoint());
 
     vp.x = Mathf.Clamp(vp.x, 0.01f, 0.99f);
     vp.y = Mathf.Clamp(vp.y, 0.01f, 0.99f);
@@ -356,8 +365,10 @@ public class TorpedoBulletView : MonoBehaviour
 
     anim.OnAnimationComplete = null;
     anim.StopAnimation();
-    target?.UnregisterIncomingTorpedo();
+    if (IsSameFish())
+      target.UnregisterIncomingTorpedo();
     target = null;
+    targetFishId = null;
     shot = null;
     SetHeight(0f);
 

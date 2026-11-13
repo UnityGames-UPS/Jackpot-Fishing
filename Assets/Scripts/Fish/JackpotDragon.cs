@@ -7,6 +7,7 @@ internal class JackpotDragon : BaseFish
   [SerializeField] private Sprite[] deathAnimationFrames;
   [SerializeField] private float deathAnimationSpeed = 10f;
   [SerializeField] private Vector2 deathSizeDelta = new Vector2(400f, 400f);
+  [SerializeField] private Vector2 deathPivot = new Vector2(0.5f, 0.5f); // centers the death frames on the hit point
   private float pendingWinAmount;
   private bool playLegacyRewards;
 
@@ -31,6 +32,7 @@ internal class JackpotDragon : BaseFish
       return;
     }
 
+    Rect.pivot = deathPivot;
     Rect.sizeDelta = deathSizeDelta;
     imageAnimation.StopAnimation();
     imageAnimation.doLoopAnimation = false;

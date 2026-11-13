@@ -8,6 +8,13 @@ internal class FishManager : MonoBehaviour
 {
   internal static FishManager Instance;
 
+  [Header("Editor Mock (M spawns, K kills)")]
+  [SerializeField] private bool enableMockSpawning = true;
+  [SerializeField] private int mockFishIndex = 25;
+  [Tooltip("Optional: Config.json. Mock fish then use its hitboxRadius/segments per type (for tuning hitboxes).")]
+  [SerializeField] private TextAsset mockConfig;
+  private Dictionary<string, MockHitbox> mockHitboxes;
+
   [Header("Fish Visual Definitions")]
   [SerializeField] private List<FishData> fishesData;
 
@@ -60,10 +67,6 @@ internal class FishManager : MonoBehaviour
   [Header("Playfield")]
   [Tooltip("Fixed 1920x1080 rect (Parent1) that server coordinates map onto.")]
   [SerializeField] private RectTransform playfieldRect;
-
-  [Header("Editor Mock")]
-  [SerializeField] private bool enableMockSpawning = true;
-  [SerializeField] private int mockFishIndex = 25;
 
   [SerializeField] private List<BaseFish> activeFishes = new();
   private readonly Dictionary<string, BaseFish> fishById = new();
@@ -157,12 +160,12 @@ internal class FishManager : MonoBehaviour
       return null;
     }
 
-    fish.InitializeFromServer(CreateRuntimeData(template, dto.id, (int)dto.lifespan), path, dto.hitboxRadius);
+    fish.InitializeFromServer(CreateRuntimeData(template, dto.id, (int)dto.lifespan), path, dto.hitboxRadius, dto.segments);
     Track(fish);
 
     if (GameLog.IsOn(LogCategory.Fish))
       GameLog.Info(LogCategory.Fish, WithFishJson(
-        $"Spawn {dto.id} {dto.type} -> {template.variant} | r={dto.hitboxRadius} life={dto.lifespan:F0}ms " +
+        $"Spawn {dto.id} {dto.type} -> {template.variant} | r={fish.HitboxRadius} segments={dto.segments?.Count ?? 0} life={dto.lifespan:F0}ms " +
         $"points={dto.pathParams.points.Count} keyframes={dto.motionKeyframes?.Count ?? 0} progress={path.ProgressAt(ServerClock.NowMs):F2}", dto));
     return fish;
   }
@@ -312,8 +315,7 @@ internal class FishManager : MonoBehaviour
       animationSpeed = template.animationSpeed,
       loop = template.loop,
       spriteSize = template.spriteSize,
-      colliderSize = template.colliderSize,
-      colliderOffset = template.colliderOffset,
+      pivot = template.pivot,
       coinBlastScaleMult = template.coinBlastScaleMult,
       fishType = template.fishType,
       fishId = fishId,
@@ -359,6 +361,12 @@ internal class FishManager : MonoBehaviour
       hitboxRadius = 50f
     };
 
+    if (TryGetMockHitbox(dto.type, out MockHitbox hitbox))
+    {
+      dto.hitboxRadius = hitbox.hitboxRadius;
+      dto.segments = hitbox.segments;
+    }
+
     // Half the mocks pause mid-path, like the server's crab/tortoise speed profiles.
     if (UnityEngine.Random.value > 0.5f)
     {
@@ -376,6 +384,46 @@ internal class FishManager : MonoBehaviour
     }
 
     SpawnFromServer(dto);
+  }
+
+  [Serializable]
+  private class MockHitbox
+  {
+    public string type;
+    public float hitboxRadius;
+    public List<HitSegment> segments;
+  }
+
+  [Serializable]
+  private class MockConfigRoot
+  {
+    public List<MockHitbox> fishes;
+  }
+
+  private bool TryGetMockHitbox(string type, out MockHitbox hitbox)
+  {
+    hitbox = null;
+    if (mockConfig == null || string.IsNullOrEmpty(type))
+      return false;
+
+    if (mockHitboxes == null)
+    {
+      mockHitboxes = new Dictionary<string, MockHitbox>();
+      try
+      {
+        var root = JsonConvert.DeserializeObject<MockConfigRoot>(mockConfig.text);
+        if (root?.fishes != null)
+          foreach (var f in root.fishes)
+            if (f != null && !string.IsNullOrEmpty(f.type))
+              mockHitboxes[f.type] = f;
+      }
+      catch (Exception e)
+      {
+        GameLog.Warn(LogCategory.Fish, "mockConfig could not be parsed: " + e.Message);
+      }
+    }
+
+    return mockHitboxes.TryGetValue(type, out hitbox);
   }
 
   private void MockKillRandomFish()
@@ -677,8 +725,9 @@ public class FishData
   public float animationSpeed = 5f;
   public bool loop = true;
   public Vector2 spriteSize;
-  public Vector2 colliderSize;
-  public Vector2 colliderOffset;
+  // Normalized RectTransform pivot. The path point (and the server hit circle) sits on it, so
+  // shift it to center the art on the hitbox. Hitboxes themselves come from the server.
+  public Vector2 pivot = new Vector2(0.5f, 0.5f);
   public float coinBlastScaleMult = 1.8f;
   public int duration = 10000;
   public FishType fishType = FishType.Normal;

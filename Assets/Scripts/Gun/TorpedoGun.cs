@@ -171,7 +171,7 @@ public class TorpedoGun : BaseGun
     string bulletId = "torpedo_" + Guid.NewGuid().ToString("N").Substring(0, 12);
     int betIndex = UIManager.Instance.BetCounter;
     Vector2 origin = socket.SeatOrigin;
-    Vector2 direction = (fish.ServerPositionAt(ServerClock.NowMs) - origin).normalized;
+    Vector2 direction = (fish.AimServerPointAt(ServerClock.NowMs) - origin).normalized;
     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
     var shot = new TorpedoShot(bulletId, fish.Id, origin, betIndex);
 
@@ -200,7 +200,7 @@ public class TorpedoGun : BaseGun
     bool hasTarget = IsFishValidForShot(fish);
     if (hasTarget)
     {
-      RotateGun(fish.GetAimPoint(Camera.main));
+      RotateGun(fish.GetAimPoint());
     }
     else if (Playfield.IsReady)
     {
@@ -415,7 +415,7 @@ public class TorpedoGun : BaseGun
     if (torpedoLockTarget == target)
     {
       if (torpedoLockTarget != null)
-        UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint(Camera.main));
+        UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint());
       return;
     }
 
@@ -428,7 +428,7 @@ public class TorpedoGun : BaseGun
     }
 
     StartTorpedoLockVisual();
-    UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint(Camera.main));
+    UpdateTorpedoLockPosition(torpedoLockTarget.GetAimPoint());
   }
 
   private void StartTorpedoLockVisual()

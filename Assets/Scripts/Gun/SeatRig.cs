@@ -146,9 +146,26 @@ public class SeatRig : MonoBehaviour
       default:
         ShowOnly(defaultGun);
         if (defaultGun is SimpleGun simpleGun)
-          simpleGun.PlayRemoteShot(fired.bulletId, fired.weaponType, fired.angle);
+          simpleGun.PlayRemoteShot(fired.bulletId, fired.weaponType, fired.angle, fired.bulletSpeed, fired.firedAt);
         break;
     }
+  }
+
+  // Opponent laser tick, from their shot_result.
+  internal void PlayRemoteLaser(string fishId)
+  {
+    if (GunOf<LazerGun>() is not LazerGun lazerGun)
+      return;
+
+    BaseFish target = null;
+    FishManager.Instance?.TryGetFish(fishId, out target);
+    ShowOnly(lazerGun);
+    lazerGun.PlayRemoteTick(target);
+  }
+
+  internal void StopRemoteLaser()
+  {
+    GunOf<LazerGun>()?.StopRemote();
   }
 
   private T GunOf<T>() where T : BaseGun

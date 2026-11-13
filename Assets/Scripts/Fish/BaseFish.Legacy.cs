@@ -45,7 +45,7 @@ internal partial class BaseFish
   internal virtual void Initialize(FishData data)
   {
     Path = null;
-    HitboxRadius = 0f;
+    SetSegments(0f, null); // default circle so the fish stays pickable
     BeginLife(data);
   }
 
@@ -211,43 +211,4 @@ internal partial class BaseFish
 
   internal void PlayLaserImpact() { }
   internal void StopLaserImpact() { }
-
-  internal Vector3 GetAimPoint(Camera cam)
-  {
-    if (data == null || data.fishType != FishType.Jackpot_Dragon)
-      return ColliderMidPoint;
-
-    if (boxCollider == null)
-      boxCollider = GetComponent<BoxCollider2D>();
-    if (boxCollider == null)
-      return HitPoint.position;
-
-    Bounds bounds = boxCollider.bounds;
-    Vector3 center = bounds.center;
-    const float inwardOffset = 1f;
-    float halfWidth = Mathf.Abs(boxCollider.size.x * transform.lossyScale.x) * 0.5f;
-    float edgeOffset = Mathf.Max(halfWidth - inwardOffset, 0f);
-    Vector3 right = center + transform.right * edgeOffset;
-    Vector3 left = center - transform.right * edgeOffset;
-
-    if (cam == null)
-      return center;
-
-    if (IsPointVisible(cam, center, 0f))
-      return center;
-    if (IsPointVisible(cam, left, 0f))
-      return left;
-    if (IsPointVisible(cam, right, 0f))
-      return right;
-
-    return center;
-  }
-
-  private bool IsPointVisible(Camera cam, Vector3 worldPoint, float padding)
-  {
-    Vector3 vp = cam.WorldToViewportPoint(worldPoint);
-    return vp.z > 0f &&
-           vp.x >= padding && vp.x <= 1f - padding &&
-           vp.y >= padding && vp.y <= 1f - padding;
-  }
 }

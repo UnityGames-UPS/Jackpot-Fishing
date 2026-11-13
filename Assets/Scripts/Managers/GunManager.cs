@@ -259,8 +259,19 @@ public class GunManager : MonoBehaviour
     if (GameLog.IsOn(LogCategory.Bullet))
       GameLog.Info(LogCategory.Bullet, SocketIOManager.Instance.WithInboundJson($"Opponent shot {result.shotId} by {result.shooterId} seat {rig.SeatIndex}: {result.outcome} at ({result.aimTarget?.x:F0},{result.aimTarget?.y:F0})"));
     ApplyOpponentBet(rig, result.betIndex);
-    if (result.shooterBalance.HasValue)
-      rig.SetBalance(result.shooterBalance.Value);
+    double? balance = result.ShooterBalance;
+    if (balance.HasValue)
+      rig.SetBalance(balance.Value);
+
+    // The laser sends no FIRE (so no bullet_fired): each tick's shot_result draws the beam.
+    if (result.weaponType == MLFGWeaponIds.Laser)
+      rig.PlayRemoteLaser(string.IsNullOrEmpty(result.targetFishId) ? result.fishId : result.targetFishId);
+  }
+
+  // game:laser_stopped for an opponent.
+  internal void StopRemoteLaser(string shooterId)
+  {
+    FindOpponentRig(shooterId)?.StopRemoteLaser();
   }
 
   // betIndex points into the current hall's bets, which every player in the room shares.

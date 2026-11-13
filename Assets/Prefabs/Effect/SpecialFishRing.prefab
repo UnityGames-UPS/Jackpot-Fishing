@@ -88,6 +88,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35b10ef15a8f24028a1858de139de388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldOffset: {x: 0, y: 0, z: 0}
   rotationDuration: 2.2
-  rotationEase: 1

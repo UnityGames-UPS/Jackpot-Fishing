@@ -80,7 +80,8 @@ public class SimpleGun : BaseGun
   }
 
   // Opponent's bullet_fired: visual only. No balance reservation, FIRE or SHOOT.
-  internal void PlayRemoteShot(string bulletId, string weaponType, float serverAngle)
+  // firedAt (server ms) fast-forwards the bullet to where it is now on the shooter's screen.
+  internal void PlayRemoteShot(string bulletId, string weaponType, float serverAngle, float? bulletSpeed, double? firedAt)
   {
     var socket = SocketIOManager.Instance;
     if (socket == null || !Playfield.IsReady)
@@ -96,7 +97,11 @@ public class SimpleGun : BaseGun
     bullet.transform.SetPositionAndRotation(muzzle.position, muzzle.rotation);
     // Simulated with the shooter's weapon settings, so it bounces like it does on their screen.
     string weapon = string.IsNullOrEmpty(weaponType) ? socket.NormalWeaponId : weaponType;
-    bullet.FireRemote(bulletId, Playfield.WorldToServer(muzzle.position), direction, socket.BouncesFor(weapon), socket.BulletSpeedFor(weapon));
+    float? speed = bulletSpeed > 0f ? bulletSpeed : socket.BulletSpeedFor(weapon);
+    float elapsed = firedAt.HasValue && ServerClock.IsSynced
+      ? Mathf.Max(0f, (float)((ServerClock.NowMs - firedAt.Value) / 1000.0))
+      : 0f;
+    bullet.FireRemote(bulletId, Playfield.WorldToServer(muzzle.position), direction, socket.BouncesFor(weapon), speed, elapsed);
   }
 
   void PlayRecoil()

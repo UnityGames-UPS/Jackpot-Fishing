@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Normal bullet, simulated in server space exactly like the backend's reference client:
 // constant speed, bounces off the 1920x1080 edges (each axis hit counts as one bounce),
-// circle hit test against each fish's server position and hitboxRadius.
+// point-in-circle hit test against each fish's server hit circles (hitboxRadius, or segments).
 //
 // Every bullet resolves exactly once and sends exactly one SHOOT, which settles the shot
 // FIRE charged for: on a hit, when it bounces more than maxBulletBounces, or when its lifetime ends.
@@ -10,6 +11,8 @@ using UnityEngine;
 public class BulletView : MonoBehaviour
 {
   private const float MaxStep = 1f / 60f; // substep long frames so bullets can't tunnel through fish
+  private const float FastForwardStep = 0.01f; // latency compensation steps (s)
+  private const float MaxFastForward = 0.5f;   // never fast-forward more than this (s)
 
   [SerializeField] private float serverSpeed = 1200f; // server px per second (matches the reference client)
   [SerializeField] private float maxLifetime = 10f; // safety net; bounces normally end a miss first
@@ -19,6 +22,9 @@ public class BulletView : MonoBehaviour
 
   internal static int InFlight { get; private set; } // own bullets only
   internal static int RemoteInFlight { get; private set; }
+
+  // Opponent bullets in flight, so the server's shot_result can end them by bulletId.
+  private static readonly Dictionary<string, BulletView> remoteById = new();
 
   private string bulletId;
   private Vector2 origin;   // the seat, as reported to the server
@@ -51,12 +57,45 @@ public class BulletView : MonoBehaviour
     InFlight++;
   }
 
-  internal void FireRemote(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed)
+  // elapsedSec: time since the server's firedAt. The bullet starts where it is by now on the
+  // shooter's screen, bouncing off the walls on the way (no hit tests: shot_result ends it).
+  internal void FireRemote(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed, float elapsedSec)
   {
     remote = true;
     origin = serverStart;
     Launch(id, serverStart, serverDirection, maxBulletBounces, speed);
     RemoteInFlight++;
+    if (!string.IsNullOrEmpty(id))
+      remoteById[id] = this;
+
+    float fastForward = Mathf.Clamp(elapsedSec, 0f, MaxFastForward);
+    float remaining = fastForward;
+    while (remaining > 0f)
+    {
+      float step = Mathf.Min(remaining, FastForwardStep);
+      remaining -= step;
+      position += velocity * step;
+      Bounce();
+      if (bounceCount > maxBounces)
+      {
+        Finish();
+        return;
+      }
+    }
+    age = fastForward;
+    Render();
+  }
+
+  // shot_result for an opponent's bullet: it ends now, with a hit marker at aimTarget on a hit.
+  // MISS_GATE just removes it. Unknown ids (already ended locally) are ignored.
+  internal static void ResolveRemote(string id, Vector2? serverAimTarget, bool hit)
+  {
+    if (string.IsNullOrEmpty(id) || !remoteById.TryGetValue(id, out var bullet))
+      return;
+
+    if (hit && serverAimTarget.HasValue)
+      HitMarkerPool.Instance.GetFromPool().Play(Playfield.ServerToWorld(serverAimTarget.Value));
+    bullet.Finish();
   }
 
   // speed: the weapon's server px/s, or null for the serialized default.
@@ -158,8 +197,7 @@ public class BulletView : MonoBehaviour
       if (!fish.IsHittable(now))
         continue;
 
-      float radius = fish.HitboxRadius;
-      if ((position - fish.ServerPositionAt(now)).sqrMagnitude <= radius * radius)
+      if (fish.ContainsServerPoint(position, now)) // every hit circle, incl. dragon segments
         return fish;
     }
     return null;
@@ -213,6 +251,9 @@ public class BulletView : MonoBehaviour
 
   private void ReleaseCount()
   {
+    if (remote && bulletId != null && remoteById.TryGetValue(bulletId, out var tracked) && tracked == this)
+      remoteById.Remove(bulletId);
+
     if (remote)
       RemoteInFlight = Mathf.Max(0, RemoteInFlight - 1);
     else

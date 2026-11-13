@@ -82,9 +82,14 @@
       "lifespan": 22000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 100,
+          "min": -100
+        },
         "speedRange": {
           "max": 200,
           "min": 120
@@ -102,13 +107,21 @@
       "lifespan": 25000,
       "movement": {
         "pathTypes": [
-          "straight",
           "curve",
-          "w_shape"
+          "w_shape",
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 80,
+          "min": -80
+        },
         "speedRange": {
           "max": 180,
           "min": 100
+        },
+        "wShapeAmplitudeRange": {
+          "max": 120,
+          "min": 60
         }
       },
       "hitChance": 0.2933,
@@ -123,9 +136,13 @@
       "lifespan": 28000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "s_curve"
+          "s_curve",
+          "curve"
         ],
+        "curveRange": {
+          "max": 120,
+          "min": -120
+        },
         "speedRange": {
           "max": 160,
           "min": 90
@@ -143,18 +160,26 @@
       "lifespan": 30000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "w_shape"
         ],
+        "curveRange": {
+          "max": 90,
+          "min": -90
+        },
         "speedRange": {
           "max": 150,
           "min": 80
+        },
+        "wShapeAmplitudeRange": {
+          "max": 130,
+          "min": 70
         }
       },
       "hitChance": 0.176,
       "multiplier": 5,
       "spawnWeight": 30,
-      "hitboxRadius": 45
+      "hitboxRadius": 35
     },
     {
       "name": "Pufferfish",
@@ -163,9 +188,13 @@
       "lifespan": 30000,
       "movement": {
         "pathTypes": [
-          "straight",
+          "s_curve",
           "curve"
         ],
+        "curveRange": {
+          "max": 100,
+          "min": -100
+        },
         "speedRange": {
           "max": 140,
           "min": 80
@@ -174,7 +203,7 @@
       "hitChance": 0.1467,
       "multiplier": 6,
       "spawnWeight": 25,
-      "hitboxRadius": 50
+      "hitboxRadius": 40
     },
     {
       "name": "Sea Turtle",
@@ -183,9 +212,14 @@
       "lifespan": 32000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 80,
+          "min": -80
+        },
         "speedRange": {
           "max": 160,
           "min": 110
@@ -203,7 +237,7 @@
       "hitChance": 0.11,
       "multiplier": 8,
       "spawnWeight": 22,
-      "hitboxRadius": 50
+      "hitboxRadius": 55
     },
     {
       "name": "Jellyfish",
@@ -212,19 +246,27 @@
       "lifespan": 32000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve",
-          "w_shape"
+          "w_shape",
+          "s_curve",
+          "curve"
         ],
+        "curveRange": {
+          "max": 110,
+          "min": -110
+        },
         "speedRange": {
           "max": 120,
           "min": 60
+        },
+        "wShapeAmplitudeRange": {
+          "max": 160,
+          "min": 90
         }
       },
-      "hitChance": 0.088,
+      "hitChance": 0.2,
       "multiplier": 10,
       "spawnWeight": 20,
-      "hitboxRadius": 50
+      "hitboxRadius": 55
     },
     {
       "name": "Lobster",
@@ -233,18 +275,23 @@
       "lifespan": 32000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "zigzag",
+          "curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 70,
+          "min": -70
+        },
         "speedRange": {
           "max": 130,
           "min": 70
         }
       },
-      "hitChance": 0.0733,
+      "hitChance": 0.3,
       "multiplier": 12,
       "spawnWeight": 18,
-      "hitboxRadius": 55
+      "hitboxRadius": 50
     },
     {
       "name": "Hermit Crab",
@@ -253,15 +300,19 @@
       "lifespan": 34000,
       "movement": {
         "pathTypes": [
-          "straight",
+          "zigzag",
           "curve"
         ],
+        "curveRange": {
+          "max": 60,
+          "min": -60
+        },
         "speedRange": {
           "max": 120,
           "min": 60
         }
       },
-      "hitChance": 0.0587,
+      "hitChance": 0.4,
       "multiplier": 15,
       "spawnWeight": 16,
       "hitboxRadius": 50
@@ -273,19 +324,27 @@
       "lifespan": 34000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve",
-          "s_curve"
+          "s_curve",
+          "w_shape",
+          "curve"
         ],
+        "curveRange": {
+          "max": 130,
+          "min": -130
+        },
         "speedRange": {
           "max": 110,
           "min": 60
+        },
+        "wShapeAmplitudeRange": {
+          "max": 150,
+          "min": 80
         }
       },
-      "hitChance": 0.044,
+      "hitChance": 0.4,
       "multiplier": 20,
       "spawnWeight": 15,
-      "hitboxRadius": 55
+      "hitboxRadius": 50
     },
     {
       "name": "Lanternfish",
@@ -294,18 +353,32 @@
       "lifespan": 35000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 110,
+          "min": -110
+        },
         "speedRange": {
           "max": 160,
           "min": 90
         }
       },
-      "hitChance": 0.0352,
+      "hitChance": 0.4,
       "multiplier": 25,
       "spawnWeight": 14,
-      "hitboxRadius": 60
+      "hitboxRadius": 60,
+      "segments": [
+        {
+          "offset": -52,
+          "radius": 55
+        },
+        {
+          "offset": 33,
+          "radius": 55
+        }
+      ]
     },
     {
       "name": "Manta Ray",
@@ -314,19 +387,22 @@
       "lifespan": 36000,
       "movement": {
         "pathTypes": [
-          "straight",
           "curve",
           "s_curve"
         ],
+        "curveRange": {
+          "max": 140,
+          "min": -140
+        },
         "speedRange": {
           "max": 130,
           "min": 70
         }
       },
-      "hitChance": 0.0293,
+      "hitChance": 0.4,
       "multiplier": 30,
       "spawnWeight": 12,
-      "hitboxRadius": 65
+      "hitboxRadius": 70
     },
     {
       "name": "Hammerhead Shark",
@@ -335,18 +411,37 @@
       "lifespan": 38000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 130,
+          "min": -130
+        },
         "speedRange": {
           "max": 170,
           "min": 90
         }
       },
-      "hitChance": 0.0251,
+      "hitChance": 0.4,
       "multiplier": 35,
       "spawnWeight": 10,
-      "hitboxRadius": 75
+      "hitboxRadius": 75,
+      "segments": [
+        {
+          "offset": -157,
+          "radius": 70
+        },
+        {
+          "offset": -21,
+          "radius": 70
+        },
+        {
+          "offset": 93,
+          "radius": 61
+        }
+      ]
     },
     {
       "name": "Golden Angelfish",
@@ -355,15 +450,19 @@
       "lifespan": 40000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "s_curve"
+          "s_curve",
+          "curve"
         ],
+        "curveRange": {
+          "max": 120,
+          "min": -120
+        },
         "speedRange": {
           "max": 140,
           "min": 80
         }
       },
-      "hitChance": 0.0176,
+      "hitChance": 0.4,
       "multiplier": 50,
       "spawnWeight": 8,
       "hitboxRadius": 60
@@ -375,18 +474,37 @@
       "lifespan": 40000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "w_shape",
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 90,
+          "min": -90
+        },
         "speedRange": {
           "max": 140,
           "min": 80
+        },
+        "wShapeAmplitudeRange": {
+          "max": 130,
+          "min": 70
         }
       },
-      "hitChance": 0.016,
+      "hitChance": 0.4,
       "multiplier": 55,
       "spawnWeight": 7,
-      "hitboxRadius": 55
+      "hitboxRadius": 55,
+      "segments": [
+        {
+          "offset": -65,
+          "radius": 50
+        },
+        {
+          "offset": 20,
+          "radius": 50
+        }
+      ]
     },
     {
       "name": "Golden Manta Ray",
@@ -395,19 +513,22 @@
       "lifespan": 42000,
       "movement": {
         "pathTypes": [
-          "straight",
           "curve",
           "s_curve"
         ],
+        "curveRange": {
+          "max": 150,
+          "min": -150
+        },
         "speedRange": {
           "max": 120,
           "min": 70
         }
       },
-      "hitChance": 0.0147,
+      "hitChance": 0.4,
       "multiplier": 60,
       "spawnWeight": 6,
-      "hitboxRadius": 70
+      "hitboxRadius": 85
     },
     {
       "name": "Armored Fish",
@@ -416,15 +537,20 @@
       "lifespan": 35000,
       "movement": {
         "pathTypes": [
+          "curve",
           "straight",
-          "curve"
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 90,
+          "min": -90
+        },
         "speedRange": {
           "max": 140,
           "min": 80
         }
       },
-      "hitChance": 0.0319,
+      "hitChance": 0.4,
       "multipliers": [
         20,
         25,
@@ -435,7 +561,7 @@
       ],
       "rewardLabel": "Armored Fish Reward",
       "spawnWeight": 8,
-      "hitboxRadius": 65,
+      "hitboxRadius": 80,
       "criticalLabel": "Super Win (5x)",
       "multiplierWeights": [
         50,
@@ -454,15 +580,19 @@
       "lifespan": 38000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "s_curve"
+          "s_curve",
+          "curve"
         ],
+        "curveRange": {
+          "max": 120,
+          "min": -120
+        },
         "speedRange": {
           "max": 130,
           "min": 70
         }
       },
-      "hitChance": 0.0222,
+      "hitChance": 0.4,
       "multipliers": [
         30,
         35,
@@ -473,7 +603,7 @@
       ],
       "rewardLabel": "Anglerfish Reward",
       "spawnWeight": 6,
-      "hitboxRadius": 70,
+      "hitboxRadius": 80,
       "criticalLabel": "Super Win (5x)",
       "multiplierWeights": [
         50,
@@ -492,9 +622,14 @@
       "lifespan": 42000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 85,
+          "min": -85
+        },
         "speedRange": {
           "max": 150,
           "min": 100
@@ -509,7 +644,7 @@
           "dipSpeedFactor": 0.25
         }
       },
-      "hitChance": 0.017,
+      "hitChance": 0.4,
       "multipliers": [
         40,
         45,
@@ -520,7 +655,7 @@
       ],
       "rewardLabel": "Fortune Terrapin Reward",
       "spawnWeight": 5,
-      "hitboxRadius": 75,
+      "hitboxRadius": 80,
       "criticalLabel": "Super Win (5x)",
       "multiplierWeights": [
         50,
@@ -539,15 +674,20 @@
       "lifespan": 35000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve",
+          "zigzag"
         ],
+        "curveRange": {
+          "max": 140,
+          "min": -140
+        },
         "speedRange": {
           "max": 140,
           "min": 80
         }
       },
-      "hitChance": 0.0113,
+      "hitChance": 0.4,
       "effectType": "chain_lightning",
       "multipliers": [
         70,
@@ -560,6 +700,20 @@
         "chainRadius": 350
       },
       "hitboxRadius": 80,
+      "segments": [
+        {
+          "offset": -120,
+          "radius": 60
+        },
+        {
+          "offset": -28,
+          "radius": 75
+        },
+        {
+          "offset": 64,
+          "radius": 60
+        }
+      ],
       "multiplierWeights": [
         60,
         40
@@ -572,15 +726,20 @@
       "lifespan": 30000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "zigzag",
+          "curve",
+          "straight"
         ],
+        "curveRange": {
+          "max": 70,
+          "min": -70
+        },
         "speedRange": {
           "max": 120,
           "min": 70
         }
       },
-      "hitChance": 0.01,
+      "hitChance": 0.4,
       "effectType": "torpedo_blast",
       "multipliers": [
         80,
@@ -592,7 +751,7 @@
         "blastRadius": 200,
         "torpedoCount": 3
       },
-      "hitboxRadius": 65,
+      "hitboxRadius": 95,
       "multiplierWeights": [
         60,
         40
@@ -605,9 +764,14 @@
       "lifespan": 30000,
       "movement": {
         "pathTypes": [
-          "straight",
+          "w_shape",
+          "s_curve",
           "curve"
         ],
+        "curveRange": {
+          "max": 100,
+          "min": -100
+        },
         "speedRange": {
           "max": 150,
           "min": 110
@@ -620,9 +784,13 @@
             "min": 2
           },
           "dipSpeedFactor": 0.25
+        },
+        "wShapeAmplitudeRange": {
+          "max": 140,
+          "min": 80
         }
       },
-      "hitChance": 0.009,
+      "hitChance": 0.4,
       "effectType": "whirlpool",
       "multipliers": [
         90,
@@ -634,7 +802,7 @@
         "durationMs": 3500,
         "pullRadius": 220
       },
-      "hitboxRadius": 60,
+      "hitboxRadius": 140,
       "multiplierWeights": [
         60,
         40
@@ -647,16 +815,24 @@
       "lifespan": 50000,
       "movement": {
         "pathTypes": [
-          "curve",
           "s_curve",
-          "straight"
+          "curve",
+          "w_shape"
         ],
+        "curveRange": {
+          "max": 150,
+          "min": -150
+        },
         "speedRange": {
           "max": 100,
           "min": 60
+        },
+        "wShapeAmplitudeRange": {
+          "max": 180,
+          "min": 100
         }
       },
-      "hitChance": 0.0098,
+      "hitChance": 0.4,
       "multipliers": [
         60,
         120,
@@ -664,7 +840,17 @@
       ],
       "rewardLabel": "King Squid Rewards",
       "spawnWeight": 8,
-      "hitboxRadius": 95,
+      "hitboxRadius": 150,
+      "segments": [
+        {
+          "offset": -76,
+          "radius": 155
+        },
+        {
+          "offset": 123,
+          "radius": 155
+        }
+      ],
       "despawnOnKill": false,
       "multiplierWeights": [
         60,
@@ -680,15 +866,18 @@
       "movement": {
         "pathTypes": [
           "curve",
-          "s_curve",
-          "straight"
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 140,
+          "min": -140
+        },
         "speedRange": {
           "max": 110,
           "min": 70
         }
       },
-      "hitChance": 0.0073,
+      "hitChance": 0.4,
       "multipliers": [
         80,
         160,
@@ -697,6 +886,20 @@
       "rewardLabel": "Golden Shark Rewards",
       "spawnWeight": 8,
       "hitboxRadius": 85,
+      "segments": [
+        {
+          "offset": -208,
+          "radius": 107
+        },
+        {
+          "offset": -42,
+          "radius": 142
+        },
+        {
+          "offset": 147,
+          "radius": 91
+        }
+      ],
       "despawnOnKill": false,
       "multiplierWeights": [
         60,
@@ -712,14 +915,18 @@
       "movement": {
         "pathTypes": [
           "curve",
-          "straight"
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 70,
+          "min": -70
+        },
         "speedRange": {
           "max": 80,
           "min": 45
         }
       },
-      "hitChance": 0.016,
+      "hitChance": 0.4,
       "multipliers": [
         3,
         168,
@@ -728,7 +935,7 @@
       ],
       "rewardLabel": "Small Prize (3x)",
       "spawnWeight": 10,
-      "hitboxRadius": 85,
+      "hitboxRadius": 190,
       "criticalLabel": "Critical Hit Jackpot",
       "despawnOnKill": false,
       "multiplierWeights": [
@@ -746,15 +953,19 @@
       "lifespan": 36000,
       "movement": {
         "pathTypes": [
-          "straight",
-          "curve"
+          "curve",
+          "s_curve"
         ],
+        "curveRange": {
+          "max": 120,
+          "min": -120
+        },
         "speedRange": {
           "max": 140,
           "min": 90
         }
       },
-      "hitChance": 0.0099,
+      "hitChance": 0.4,
       "multipliers": [
         66,
         88,
@@ -778,9 +989,13 @@
       "lifespan": 48000,
       "movement": {
         "pathTypes": [
-          "curve",
-          "s_curve"
+          "s_curve",
+          "curve"
         ],
+        "curveRange": {
+          "max": 130,
+          "min": -130
+        },
         "speedRange": {
           "max": 120,
           "min": 80
@@ -788,38 +1003,38 @@
       },
       "segments": [
         {
-          "offset": 0,
-          "radius": 75
+          "offset": -500,
+          "radius": 115
         },
         {
-          "offset": 90,
-          "radius": 70
+          "offset": -316,
+          "radius": 115
         },
         {
-          "offset": 180,
-          "radius": 65
+          "offset": -130,
+          "radius": 115
         },
         {
-          "offset": 270,
-          "radius": 60
+          "offset": 62,
+          "radius": 115
         },
         {
-          "offset": 360,
-          "radius": 55
+          "offset": 247,
+          "radius": 115
         },
         {
-          "offset": 450,
-          "radius": 45
+          "offset": 452,
+          "radius": 115
         }
       ],
-      "hitChance": 0.0044,
+      "hitChance": 0.4,
       "multipliers": [
         160,
         240,
         320
       ],
       "rewardLabel": "Jackpot Dragon Win",
-      "spawnWeight": 80,
+      "spawnWeight": 2,
       "hitboxRadius": 75,
       "criticalLabel": "Jackpot Dragon Mega Win",
       "multiplierWeights": [
@@ -945,10 +1160,28 @@
           "angelfish"
         ],
         "repeatIntervalMs": 8000
+      },
+      {
+        "type": "line",
+        "weight": 50,
+        "spacing": 0.1,
+        "direction": "RIGHT_TO_LEFT",
+        "fishCount": 8,
+        "spawnDelayMs": 300,
+        "allowedSpecies": [
+          "flying_fish",
+          "lanternfish"
+        ],
+        "repeatIntervalMs": 6000
       }
     ],
-    "intervalMs": 120000,
-    "phaseDurationMs": 40000,
+    "intervalMs": 45000,
+    "intervalRangeMs": {
+      "max": 75000,
+      "min": 40000
+    },
+    "phaseDurationMs": 30000,
+    "triggerProbability": 0.45,
     "textAnimationDurationMs": 3000
   },
   "lagCompensationWindowMs": 400

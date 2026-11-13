@@ -53,6 +53,13 @@ internal sealed class ServerPath
 
   internal Vector2 PositionAtTime(double nowMs) => PositionAt(ProgressAt(nowMs));
 
+  // Distance travelled along the path in px (may be < 0 or > the path length; extrapolated).
+  internal double DistanceAt(double nowMs) => ProgressAt(nowMs) * totalLength;
+
+  // Position at an absolute path distance, extrapolated past both ends like PositionAt.
+  internal Vector2 PositionAtDistance(double distance) =>
+    totalLength > 0 ? PositionAt(distance / totalLength) : PositionAt(0);
+
   private double GetDistanceFromKeyframes(double elapsedMs)
   {
     if (keyframes.Length == 0) return 0;

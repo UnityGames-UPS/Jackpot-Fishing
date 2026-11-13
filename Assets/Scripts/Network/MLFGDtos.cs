@@ -24,6 +24,7 @@ internal static class MLFGEvents
   internal const string FormationAlert = "game:formation_alert";
   internal const string PlayerJoined = "game:player_joined";
   internal const string PlayerLeft = "game:player_left";
+  internal const string LaserStopped = "game:laser_stopped";
   // The server's "error" event is delivered by Best.SocketIO as SocketIOEventTypes.Error.
   internal const string TimeSyncAck = "time_sync_ack";
   internal const string Pong = "pong";
@@ -34,6 +35,7 @@ internal static class MLFGRequestTypes
   internal const string Fire = "FIRE";
   internal const string Shoot = "SHOOT";
   internal const string Home = "HOME";
+  internal const string LaserStop = "LASER_STOP";
 }
 
 // Keys of gameData.weapons, sent as weaponType. The normal gun's id comes from init
@@ -91,6 +93,15 @@ public class SplinePathParams
   public List<float> cumulativeLengths;
 }
 
+// One hit circle of a multi-circle fish (jackpot_dragon). offset = server px behind the
+// head, measured along the path; radius in server px. The server tests point-in-circle.
+[Serializable]
+public class HitSegment
+{
+  public float offset;
+  public float radius;
+}
+
 [Serializable]
 public class SpawnedFish
 {
@@ -106,6 +117,7 @@ public class SpawnedFish
   public double spawnTime; // server ms; can be fractional
   public double lifespan;
   public float hitboxRadius;
+  public List<HitSegment> segments; // only on multi-circle fish (jackpot_dragon); segments[0] is the head
   public float? multiplier; // absent on fish that roll from a multiplier pool
   public float? hitChance;
   public List<MotionKeyframe> motionKeyframes;
@@ -191,6 +203,7 @@ public class ShotResultPayload
   public string shooterId;
   public string shooterUsername;
   public string shotId;
+  public string bulletId;
   public string weaponType;
   public double? amount; // the shot's charge
   public int? betIndex;
@@ -198,13 +211,21 @@ public class ShotResultPayload
   public MLFGVec3 aimTarget;
   public string outcome;
   public string fishId;
+  public string targetFishId; // same as fishId on hits; the laser's lock target
+  public int? seatIndex;
+  public string type;
+  public string category;
   public double? payout;
   public double? multiplier;
   public bool? isDespawned;
   public string rewardLabel;
   public bool? isCriticalHit;
   public double? shooterBalance;
+  public double? balance; // same as shooterBalance
+
   public List<SplashHit> splashHits;
+
+  internal double? ShooterBalance => shooterBalance ?? balance;
 }
 
 [Serializable]
@@ -218,6 +239,15 @@ public class BulletFiredPayload
   public int? betIndex;
   public double? shooterBalance;
   public string targetFishId; // torpedo and laser only
+  public float? bulletSpeed; // server px/s
+  public double? firedAt;    // server ms, for latency compensation
+}
+
+[Serializable]
+public class LaserStoppedPayload
+{
+  public string shooterId;
+  public string roomId;
 }
 
 [Serializable]
@@ -272,6 +302,14 @@ public class ShootPayload
   public int betIndex;
   [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
   public string targetFishId; // hits only
+}
+
+[Serializable]
+public class LaserStopPayload
+{
+  public string weaponType;
+  public string roomId;
+  public string targetFishId;
 }
 
 [Serializable]

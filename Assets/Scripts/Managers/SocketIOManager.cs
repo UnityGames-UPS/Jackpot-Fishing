@@ -199,6 +199,7 @@ public class SocketIOManager : MonoBehaviour
     Subscribe(MLFGEvents.FormationAlert, OnFormationAlert);
     Subscribe(MLFGEvents.PlayerJoined, OnPlayerJoined);
     Subscribe(MLFGEvents.PlayerLeft, OnPlayerLeft);
+    Subscribe(MLFGEvents.LaserStopped, OnLaserStopped);
 
     MainSocketManager.Open();
   }
@@ -575,6 +576,13 @@ public class SocketIOManager : MonoBehaviour
 
     bool ownShot = IsOwnShot(result.shooterId);
 
+    // The opponent's bullet ends where the server resolved it (own bullets end when they send SHOOT).
+    if (!ownShot && !string.IsNullOrEmpty(result.bulletId))
+    {
+      bool hit = result.outcome == MLFGShotOutcome.Kill || result.outcome == MLFGShotOutcome.Reward;
+      BulletView.ResolveRemote(result.bulletId, result.aimTarget?.ToVector2(), hit);
+    }
+
     float payout = (float)(result.payout ?? 0);
 
     // Immortal and special fish are paid but keep swimming.
@@ -603,10 +611,11 @@ public class SocketIOManager : MonoBehaviour
     if (!ownShot)
       GunManager.Instance?.HandleRemoteShot(result);
 
-    if (ownShot && result.shooterBalance.HasValue)
-      UIManager.Instance.ApplyServerBalance(result.shooterBalance.Value);
-    else if (result.shooterBalance.HasValue)
-      GameLog.Info(LogCategory.Balance, WithJson($"Ignored balance {result.shooterBalance.Value:N2} from shooter {result.shooterId} (we are {UserId})", inboundJson));
+    double? shooterBalance = result.ShooterBalance;
+    if (ownShot && shooterBalance.HasValue)
+      UIManager.Instance.ApplyServerBalance(shooterBalance.Value);
+    else if (shooterBalance.HasValue)
+      GameLog.Info(LogCategory.Balance, WithJson($"Ignored balance {shooterBalance.Value:N2} from shooter {result.shooterId} (we are {UserId})", inboundJson));
   }
 
   // Opponent bullets are visual only and never send SHOOT.
@@ -616,6 +625,14 @@ public class SocketIOManager : MonoBehaviour
     if (fired == null || IsOwnShot(fired.shooterId))
       return;
     GunManager.Instance?.HandleRemoteFire(fired);
+  }
+
+  private void OnLaserStopped(JObject payload)
+  {
+    var stopped = payload.ToObject<LaserStoppedPayload>();
+    if (stopped == null || IsOwnShot(stopped.shooterId))
+      return;
+    GunManager.Instance?.StopRemoteLaser(stopped.shooterId);
   }
 
   private void OnFormationAlert(JObject payload)
@@ -691,8 +708,9 @@ public class SocketIOManager : MonoBehaviour
   }
 
   // Every fired bullet sends exactly one SHOOT (hit or miss). It settles the shot and pays any
-  // win; the bet was already charged by FIRE.
-  internal void SendShoot(string weaponType, string bulletId, Vector2 origin, Vector2 lastBouncePoint, Vector2 aimTarget, int bounceCount, int betIndex, string targetFishId, double clientTs)
+  // win; the bet was already charged by FIRE. The laser sends no FIRE: its SHOOT is charged
+  // directly. onSettled(accepted) runs once: on the ack, a rejection, a timeout or if not sent.
+  internal void SendShoot(string weaponType, string bulletId, Vector2 origin, Vector2 lastBouncePoint, Vector2 aimTarget, int bounceCount, int betIndex, string targetFishId, double clientTs, Action<bool> onSettled = null)
   {
     var payload = new ShootPayload
     {
@@ -708,19 +726,46 @@ public class SocketIOManager : MonoBehaviour
       targetFishId = targetFishId
     };
 
-    SendRequest(MLFGRequestTypes.Shoot, payload, ack =>
+    bool sent = SendRequest(MLFGRequestTypes.Shoot, payload, ack =>
     {
       if (ack == null)
+      {
+        onSettled?.Invoke(false);
         return;
+      }
 
       if (IsRejected(ack))
       {
-        GameLog.Warn(LogCategory.Balance, WithJson($"SHOOT {weaponType} {bulletId} rejected by server", ack.ToString(Formatting.None)));
+        string message = (string)(ack.SelectToken("payload.message") ?? ack["message"]);
+        GameLog.Warn(LogCategory.Balance, WithJson($"SHOOT {weaponType} {bulletId} rejected by server: {message}", ack.ToString(Formatting.None)));
+        if (weaponType == MLFGWeaponIds.Laser)
+          UIManager.Instance.OnFireRejected(message); // the laser's SHOOT is the charge
+        onSettled?.Invoke(false);
         return;
       }
 
       ApplyAckBalance(MLFGRequestTypes.Shoot, bulletId, ack);
+      onSettled?.Invoke(true);
     });
+
+    if (!sent)
+      onSettled?.Invoke(false);
+  }
+
+  // The local laser beam stopped (target gone, pointer up, tap on water, gun switch).
+  // Not sent when the beam just moves to a new target: SHOOT carries the new targetFishId.
+  internal void SendLaserStop(string targetFishId)
+  {
+    if (!IsConnected || string.IsNullOrEmpty(RoomId))
+      return;
+
+    var payload = new LaserStopPayload
+    {
+      weaponType = MLFGWeaponIds.Laser,
+      roomId = RoomId,
+      targetFishId = targetFishId
+    };
+    SendRequest(MLFGRequestTypes.LaserStop, payload, _ => { });
   }
 
   private static bool IsRejected(JObject ack) =>

@@ -20,8 +20,11 @@ public class LazerGun : BaseGun
   [Header("Firing")]
   [Tooltip("Seconds between laser ticks, used only until init sends the weapon's fireIntervalMs.")]
   [SerializeField] private float fallbackHitInterval = 0.2f;
-  [Tooltip("FIREs still waiting for an ack before the beam stops sending more.")]
+  [Tooltip("SHOOTs still waiting for an ack before the beam stops sending more.")]
   [SerializeField] private int maxPendingShots = 3;
+
+  // An opponent's beam goes away if no shot_result keeps it alive for this long.
+  private const float RemoteBeamTimeout = 0.5f;
 
   private BaseFish lockedFish;
   private RectTransform lockedFishRect;
@@ -31,6 +34,7 @@ public class LazerGun : BaseGun
   private int pendingShots;
   private bool remote; // drawing an opponent's beam
   private float remoteBeamUntil;
+  private string streamFishId; // fish of our last laser SHOOT; LASER_STOP is owed while set
   private float nextAllowedHitTime;
   private float nextAllowedDamageAnimationTime;
   private Vector3 lastLockedPosition;
@@ -149,6 +153,7 @@ public class LazerGun : BaseGun
 
   internal void StopLaser()
   {
+    EndStream();
     laserActive = false;
 
     ToggleLaserImpact(false);
@@ -168,7 +173,7 @@ public class LazerGun : BaseGun
       return;
 
     Vector3 worldStart = muzzle.position;
-    Vector3 worldEnd = lockedFish.GetAimPoint(worldCamera);
+    Vector3 worldEnd = lockedFish.GetAimPoint();
 
     // Rotate gun
     UpdateAim(worldEnd);
@@ -306,8 +311,9 @@ public class LazerGun : BaseGun
     if (!fish.gameObject.activeInHierarchy)
       return false;
 
-    var fishCollider = fish.GetComponent<Collider2D>();
-    if (fishCollider != null && !fishCollider.enabled)
+    // Not GetComponent<Collider2D>(): that returns the prefab's disabled BoxCollider2D (hit circles
+    // are added at runtime), so every fish failed. Kill/Leave leave Alive and turn picking off together.
+    if (fish.State != FishState.Alive)
       return false;
 
     return fish.IsVisibleInViewport;
@@ -395,31 +401,36 @@ public class LazerGun : BaseGun
       return;
     }
 
-    // Everything the SHOOT needs is taken now: the beam may retarget or the bet change before the ack.
+    // The laser sends no FIRE: the server charges each SHOOT directly (a FIRE would charge twice).
     string bulletId = "laser_" + Guid.NewGuid().ToString("N").Substring(0, 12);
     string fishId = lockedFish.Id;
     int betIndex = UIManager.Instance.BetCounter;
     Vector2 origin = socket.SeatOrigin;
-    Vector2 aimTarget = lockedFish.ServerPositionAt(now);
-    Vector2 direction = (aimTarget - origin).normalized;
-    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    Vector2 aimTarget = lockedFish.AimServerPointAt(now);
 
     pendingShots++;
+    streamFishId = fishId;
     nextAllowedHitTime = Time.time + socket.FireIntervalFor(MLFGWeaponIds.Laser, fallbackHitInterval);
 
     if (GameLog.IsOn(LogCategory.Bullet))
       GameLog.Info(LogCategory.Bullet, $"Laser {bulletId} -> {fishId} ({lockedFish.data?.variant}) at ({aimTarget.x:F0},{aimTarget.y:F0})");
 
-    socket.SendFire(MLFGWeaponIds.Laser, bulletId, origin, angle, betIndex,
-      onAccepted: () =>
-      {
-        pendingShots = Mathf.Max(0, pendingShots - 1);
-        socket.SendShoot(MLFGWeaponIds.Laser, bulletId, origin, origin, aimTarget, 0, betIndex, fishId, now);
-      },
-      onRejected: () =>
-      {
-        pendingShots = Mathf.Max(0, pendingShots - 1);
-      });
+    socket.SendShoot(MLFGWeaponIds.Laser, bulletId, origin, origin, aimTarget, 0, betIndex, fishId, now,
+      _ => pendingShots = Mathf.Max(0, pendingShots - 1));
+  }
+
+  // Tells the server the beam stopped, once per stop. Moving to a new target is not a stop:
+  // the next SHOOT just carries the new targetFishId.
+  private void EndStream()
+  {
+    if (streamFishId == null)
+      return;
+
+    string fishId = streamFishId;
+    streamFishId = null;
+    // Also runs from OnDisable while exiting Play mode.
+    if (SocketIOManager.Instance != null)
+      SocketIOManager.Instance.SendLaserStop(fishId);
   }
 
   private void StartFiring()
@@ -427,8 +438,8 @@ public class LazerGun : BaseGun
     isFiring = true;
   }
 
-  // Opponent's laser tick (bullet_fired): beam only, never sends FIRE or SHOOT. Each tick keeps the
-  // beam up for two intervals, so steady ticks look continuous and it goes away once they stop.
+  // Opponent's laser tick (their shot_result): beam only, never sends anything. Each tick keeps
+  // the beam up for RemoteBeamTimeout, so steady ticks look continuous and it goes away once they stop.
   internal void PlayRemoteTick(BaseFish fish)
   {
     if (!IsFishValidForBeam(fish))
@@ -437,11 +448,15 @@ public class LazerGun : BaseGun
     remote = true;
     lockedVariant = null;
     EnsureLaserActive(fish);
-    float interval = SocketIOManager.Instance != null
-      ? SocketIOManager.Instance.FireIntervalFor(MLFGWeaponIds.Laser, fallbackHitInterval)
-      : fallbackHitInterval;
-    remoteBeamUntil = Time.time + interval * 2f;
+    remoteBeamUntil = Time.time + RemoteBeamTimeout;
     StartFiring();
+  }
+
+  // game:laser_stopped from the opponent on this rig.
+  internal void StopRemote()
+  {
+    if (remote)
+      StopAndClear();
   }
 
   private void StopAndClear()
