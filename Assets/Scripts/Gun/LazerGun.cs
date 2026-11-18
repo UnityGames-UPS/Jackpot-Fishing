@@ -53,6 +53,10 @@ public class LazerGun : BaseGun
     impactBgInitSize = laserImpactBGAnimation.sizeDelta;
     impactScaleType = null;
 
+    // The beam mask grows from the muzzle: its bottom edge stays on the gun mouth and only its
+    // height changes, so the fixed-size laser strip inside is revealed, never stretched.
+    laserBeam.pivot = new Vector2(0.5f, 0f);
+
     laserBeam.gameObject.SetActive(false);
     laserImpactAnimation.gameObject.SetActive(false);
     laserImpactBGAnimation.gameObject.SetActive(false);
@@ -214,8 +218,7 @@ public class LazerGun : BaseGun
       size.y = localDistance;
       laserBeam.sizeDelta = size;
 
-      Vector2 localMid = localStart + localDir.normalized * (localDistance * 0.5f);
-      laserBeam.anchoredPosition = localMid;
+      laserBeam.anchoredPosition = localStart;
 
       SetImpactPosition(screenEnd);
     }
@@ -230,7 +233,7 @@ public class LazerGun : BaseGun
 
       laserImpactBGAnimation.position = worldEnd;
       laserImpactAnimation.position = worldEnd;
-      laserBeam.position = worldStart + worldDir.normalized * (worldDistance * 0.5f);
+      laserBeam.position = worldStart;
     }
   }
 

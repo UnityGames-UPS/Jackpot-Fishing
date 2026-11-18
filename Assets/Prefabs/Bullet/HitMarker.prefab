@@ -92,3 +92,7 @@ MonoBehaviour:
   scaleDuration: 0.08
   fadeDelay: 0.05
   fadeDuration: 0.15
+  markerSprites:
+    baseSprite: {fileID: -651749632, guid: 481a21c28bcbe41a8809cb1a5caaa02a, type: 3}
+    buffSprite: {fileID: -1147700527, guid: 481a21c28bcbe41a8809cb1a5caaa02a, type: 3}
+    buffedSprite: {fileID: 1606707941, guid: 481a21c28bcbe41a8809cb1a5caaa02a, type: 3}

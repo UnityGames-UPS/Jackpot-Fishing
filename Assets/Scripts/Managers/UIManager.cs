@@ -43,10 +43,6 @@ public class UIManager : MonoBehaviour
   [SerializeField] private Button SoundOffBtn;
   [SerializeField] private Button RoosterBtn;
 
-  [Header("Hall Selection PANEL")]
-  [SerializeField] private Button HallSelectionBtn;
-  [SerializeField] private RectTransform ExpandedRoomPanel;
-
   [Header("Top PANEL")]
   [SerializeField] private Button TopBtn;
   [SerializeField] private RectTransform ExpandedTopPanel;
@@ -61,6 +57,18 @@ public class UIManager : MonoBehaviour
   [SerializeField] private TMP_Text TorpedoBulletValueText;
   [SerializeField] private Button AutoAimBtn;
   [SerializeField] private Button AutoSelectBtn;
+
+  [Header("Freeze (art pending, all optional)")]
+  [SerializeField] private Button freezeButton;
+  [SerializeField] private TMP_Text freezeCostText;
+  [Tooltip("Black Filled (Radial 360) image over the button: the freeze timer. Off by default; fillAmount 1 -> 0 over the freeze.")]
+  [SerializeField] private Image freezeOverlay;
+  [Tooltip("Placeholder for the screen freeze effect (art pending): full-screen overlay above the fish, on while the room is frozen.")]
+  [SerializeField] private GameObject screenFreezeOverlay;
+  private Coroutine freezeCountdown;
+  private double ownFreezeEndMs; // the button stays off until our own freeze ends
+  private bool freezeRequestPending;
+  private bool OwnFreezeActive => ServerClock.NowMs < ownFreezeEndMs;
 
   [Header("Popup PANEL")]
 
@@ -131,7 +139,6 @@ public class UIManager : MonoBehaviour
   private Dictionary<Button, (GameObject highlight, GameObject panel)> helpMap;
   private bool isLeftPanelOpen = false;
   private bool isTopPanelOpen = false;
-  private bool isHallSelectionOpen = false;
   private bool isTargetLock = false;
   private bool isTorpedoGun = false;
   private Tween balanceTween;
@@ -160,6 +167,14 @@ public class UIManager : MonoBehaviour
 
   void Start()
   {
+    if (freezeButton)
+    {
+      freezeButton.onClick.RemoveAllListeners();
+      freezeButton.onClick.AddListener(OnClickFreeze);
+    }
+    if (freezeOverlay) freezeOverlay.gameObject.SetActive(false);
+    if (screenFreezeOverlay) screenFreezeOverlay.SetActive(false);
+
     if (LowBalanceCloseBtn)
     {
       LowBalanceCloseBtn.onClick.RemoveAllListeners();
@@ -199,11 +214,6 @@ public class UIManager : MonoBehaviour
     {
       TopBtn.onClick.RemoveAllListeners();
       TopBtn.onClick.AddListener(OnClickOpenTopPanel);
-    }
-    if (HallSelectionBtn)
-    {
-      HallSelectionBtn.onClick.RemoveAllListeners();
-      HallSelectionBtn.onClick.AddListener(OnClickHallSelection);
     }
 
     if (PopupPanelBGButton)
@@ -282,11 +292,6 @@ public class UIManager : MonoBehaviour
     ShowPaytablePage();
 
     // --- Initial states ---
-    if (ExpandedRoomPanel)
-    {
-      ExpandedRoomPanel.localScale = new Vector3(1, 0, 1);
-      ExpandedRoomPanel.gameObject.SetActive(false);
-    }
     if (Leftpanel)
       Leftpanel.anchoredPosition = new Vector2(-280f, Leftpanel.anchoredPosition.y);
 
@@ -341,6 +346,7 @@ public class UIManager : MonoBehaviour
     }
 
     SetBetText();
+    RefreshBetButtons();
     SnapBalanceDisplay();
   }
 
@@ -348,39 +354,39 @@ public class UIManager : MonoBehaviour
   {
     // Each hall has its own bet list, so an index from the last init may not exist.
     OnBetChanged(0);
+    if (freezeCostText && SocketIOManager.Instance != null)
+      freezeCostText.text = SocketIOManager.Instance.FreezeCost.ToString("0.##");
     // Paused: old-backend paytable multipliers. ML-FG init doesn't send them yet.
     // if (SocketIOManager.Instance?.initFishes != null)
     //   UpdatePaytableMultipliers(SocketIOManager.Instance.initFishes);
   }
 
+  // Bets don't loop: + stops at the last bet and - at the first.
   void ChangeBet(bool IncDec)
   {
-    if (IncDec)
-    {
-      BetCounter++;
-      if (BetCounter >= SocketIOManager.Instance?.bets.Count)
-      {
-        BetCounter = 0; // Loop back to the first bet
-      }
-    }
-    else
-    {
-      BetCounter--;
-      if (BetCounter < 0)
-      {
-        BetCounter = SocketIOManager.Instance?.bets.Count - 1 ?? 0; // Loop to the last bet
-      }
-    }
-    OnBetChanged(BetCounter);
+    int count = SocketIOManager.Instance?.bets?.Count ?? 0;
+    int next = Mathf.Clamp(BetCounter + (IncDec ? 1 : -1), 0, Mathf.Max(0, count - 1));
+    if (next == BetCounter)
+      return;
+    OnBetChanged(next);
   }
 
-  // Every change of the local bet goes through here.
-  // TODO: swap the gun, bullet and crosshair art for the bet (art pending).
+  // + is off on the last bet, - on the first.
+  private void RefreshBetButtons()
+  {
+    int count = SocketIOManager.Instance?.bets?.Count ?? 0;
+    if (PlusBetButton) PlusBetButton.interactable = BetCounter < count - 1;
+    if (MinusBetButton) MinusBetButton.interactable = BetCounter > 0;
+  }
+
+  // Every change of the local bet goes through here, including the reset on each init.
   private void OnBetChanged(int betIndex)
   {
     BetCounter = betIndex;
     SetBetText();
     SetTorpedoBulletValue();
+    RefreshBetButtons();
+    GunManager.Instance?.ApplyLocalBet(betIndex);
   }
 
   void SetBetText()
@@ -459,6 +465,103 @@ public class UIManager : MonoBehaviour
   {
     if (!string.IsNullOrEmpty(message) && message.Contains("Insufficient balance"))
       ShowLowBalancePopup();
+  }
+
+  // --------------------------------------------------------
+  // ROOM FREEZE
+  // --------------------------------------------------------
+
+  private void OnClickFreeze()
+  {
+    if (freezeRequestPending || OwnFreezeActive || SocketIOManager.Instance == null)
+      return;
+
+    float cost = SocketIOManager.Instance.FreezeCost;
+    if (serverBalance < cost)
+    {
+      GameLog.Info(LogCategory.Balance, $"Can't afford freeze {cost:N2} (balance {serverBalance:N2})");
+      ShowLowBalancePopup();
+      return;
+    }
+
+    freezeRequestPending = true;
+    if (freezeButton) freezeButton.interactable = false;
+    SocketIOManager.Instance.SendFreeze(ok =>
+    {
+      freezeRequestPending = false;
+      // On success the button timer (OnRoomFreezeStarted) keeps it off until our freeze ends.
+      if (freezeButton) freezeButton.interactable = !OwnFreezeActive;
+    });
+  }
+
+  internal void OnFreezeRejected(string message)
+  {
+    if (!string.IsNullOrEmpty(message) && message.Contains("Insufficient balance"))
+      ShowLowBalancePopup();
+    // TODO: show other rejection messages once the backend's list is known.
+  }
+
+  // Each new freeze in the room (ack, game:room_frozen, init / JOIN_LEVEL ack), anyone's.
+  // The screen overlay is room-wide; the button timer only runs for our own freeze, so the
+  // button stays usable during an opponent's (double freeze).
+  internal void OnRoomFreezeStarted(double startMs, double endMs, bool own)
+  {
+    GameLog.Info(LogCategory.UI, $"Freeze started until {endMs:F0}, own {own}");
+    // TODO (art pending): replace the black screen overlay with the real freeze effect and sound,
+    // and show "frozen by {username}" for opponents.
+    if (screenFreezeOverlay) screenFreezeOverlay.SetActive(true);
+
+    if (!own)
+      return;
+
+    StopFreezeTimer();
+    ownFreezeEndMs = endMs;
+    if (freezeButton) freezeButton.interactable = false;
+    freezeCountdown = StartCoroutine(FreezeTimer(endMs, endMs - startMs));
+  }
+
+  // The room unfroze or was re-initialised.
+  internal void OnRoomFreezeEnded()
+  {
+    GameLog.Info(LogCategory.UI, "Freeze ended");
+    if (screenFreezeOverlay) screenFreezeOverlay.SetActive(false);
+    StopFreezeTimer();
+    ownFreezeEndMs = 0;
+    if (freezeButton) freezeButton.interactable = !freezeRequestPending;
+  }
+
+  private void StopFreezeTimer()
+  {
+    if (freezeCountdown != null)
+    {
+      StopCoroutine(freezeCountdown);
+      freezeCountdown = null;
+    }
+    if (freezeOverlay) freezeOverlay.gameObject.SetActive(false);
+  }
+
+  // Our own freeze's button timer: the black radial overlay goes 1 -> 0. Driven by the server
+  // clock, not a tween, so a rejoin mid-freeze starts part-revealed and a hidden tab catches up.
+  // The fill direction (clockwise flag) is set on the Image.
+  private IEnumerator FreezeTimer(double endMs, double durationMs)
+  {
+    if (freezeOverlay)
+    {
+      freezeOverlay.fillAmount = 1f;
+      freezeOverlay.gameObject.SetActive(true);
+    }
+
+    while (ServerClock.NowMs < endMs)
+    {
+      double leftMs = endMs - ServerClock.NowMs;
+      if (freezeOverlay)
+        freezeOverlay.fillAmount = durationMs > 0 ? (float)Math.Min(1.0, leftMs / durationMs) : 0f;
+      yield return null;
+    }
+
+    if (freezeOverlay) freezeOverlay.gameObject.SetActive(false);
+    if (freezeButton) freezeButton.interactable = !freezeRequestPending;
+    freezeCountdown = null;
   }
 
   private void SnapBalanceDisplay()
@@ -738,36 +841,7 @@ public class UIManager : MonoBehaviour
   }
   #endregion
 
-  #region Hall Selection Panel
-  void OnClickHallSelection()
-  {
-    HallSelectionBtn.transform
-.DOScaleY(HallSelectionBtn.transform.localScale.y * -1, 0.2f)
-.SetEase(Ease.OutBack);
-
-    if (!ExpandedRoomPanel) return;
-
-    if (!isHallSelectionOpen)
-    {
-      ExpandedRoomPanel.gameObject.SetActive(true);
-      ExpandedRoomPanel.localScale = new Vector3(1, 0, 1);
-
-      ExpandedRoomPanel.DOScaleY(1f, 0.4f)
-          .SetEase(Ease.OutBack)
-          .OnComplete(() => isHallSelectionOpen = true);
-    }
-    else
-    {
-      ExpandedRoomPanel.DOScaleY(0f, 0.3f)
-          .SetEase(Ease.InBack)
-          .OnComplete(() =>
-          {
-            ExpandedRoomPanel.gameObject.SetActive(false);
-            isHallSelectionOpen = false;
-          });
-    }
-  }
-  #endregion
+  // Hall Selection panel: moved to HallSwitcherManager.
 
   internal void DisconnectionPopup()
   {

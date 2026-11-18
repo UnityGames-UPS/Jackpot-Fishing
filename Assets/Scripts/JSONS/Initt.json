@@ -1,0 +1,324 @@
+{
+  "id": "f8cd80d3-76c6-4361-92f1-dd2c9f3ffe6a",
+  "gameData": {
+    "weapons": {
+      "laser": {
+        "cost": 1,
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 300,
+        "bulletSpeed": 0,
+        "maxBounces": 0,
+        "maxBulletBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "normal": {
+        "cost": 1,
+        "targetingMode": "raycast",
+        "fireIntervalMs": 250,
+        "bulletSpeed": 1200,
+        "maxBounces": 3,
+        "maxBulletBounces": 3,
+        "minBet": 0.1,
+        "maxBet": 1000
+      },
+      "torpedo": {
+        "cost": 4,
+        "targetingMode": "target_lock",
+        "fireIntervalMs": 600,
+        "bulletSpeed": 800,
+        "maxBounces": 0,
+        "maxBulletBounces": 0,
+        "minBet": 0.1,
+        "maxBet": 1000
+      }
+    },
+    "fishes": [
+      {
+        "type": "flying_fish",
+        "variants": [
+          "flying_fish"
+        ]
+      },
+      {
+        "type": "clownfish",
+        "variants": [
+          "clownfish"
+        ]
+      },
+      {
+        "type": "angelfish",
+        "variants": [
+          "angelfish"
+        ]
+      },
+      {
+        "type": "blowfish",
+        "variants": [
+          "blowfish"
+        ]
+      },
+      {
+        "type": "pufferfish",
+        "variants": [
+          "pufferfish"
+        ]
+      },
+      {
+        "type": "sea_turtle",
+        "variants": [
+          "sea_turtle"
+        ]
+      },
+      {
+        "type": "jellyfish",
+        "variants": [
+          "jellyfish"
+        ]
+      },
+      {
+        "type": "lobster",
+        "variants": [
+          "lobster"
+        ]
+      },
+      {
+        "type": "hermit_crab",
+        "variants": [
+          "hermit_crab"
+        ]
+      },
+      {
+        "type": "octopus",
+        "variants": [
+          "octopus"
+        ]
+      },
+      {
+        "type": "lanternfish",
+        "variants": [
+          "lanternfish"
+        ]
+      },
+      {
+        "type": "manta_ray",
+        "variants": [
+          "manta_ray"
+        ]
+      },
+      {
+        "type": "hammerhead_shark",
+        "variants": [
+          "hammerhead_shark"
+        ]
+      },
+      {
+        "type": "golden_angelfish",
+        "variants": [
+          "golden_angelfish"
+        ]
+      },
+      {
+        "type": "golden_clownfish",
+        "variants": [
+          "golden_clownfish"
+        ]
+      },
+      {
+        "type": "golden_manta_ray",
+        "variants": [
+          "golden_manta_ray"
+        ]
+      },
+      {
+        "type": "armored_fish",
+        "variants": [
+          "armored_fish"
+        ]
+      },
+      {
+        "type": "anglerfish",
+        "variants": [
+          "anglerfish"
+        ]
+      },
+      {
+        "type": "fortune_terrapin",
+        "variants": [
+          "fortune_terrapin"
+        ]
+      },
+      {
+        "type": "thunder_shark",
+        "variants": [
+          "thunder_shark"
+        ]
+      },
+      {
+        "type": "torpedo_crab",
+        "variants": [
+          "torpedo_crab"
+        ]
+      },
+      {
+        "type": "sea_anemone",
+        "variants": [
+          "sea_anemone"
+        ]
+      },
+      {
+        "type": "king_squid",
+        "variants": [
+          "king_squid"
+        ]
+      },
+      {
+        "type": "golden_shark",
+        "variants": [
+          "golden_shark"
+        ]
+      },
+      {
+        "type": "treasure_bowl",
+        "variants": [
+          "treasure_bowl"
+        ]
+      },
+      {
+        "type": "jackpot_fish",
+        "variants": [
+          "jackpot_fish"
+        ]
+      },
+      {
+        "type": "jackpot_dragon",
+        "variants": [
+          "jackpot_dragon"
+        ]
+      }
+    ],
+    "spawnInterval": 1500,
+    "maxConcurrentFish": 25,
+    "seats": [
+      {
+        "x": 370,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 960,
+        "y": 1080,
+        "z": 0
+      },
+      {
+        "x": 1550,
+        "y": 1080,
+        "z": 0
+      }
+    ],
+    "bets": [
+      0.1,
+      0.2,
+      0.5,
+      1,
+      2,
+      5,
+      10
+    ],
+    "levels": [
+      "joy",
+      "regal",
+      "regal_single"
+    ],
+    "capabilities": {
+      "freeze": {
+        "cost": 30,
+        "durationMs": 30000
+      },
+      "energyBoost": {
+        "enabled": true,
+        "referenceBet": 1,
+        "baseChargePerShot": 1,
+        "chargeThreshold": 100,
+        "hitChanceMultiplier": 2,
+        "maxTargets": 15,
+        "currentCharge": 97.6,
+        "maxCharge": 100,
+        "isReady": false,
+        "accumulatedTurnover": 97.6,
+        "shotsCount": 949
+      }
+    }
+  },
+  "activeFish": [],
+  "seatIndex": 0,
+  "roomSeats": {
+    "a56d1a11-e499-42ec-9713-6716b261e6e7": 0
+  },
+  "players": [
+    {
+      "userId": "a56d1a11-e499-42ec-9713-6716b261e6e7",
+      "username": "maahul",
+      "seatIndex": 0,
+      "balance": 9363.19,
+      "betIndex": 0
+    }
+  ],
+  "player": {
+    "balance": 9363.19,
+    "username": "maahul",
+    "userId": "a56d1a11-e499-42ec-9713-6716b261e6e7",
+    "betIndex": 0
+  },
+  "activeFreeze": null,
+  "currentHall": "joy",
+  "halls": {
+    "joy": {
+      "bets": [
+        0.1,
+        0.2,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "mode": "multiplayer",
+      "name": "Joy Hall",
+      "roomLimit": 3
+    },
+    "regal": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "multiplayer",
+      "name": "Regal Hall",
+      "roomLimit": 3
+    },
+    "regal_single": {
+      "bets": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "mode": "single",
+      "name": "Regal Hall (Single)",
+      "roomLimit": 1
+    }
+  },
+  "jackpotPools": {
+    "speed": 64.1472,
+    "lucky": 210.61039999999997,
+    "jili": 1010.6104000000001
+  }
+}

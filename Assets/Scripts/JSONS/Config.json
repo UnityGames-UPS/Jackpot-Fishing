@@ -368,15 +368,19 @@
       "hitChance": 0.4,
       "multiplier": 25,
       "spawnWeight": 14,
-      "hitboxRadius": 60,
+      "hitboxRadius": 30,
       "segments": [
         {
-          "offset": -52,
-          "radius": 55
+          "offset": 0,
+          "radius": 30
         },
         {
-          "offset": 33,
-          "radius": 55
+          "offset": 70,
+          "radius": 50
+        },
+        {
+          "offset": 140,
+          "radius": 35
         }
       ]
     },
@@ -427,19 +431,19 @@
       "hitChance": 0.4,
       "multiplier": 35,
       "spawnWeight": 10,
-      "hitboxRadius": 75,
+      "hitboxRadius": 55,
       "segments": [
         {
-          "offset": -157,
-          "radius": 70
+          "offset": 0,
+          "radius": 55
         },
         {
-          "offset": -21,
-          "radius": 70
+          "offset": 110,
+          "radius": 60
         },
         {
-          "offset": 93,
-          "radius": 61
+          "offset": 205,
+          "radius": 50
         }
       ]
     },
@@ -494,15 +498,19 @@
       "hitChance": 0.4,
       "multiplier": 55,
       "spawnWeight": 7,
-      "hitboxRadius": 55,
+      "hitboxRadius": 40,
       "segments": [
         {
-          "offset": -65,
-          "radius": 50
+          "offset": 0,
+          "radius": 40
         },
         {
-          "offset": 20,
-          "radius": 50
+          "offset": 50,
+          "radius": 40
+        },
+        {
+          "offset": 100,
+          "radius": 25
         }
       ]
     },
@@ -699,19 +707,19 @@
         "maxTargets": 5,
         "chainRadius": 350
       },
-      "hitboxRadius": 80,
+      "hitboxRadius": 65,
       "segments": [
         {
-          "offset": -120,
-          "radius": 60
+          "offset": 0,
+          "radius": 65
         },
         {
-          "offset": -28,
-          "radius": 75
+          "offset": 84,
+          "radius": 85
         },
         {
-          "offset": 64,
-          "radius": 60
+          "offset": 201,
+          "radius": 55
         }
       ],
       "multiplierWeights": [
@@ -840,15 +848,19 @@
       ],
       "rewardLabel": "King Squid Rewards",
       "spawnWeight": 8,
-      "hitboxRadius": 150,
+      "hitboxRadius": 155,
       "segments": [
         {
-          "offset": -76,
+          "offset": 0,
           "radius": 155
         },
         {
-          "offset": 123,
-          "radius": 155
+          "offset": 153,
+          "radius": 145
+        },
+        {
+          "offset": 314,
+          "radius": 135
         }
       ],
       "despawnOnKill": false,
@@ -885,18 +897,18 @@
       ],
       "rewardLabel": "Golden Shark Rewards",
       "spawnWeight": 8,
-      "hitboxRadius": 85,
+      "hitboxRadius": 107,
       "segments": [
         {
-          "offset": -208,
+          "offset": 0,
           "radius": 107
         },
         {
-          "offset": -42,
+          "offset": 166,
           "radius": 142
         },
         {
-          "offset": 147,
+          "offset": 355,
           "radius": 91
         }
       ],
@@ -1003,27 +1015,31 @@
       },
       "segments": [
         {
-          "offset": -500,
+          "offset": 0,
           "radius": 115
         },
         {
-          "offset": -316,
+          "offset": 195,
           "radius": 115
         },
         {
-          "offset": -130,
+          "offset": 379,
           "radius": 115
         },
         {
-          "offset": 62,
+          "offset": 566,
           "radius": 115
         },
         {
-          "offset": 247,
+          "offset": 768,
           "radius": 115
         },
         {
-          "offset": 452,
+          "offset": 973,
+          "radius": 115
+        },
+        {
+          "offset": 1165,
           "radius": 115
         }
       ],
@@ -1035,7 +1051,7 @@
       ],
       "rewardLabel": "Jackpot Dragon Win",
       "spawnWeight": 2,
-      "hitboxRadius": 75,
+      "hitboxRadius": 115,
       "criticalLabel": "Jackpot Dragon Mega Win",
       "multiplierWeights": [
         60,
@@ -1047,7 +1063,7 @@
   ],
   "freeze": {
     "cost": 30,
-    "durationMs": 30000
+    "durationMs": 10000
   },
   "weapons": {
     "laser": {

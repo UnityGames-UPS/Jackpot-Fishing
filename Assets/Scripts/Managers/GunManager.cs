@@ -9,8 +9,15 @@ public class GunManager : MonoBehaviour
   internal static GunManager Instance;
   [SerializeField] private RectTransform bgRect;
   [SerializeField] private Camera worldCamera;
-  [Tooltip("One rig per server seat, in seat order (index = seatIndex).")]
-  [SerializeField] private SeatRig[] seatRigs;
+
+  [Header("Seats")]
+  [Tooltip("A rig laid out in the scene and left inactive. Every seat is a clone of it, made under the same parent.")]
+  [SerializeField] private SeatRig seatRigTemplate;
+  [Tooltip("Rigs cloned on Awake. More are made if an init has more seats.")]
+  [SerializeField] private int prewarmSeats = 4;
+
+  // Pooled rigs, index = seatIndex. Rigs past the room's seat count stay inactive.
+  private readonly List<SeatRig> seatRigs = new();
 
   // Always the local player's rig, taken from its SeatRig on init. Null until then.
   internal BaseGun currentGun { get; private set; }
@@ -22,6 +29,24 @@ public class GunManager : MonoBehaviour
   void Awake()
   {
     Instance = this;
+    if (seatRigTemplate != null)
+      seatRigTemplate.gameObject.SetActive(false);
+    EnsureRigs(prewarmSeats);
+  }
+
+  private void EnsureRigs(int count)
+  {
+    if (seatRigTemplate == null)
+      return;
+
+    while (seatRigs.Count < count)
+    {
+      // Same parent and local layout as the template, so PlaceAt keeps its edge gap.
+      SeatRig rig = Instantiate(seatRigTemplate, seatRigTemplate.transform.parent, false);
+      rig.name = $"GunRig (seat {seatRigs.Count})";
+      rig.gameObject.SetActive(false);
+      seatRigs.Add(rig);
+    }
   }
 
   internal void UpdateAim(Vector3 screenPos)
@@ -113,26 +138,32 @@ public class GunManager : MonoBehaviour
   // --------------------------------------------------------
 
   // game:init (and every re-init): place all rigs, take over ours, show the room's opponents.
-  internal void SetupSeats(List<MLFGVec3> seats, int localSeat, Dictionary<string, int> roomSeats, string userId, string username)
+  internal void SetupSeats(List<MLFGVec3> seats, int localSeat, List<MLFGRoomPlayer> players, Dictionary<string, int> roomSeats, string userId, string username)
   {
-    if (seatRigs == null || seatRigs.Length == 0 || !Playfield.IsReady)
+    if (seatRigTemplate == null || !Playfield.IsReady)
     {
-      GameLog.Warn(LogCategory.Socket, "No seat rigs or playfield; seats not set up");
+      GameLog.Warn(LogCategory.Socket, "No seat rig template or playfield; seats not set up");
       return;
     }
 
     SetBulletFiring(false);
     localRig = null;
 
-    for (int i = 0; i < seatRigs.Length; i++)
+    // One rig per seat of this room; the rest go back to the pool.
+    int seatCount = seats?.Count ?? 0;
+    EnsureRigs(seatCount);
+    for (int i = 0; i < seatRigs.Count; i++)
     {
       SeatRig rig = seatRigs[i];
-      if (rig == null)
-        continue;
-
-      rig.Clear();
-      if (seats != null && i < seats.Count && seats[i] != null)
+      if (i < seatCount && seats[i] != null)
+      {
+        rig.Clear();
         rig.PlaceAt(i, seats[i].ToVector2());
+      }
+      else
+      {
+        rig.Retire();
+      }
     }
 
     SeatRig mine = RigAt(localSeat, seats);
@@ -146,7 +177,18 @@ public class GunManager : MonoBehaviour
       GameLog.Error(LogCategory.Socket, $"No rig for local seat {localSeat}");
     }
 
-    if (roomSeats != null)
+    // players has names, balances and bets; roomSeats (ids only) is the fallback.
+    if (players != null && players.Count > 0)
+    {
+      foreach (var player in players)
+      {
+        if (player == null || player.userId == userId)
+          continue;
+
+        OccupySeat(player.userId, player.username, player.seatIndex, player.balance, player.betIndex);
+      }
+    }
+    else if (roomSeats != null)
     {
       foreach (var entry in roomSeats)
       {
@@ -158,7 +200,7 @@ public class GunManager : MonoBehaviour
 
   private SeatRig RigAt(int seatIndex, List<MLFGVec3> seats)
   {
-    if (seatIndex < 0 || seatIndex >= seatRigs.Length)
+    if (seatIndex < 0 || seatIndex >= seatRigs.Count)
       return null;
     if (seats == null || seatIndex >= seats.Count || seats[seatIndex] == null)
       return null;
@@ -171,21 +213,32 @@ public class GunManager : MonoBehaviour
     Guns = rig.guns;
     currentGun = rig.defaultGun;
     UIManager.Instance.BindGunPanel(rig);
+    // The bet was reset before the seats were set up, so the new rig picks up its tier here.
+    rig.NormalGun?.SetTier(GunTiers.ForBet(UIManager.Instance.BetCounter));
   }
 
   // game:init roster, game:player_joined, or an unknown shooter's first shot.
-  internal void OccupySeat(string userId, string username, int seatIndex)
+  internal void OccupySeat(string userId, string username, int seatIndex, double? balance = null, int? betIndex = null)
   {
-    if (string.IsNullOrEmpty(userId) || seatIndex < 0 || seatIndex >= seatRigs.Length)
+    if (string.IsNullOrEmpty(userId) || seatIndex < 0 || seatIndex >= seatRigs.Count)
       return;
 
     SeatRig rig = seatRigs[seatIndex];
     if (rig == null || rig == localRig || rig.SeatIndex < 0)
       return;
 
-    VacateSeat(userId); // a player can only hold one seat
-    rig.SetOpponent(userId, username);
-    GameLog.Info(LogCategory.Socket, $"Seat {seatIndex}: opponent {userId}");
+    // Re-showing the rig resets its balance to 0, so only set it up when the occupant changes
+    // (e.g. a join that repeats the init roster, or a shot that already claimed the seat).
+    if (rig.OccupantId != userId || !rig.gameObject.activeSelf)
+    {
+      VacateSeat(userId); // a player can only hold one seat
+      rig.SetOpponent(userId, username);
+      GameLog.Info(LogCategory.Socket, $"Seat {seatIndex}: opponent {userId}");
+    }
+
+    if (balance.HasValue)
+      rig.SetBalance(balance.Value);
+    ApplyOpponentBet(rig, betIndex);
   }
 
   internal void VacateSeat(string userId)
@@ -208,7 +261,7 @@ public class GunManager : MonoBehaviour
   // No join events yet, so an unknown shooter claims the seat their shot came from.
   private SeatRig ResolveOpponentRig(string shooterId, MLFGVec3 origin)
   {
-    if (seatRigs == null || string.IsNullOrEmpty(shooterId))
+    if (string.IsNullOrEmpty(shooterId))
       return null;
 
     SeatRig known = FindOpponentRig(shooterId);
@@ -243,8 +296,9 @@ public class GunManager : MonoBehaviour
     if (GameLog.IsOn(LogCategory.Bullet))
       GameLog.Info(LogCategory.Bullet, SocketIOManager.Instance.WithInboundJson($"Opponent fire {fired.bulletId} by {fired.shooterId} seat {rig.SeatIndex} from ({fired.origin?.x:F0},{fired.origin?.y:F0}) angle {fired.angle:F1} bet #{fired.betIndex?.ToString() ?? "-"}"));
     ApplyOpponentBet(rig, fired.betIndex);
-    if (fired.shooterBalance.HasValue)
-      rig.SetBalance(fired.shooterBalance.Value);
+    double? balance = fired.ShooterBalance;
+    if (balance.HasValue)
+      rig.SetBalance(balance.Value);
     rig.PlayRemoteFire(fired);
   }
 
@@ -277,8 +331,19 @@ public class GunManager : MonoBehaviour
   // betIndex points into the current hall's bets, which every player in the room shares.
   private static void ApplyOpponentBet(SeatRig rig, int? betIndex)
   {
-    var bets = SocketIOManager.Instance?.bets;
-    if (betIndex.HasValue && bets != null && betIndex.Value >= 0 && betIndex.Value < bets.Count)
-      rig.SetBet(bets[betIndex.Value]);
+    if (betIndex.HasValue)
+      rig.SetBetIndex(betIndex.Value);
+  }
+
+  // Every local bet change (UIManager.OnBetChanged): the normal gun's tier art follows the bet,
+  // and the switch transition plays only while the normal gun is out.
+  internal void ApplyLocalBet(int betIndex)
+  {
+    if (localRig == null)
+      return;
+
+    localRig.NormalGun?.SetTier(GunTiers.ForBet(betIndex));
+    if (currentGun is SimpleGun && localRig.gunSwitchAnimation)
+      localRig.gunSwitchAnimation.RestartAnimation();
   }
 }

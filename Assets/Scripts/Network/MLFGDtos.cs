@@ -25,6 +25,10 @@ internal static class MLFGEvents
   internal const string PlayerJoined = "game:player_joined";
   internal const string PlayerLeft = "game:player_left";
   internal const string LaserStopped = "game:laser_stopped";
+  internal const string RoomFrozen = "game:room_frozen";
+  internal const string RoomUnfrozen = "game:room_unfrozen";
+  // May arrive as its own event or only as the JOIN_LEVEL ack callback (unconfirmed); both are handled.
+  internal const string JoinLevelAck = "JOIN_LEVEL_ACK";
   // The server's "error" event is delivered by Best.SocketIO as SocketIOEventTypes.Error.
   internal const string TimeSyncAck = "time_sync_ack";
   internal const string Pong = "pong";
@@ -36,6 +40,16 @@ internal static class MLFGRequestTypes
   internal const string Shoot = "SHOOT";
   internal const string Home = "HOME";
   internal const string LaserStop = "LASER_STOP";
+  internal const string JoinLevel = "JOIN_LEVEL";
+  internal const string Freeze = "FREEZE";
+}
+
+// Hall ids (keys of init's `halls`), sent as JOIN_LEVEL's level.
+internal static class MLFGHallIds
+{
+  internal const string Joy = "joy";
+  internal const string Regal = "regal";
+  internal const string RegalSingle = "regal_single";
 }
 
 // Keys of gameData.weapons, sent as weaponType. The normal gun's id comes from init
@@ -144,6 +158,69 @@ public class MLFGGameData
   public int spawnInterval;
   public int maxConcurrentFish;
   public List<float> bets;
+  public List<string> levels; // hall ids, in display order
+  public MLFGCapabilities capabilities;
+}
+
+// gameData.capabilities. energyBoost is not parsed yet.
+[Serializable]
+public class MLFGCapabilities
+{
+  public MLFGFreezeConfig freeze;
+}
+
+[Serializable]
+public class MLFGFreezeConfig
+{
+  public float cost;
+  public double durationMs;
+}
+
+// init's activeFreeze, the FREEZE ack's payload.activeFreeze, and game:room_frozen. Server ms.
+[Serializable]
+public class MLFGActiveFreeze
+{
+  public double startTime;
+  public double durationMs;
+  public double endTime;
+  public string activatorUserId;
+  public double? remainingMs; // init only
+}
+
+// game:room_frozen: the freeze fields at the top level, and again nested under `freeze`.
+[Serializable]
+public class RoomFrozenPayload : MLFGActiveFreeze
+{
+  public string roomId;
+  public MLFGActiveFreeze freeze;
+}
+
+// game:room_unfrozen. The guide's freezeDurationMs isn't sent.
+[Serializable]
+public class RoomUnfrozenPayload
+{
+  public string roomId;
+  public double unfrozenAt;
+}
+
+[Serializable]
+public class MLFGHall
+{
+  public string name;
+  public string mode; // "multiplayer" | "single"
+  public int roomLimit;
+  public List<float> bets;
+}
+
+// One entry of init's `players`: everyone in the room, us included.
+[Serializable]
+public class MLFGRoomPlayer
+{
+  public string userId;
+  public string username;
+  public int seatIndex = -1;
+  public double? balance;
+  public int? betIndex;
 }
 
 [Serializable]
@@ -162,7 +239,11 @@ public class MLFGInitData
   public int seatIndex = -1;
   public Dictionary<string, int> roomSeats;
   public MLFGPlayer player;
+  public List<MLFGRoomPlayer> players;
   public string roomId;
+  public string currentHall;
+  public Dictionary<string, MLFGHall> halls;
+  public MLFGActiveFreeze activeFreeze; // null when the room isn't frozen
 }
 
 [Serializable]
@@ -171,7 +252,7 @@ public class RoomJoinedPayload
   public string roomId;
 }
 
-// game:player_joined / game:player_left. Also sent for our own join.
+// game:player_joined / game:player_left. Also sent for our own join. Joins carry balance and betIndex.
 [Serializable]
 public class PlayerSeatPayload
 {
@@ -179,6 +260,8 @@ public class PlayerSeatPayload
   public string username;
   public int seatIndex = -1;
   public string roomId;
+  public int? betIndex;
+  public double? balance;
 }
 
 [Serializable]
@@ -238,9 +321,13 @@ public class BulletFiredPayload
   public string bulletId;
   public int? betIndex;
   public double? shooterBalance;
+  public double? balance;    // what the server actually sends: shooter balance after the charge
+  public double? amount;     // charge for this shot
   public string targetFishId; // torpedo and laser only
   public float? bulletSpeed; // server px/s
   public double? firedAt;    // server ms, for latency compensation
+
+  internal double? ShooterBalance => shooterBalance ?? balance;
 }
 
 [Serializable]
@@ -316,4 +403,27 @@ public class LaserStopPayload
 public class HomePayload
 {
   public string roomId;
+}
+
+[Serializable]
+public class FreezePayload
+{
+  public string requestId;
+}
+
+[Serializable]
+public class JoinLevelPayload
+{
+  public string level; // an MLFGHallIds value
+}
+
+// JOIN_LEVEL ack payload: the new room's full init snapshot plus the move's details.
+// level, hall and currentHall all carry the same hall id.
+[Serializable]
+public class JoinLevelAckPayload : MLFGInitData
+{
+  public string oldRoomId;
+  public string mode; // "multiplayer" | "single"
+  public string level;
+  public string hall;
 }

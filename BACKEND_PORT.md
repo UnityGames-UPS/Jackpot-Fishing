@@ -48,11 +48,11 @@ Wired in code but not yet tested against the live server.
 | `gameData.bets` | Used; this is the current hall's list |
 | `gameData.seats`, `seatIndex`, `roomSeats`, `player`, `activeFish` | Used |
 | `gameData.fishes` (`type` + `variants`, equal names) | Not needed; lookup is by type. Hitbox `hitboxRadius` / `segments` arrive per spawn (`FishSpawnedExample.json`) |
-| `players` (`userId`, `username`, `seatIndex`, `balance`, `betIndex`) | Not parsed yet; for opponents on join (with room switching) |
-| `gameData.levels`, `currentHall`, `halls` | Not parsed (see Halls) |
-| `gameData.capabilities.freeze` | Not parsed (see Freeze) |
+| `players` (`userId`, `username`, `seatIndex`, `balance`, `betIndex`) | Used: opponents' rigs (name, balance, bet) in `GunManager.SetupSeats` |
+| `gameData.levels`, `currentHall`, `halls` | Used by `HallSwitcherManager` (see Halls) |
+| `gameData.capabilities.freeze` | `cost` → `SocketIOManager.FreezeCost` (fallback 30). `durationMs` unused (the freeze object carries its own) |
 | `gameData.capabilities.energyBoost` (config + current `currentCharge`, `isReady`, `accumulatedTurnover`) | Not parsed (see Electric cannon) |
-| `activeFreeze` | Not parsed (see Freeze) |
+| `activeFreeze` | Used (init and JOIN_LEVEL ack): re-init clears any freeze, then starts this one before `activeFish` spawns. Live mid-freeze init confirmed: `{ startTime, durationMs, endTime, activatorUserId, remainingMs }`; `remainingMs` is only logged against our own `endTime − NowMs` |
 | `jackpotPools` | Not parsed (see Progressive jackpots) |
 | `roomId` | Used. The live init sends it (format `<id>:room-<hall>-<uuid>`; missing from the sample file). `room:joined` is not sent on our own join, but did arrive when another player joined our room; it now logs its raw payload (Socket) to learn the shape. It still sets `RoomId` if it carries a `roomId` |
 
@@ -60,14 +60,19 @@ Wired in code but not yet tested against the live server.
 
 ### Halls and rooms
 How joining works now: the client sends no join request. On connect the server places the player in a room by itself (default hall `joy`) and pushes `game:init`, which carries `roomId` (`room:joined` is no longer sent). The reference mock does the same. There is no room list or lobby in the docs; `JOIN_LEVEL` only picks a hall, and the server picks the room inside it.
-- **Todo** `JOIN_LEVEL` with `level`: `joy` / `regal` / `regal_single`. Handle `JOIN_LEVEL_ACK`, then the fresh `game:init`
-- **Todo** Connect the existing Hall Selection panel (`UIManager.OnClickHallSelection`, `HallSelectionBtn`) to `JOIN_LEVEL`. It only animates open and closed today
+- **Done** `JOIN_LEVEL` with `level` (`MLFGHallIds`: `joy` / `regal` / `regal_single`), sent by `SocketIOManager.SendJoinLevel`. The ack is `{ success, payload }`, where the payload is a full init snapshot (`gameData`, `activeFish`, `seatIndex`, `roomSeats`, `players`, `player`, `halls`, `currentHall`, `jackpotPools`) plus `roomId`, `oldRoomId`, `mode`, `level` and `hall`.
+  - It's typed as `JoinLevelAckPayload : MLFGInitData` and applied through `ApplyInit`, the same path as `game:init`: fish cleared, `activeFish` spawned, seats, bets and balance rebuilt.
+  - It's accepted from the ack callback or from a `JOIN_LEVEL_ACK` event, applied only once per request, and both paths log the raw JSON. A `game:init` that follows re-applies the same state.
+- **Done (needs Inspector wiring)** `HallSwitcherManager` (moved out of `UIManager`):
+  - Shows `currentHall`'s name and relabels the hall buttons to the other halls (`gameData.levels` order).
+  - Opens on every init. The arrow snaps (no tween), the panel scales open, and the title fades in after the panel is fully open. Auto-closes after 4 s.
+  - Hall button → confirm popup, and the timer stops. No → the timer restarts. Yes → black loading panel until ≥ 1 s has passed, the ack succeeded and the new init arrived. Failure or 10 s timeout → error log, loading hidden, panel reopened.
 - **Done** `BetCounter` resets to 0 on every `game:init` (`UIManager.OnBetChanged`)
-- **Todo** Read `currentHall` from init and show the hall name
+- **Done** `currentHall` and `halls` read from init (`MLFGInitData`)
 - **Done** Player joined / left: `game:player_joined` → `GunManager.OccupySeat` (shows the rig with the username), `game:player_left` → `VacateSeat` (hides it). Payload `{ userId, username, seatIndex, roomId }`; our own join is also broadcast and skipped. `room:joined` (`{ roomId, userId, playerCount }`) is broadcast on every join and only sets `RoomId` for our own `userId`. `playerCount` unused
 - **Done** Opponent bet text: `bets[0]` when the rig appears, then each shot's `betIndex`. Bet +/- hidden on opponent rigs
 - **Done** Opponent gun follows `bullet_fired.weaponType` (instant switch, no animation). Torpedo: visual-only torpedo at `targetFishId` (no `TorpedoShot`, so no SHOOT). Laser: beam on `targetFishId`, kept up for 2 intervals per tick. No live target → the gun turns to `angle` and flashes. Field name `targetFishId` assumed; not yet checked against a live payload
-- **Todo** Opponents already in the room when we join show no name (init's `roomSeats` has only ids) and a balance of 0 until their first `shot_result`. Ask the backend for usernames/balances in init, or a `player_joined` replay Today an opponent appears only once they fire (`GunManager.ResolveOpponentRig` claims a seat from the bullet origin), and a leaver's cannon stays until our next `game:init`. When the events exist, call the ready hooks `GunManager.OccupySeat(userId, username, seatIndex)` and `VacateSeat(userId)`
+- **Done** Opponents already in the room come from init's `players` (`userId`, `username`, `seatIndex`, `balance`, `betIndex`) in `GunManager.SetupSeats`; `roomSeats` is the fallback when `players` is missing. Earlier note: opponents already in the room showed no name (init's `roomSeats` has only ids) and a balance of 0 until their first `shot_result`. Before `players`, an opponent appears only once they fire (`GunManager.ResolveOpponentRig` claims a seat from the bullet origin), and a leaver's cannon stays until our next `game:init`. When the events exist, call the ready hooks `GunManager.OccupySeat(userId, username, seatIndex)` and `VacateSeat(userId)`
 - **Done** Seats: config has 3 bottom seats (x 480 / 960 / 1440). `GunManager.SetupSeats` places rigs from the server's seats and hides the extra 4th rig on every init, so the scene needs no change. Minor: `SeatRig.SeatIndex` is never reset, so it would only matter if the server's seat count shrank mid-session
 
 ### Progressive jackpots (Speed / Lucky / JILI)
@@ -85,10 +90,17 @@ How joining works now: the client sends no join request. On connect the server p
 - **Blocked** UI and VFX. The old `LazerGun` "electric" gun is now the laser weapon, not this feature
 
 ### Freeze
-- **Todo** `FREEZE` request (`requestId`), ack balance and `activeFreeze`
-- **Todo** `game:room_frozen` / `game:room_unfrozen`, plus `activeFreeze` in init
-- **Todo** Freeze the server path clock: hold sim time at `startTime`, then shift each fish's `spawnTime` by `durationMs` on unfreeze (`ServerPath` / `BaseFish`)
-- **Blocked** UI button and frozen overlay
+Only fish paths freeze; shooting, bullets and `ServerClock.NowMs` keep running. It's room-wide.
+- **Done** `RoomFreeze` (static state) + `ServerPath.ProgressAt` samples at `RoomFreeze.FishTime` (held at `startTime`). Every position, hit circle, pick and expiry check goes through it
+- **Done** `SocketIOManager.SendFreeze` (`FREEZE`, `requestId`): ack balance via `ApplyAckBalance`, ack `activeFreeze` → `FishManager.BeginRoomFreeze`. One request at a time, not while frozen. Rejection `{ success: false, message }` logged and passed to `UIManager.OnFreezeRejected` (only "Insufficient balance" handled). Rejection shape confirmed: `{ success: false, payload: { message } }`; seen so far: `Room is already frozen`
+- **Done** Live shapes confirmed: ack `{ success, payload: { balance, activeFreeze } }`; `game:room_frozen` has the freeze fields at the top level and again under `freeze` (plus `roomId`, `balance`); `game:room_unfrozen` is only `{ roomId, unfrozenAt }` (no `freezeDurationMs`; arrived ~90 ms after `endTime`)
+- **Done** `game:room_frozen` → `BeginRoomFreeze` (idempotent by `startTime`), `game:room_unfrozen` → `EndRoomFreeze(unfrozenAt)`: shifts the `spawnTime` of fish spawned before the freeze by the time held. Local fallback in `SocketIOManager.Update` ends it at `endTime`; whichever comes first wins
+- **Waiting on backend** Double freeze: the server currently rejects FREEZE during another player's freeze with `{ success: false, payload: { message: "Room is already frozen" } }` (logged as a warning, nothing else happens). The backend dev is adding stacking. Client side is ready but unverified: a new freeze while frozen extends the hold to the later `endTime` (`RoomFreeze.Extend`), and an unfreeze > 250 ms before the extended end is ignored. Revisit both once the backend's stacking shape is known (new `endTime` on the first freeze? separate unfreezes?)
+- **Done** Fish spawned during a freeze (not expected): warning logged, spawned anyway, not frozen and not shifted
+- **Done** Editor mock: **F** toggles a 10 s freeze (early toggle shifts by the time actually frozen)
+- **Done** `Config.json` `freeze.durationMs` 30000 → 10000 (client copy; the server's config has to change too)
+- **Done (needs Inspector wiring)** `UIManager` Freeze header: `freezeButton` (sends FREEZE; off only while a request is pending or **our own** freeze runs, so it works during an opponent's), `freezeCostText` (cost as-is, e.g. "30"), `freezeOverlay` (black Filled Radial 360 `Image` over the button, the only timer, **own freeze only**; off by default; `fillAmount` 1 → 0 from `endTime − ServerClock.NowMs` over `durationMs`, so late joiners start part-revealed), `screenFreezeOverlay` (placeholder full-screen black overlay above the fish, on while the room is frozen). All optional
+- **Blocked** Screen freeze effect art (black `screenFreezeOverlay` stands in), sound, "frozen by {username}" for opponents (`TODO` in `UIManager.OnRoomFreezeChanged`)
 
 ### Fish behaviour
 - **Todo** `rewardLabel` / `criticalLabel` win banner for immortal, special and jackpot fish (`TODO` in `SocketIOManager.OnShotResult`)
@@ -103,7 +115,7 @@ How joining works now: the client sends no join request. On connect the server p
 - **Todo** Rock crab escape (`EffectFish.StartRockCrabEscape`) was a Curvy speed burst; now it just fades out with `Leave()`. Replace when `torpedo_crab` `killEffect` lands
 - **Todo** Opponents' kills and rewards show no coins or wins (only our own)
 - **Todo** Tune `hitboxRadius` / dragon `segments` against the art (mock with `FishManager.mockConfig` = `Config.json`, Physics 2D "Always Show Colliders"), then hand the numbers to the backend for `Config.json`
-- **Todo** Backend to apply `segments` to any fish that has them, not only `jackpot_dragon` (`lanternfish` 2 circles, `hammerhead_shark` 3, `golden_clownfish` 2, `thunder_shark` 3, `king_squid` 2, `golden_shark` 3 circles in `Config.json`), in hit tests and spawn payloads
+- **Todo** Backend to apply `segments` to any fish that has them, not only `jackpot_dragon` (`lanternfish` 3 circles, `hammerhead_shark` 3, `golden_clownfish` 3, `thunder_shark` 3, `king_squid` 3, `golden_shark` 3, `jackpot_dragon` 7 circles in `Config.json`; all offsets ≥ 0 with the head at 0), in hit tests and spawn payloads
 - **Todo** Set `FishData.pivot` per fish so the art is centered on its hit circle (and `JackpotDragon.deathPivot`)
 - **Todo** Optional prefab tidy: replace fish `BoxCollider2D` with `CircleCollider2D` (code already adds circles and disables the box); wire the new `BaseFish` References
 
@@ -123,7 +135,7 @@ Work items:
 - **Todo** Floating score text at `aimTarget` (guide asks for it; nothing exists yet, own kills use star coins / rainbow win)
 
 ### Weapons
-- **Todo** Bet-based art: changing the bet swaps the gun, bullet and crosshair graphics. Hook: `UIManager.OnBetChanged`
+- **Done (code)** Normal-gun bet tiers Base / Buff / Buffed (`GunTier.cs`): bets split into thirds; gun, bullet and hit-marker sprites per tier (`TierSprites` on `SimpleGun`, `BulletView`, `HitMarker`); switch animation on every bet change while the normal gun is out. Opponents' tier comes from their `betIndex`. **Todo:** assign the tier sprites in the scene and prefabs.
 - **Todo** The backend's new config (2026-11-13) sets `fireIntervalMs` to normal 33, laser 33, torpedo 100. The client uses whatever init sends, so these take effect when the server deploys them. At ~30 shots/s (normal = FIRE + SHOOT = ~55 requests/s) this is far over the measured ~6 requests/s socket limit (question 13). Confirm the limit was raised or removed first. Earlier, at 160 / 200 / 500 (+10%), the server returned `Too many request requests` and some `Fire rate limit exceeded` with `remainingMs` 5–10
 - **Done** After a `Too many request requests` socket error, `CanShoot` is false on every gun for 1.5 s, doubling per repeat up to 12 s; resets on the next ack. The error log lists the recent requests and gaps
 - **Todo** `IsValidTorpedoTarget` uses a hardcoded list of normal fish; consider using fish category instead
@@ -140,7 +152,7 @@ Work items:
 4. `roomLimit`: halls say 3, top level says 4, seats list 3.
 5. ~~Full `game:init` shape~~ Answered, see `InitJson.json`. ~~Why did `weapons.*.cost` disappear?~~ Back in config and init. ~~Is `room:joined` still sent?~~ No, but the live init carries `roomId`.
 6. Requests: still `request` with `{ type, payload }`, or the new `game:shoot` / `game:fire` names in `NewNewNewJFMD.md`?
-7. `JOIN_LEVEL_ACK`: a socket ack callback or a separate event?
+7. ~~`JOIN_LEVEL_ACK` shape~~ Answered: a full init snapshot plus `oldRoomId` / `mode` / `level`. Still unconfirmed: whether it arrives as the ack callback, as a separate event, or both. The client handles all three. Also unconfirmed: whether a `game:init` still follows it.
 8. Clock sync: ack callback (guide) or the `time_sync_ack` event the client uses?
 9. Does a jackpot win also update the winner's balance in the same `shot_result`, or only via `jackpot_win`?
 10. ~~Is `variant` still sent?~~ Yes, equal to `type`.
@@ -151,6 +163,7 @@ Work items:
 14. Torpedo at a fish that died mid-flight: the client sends SHOOT with no `targetFishId` (a miss). Is the 4× bet refunded, and is the refund reported in the SHOOT ack or in `shot_result`?
 15. ~~`shot_result` field names~~ Answered by a live sample: it sends all of `bulletId`, `shotId`, `targetFishId`, `fishId`, `balance` and `shooterBalance`.
 16. ~~+15 ms buffer: laser only?~~ Not needed: × 1.1 already gives more than +15 ms on every gun.
+17. Freeze: (a) during a freeze, are init's `activeFish` spawnTimes unshifted (client assumes yes, per the guide's math)? Check on the next mid-freeze join: fish should sit where they are on the other client. (b) ~~FREEZE while already frozen~~ Currently rejected (`Room is already frozen`); backend is adding stacking, shape to come. (c) Rejection messages (insufficient balance, already frozen, ...). (d) Server hit checks use the frozen position at SHOOT `clientTs` (assumed).
 
 ## Fish list (`fishesData`, renamed to config `type`)
 
@@ -164,6 +177,19 @@ Work items:
 | jackpot | `jackpot_fish` (jackpot_rainbow_fish), `jackpot_dragon` (jackpot_dragon_fish) |
 
 ## Session log
+- **2026-11-17 (9)**: Bet-change transition restarts on every press (`ImageAnimation.RestartAnimation`, no first-frame delay).
+- **2026-11-17 (8)**: Bets no longer loop. Bet + is non-interactable on the last bet and - on the first (`UIManager.RefreshBetButtons`).
+- **2026-11-17 (7)**: Seat rigs pooled from one inactive scene template (`GunManager.seatRigTemplate`, `prewarmSeats`). Each init activates one rig per `gameData.seats` entry and retires the rest. Needs scene wiring by the user.
+- **2026-11-17 (6)**: Normal-gun bet tiers (gun, bullet and hit-marker art by bet third, plus the switch transition on bet change for the normal gun only). Waiting on the user to wire the sprites in the Inspector.
+- **2026-11-17 (5)**: Two-user test: FREEZE during an opponent's freeze is rejected (`Room is already frozen`). Backend will add stacking; client double-freeze handling kept as is until then.
+- **2026-11-17 (4)**: Freeze from live payloads. The button timer only runs for our own freeze (opponent's freeze: screen overlay only, button usable). Double freeze extends the hold. `room_unfrozen` uses `unfrozenAt`; `room_frozen` falls back to the nested `freeze`; init `remainingMs` logged. Not compiled yet.
+- **2026-11-17 (3)**: Freeze UI: radial black overlay (`fillAmount` 1 → 0 on the server clock), cost text from `FreezeCost`, placeholder full-screen `screenFreezeOverlay` while frozen (no countdown text). Config freeze duration 10 s. Not compiled yet.
+- **2026-11-17 (2)**: Freeze. `FREEZE` request, `room_frozen` / `room_unfrozen`, init `activeFreeze` and `capabilities.freeze.cost`. Path clock held through `RoomFreeze` in `ServerPath`, spawnTimes shifted on unfreeze, local `endTime` fallback, editor **F** mock, optional UI hooks in `UIManager`. Not compiled yet. Waiting on a rejection JSON.
+- **2026-11-17**: Opponent joins now show their balance and bet. `game:player_joined` parses `balance` / `betIndex` into `PlayerSeatPayload` and pass them to `GunManager.OccupySeat`, which no longer re-shows (and zeroes) a rig that already holds that player. `game:bullet_fired` sends the shooter's balance as `balance` (not `shooterBalance`), so `BulletFiredPayload.ShooterBalance` reads either. Not compiled yet.
+- **2026-11-16 (4)**: The `JOIN_LEVEL` ack is typed (`JoinLevelAckPayload`) and applied as an init (`OnInit` → `ApplyInit`). The hall switcher uses linear easing, its confirm popup has an invisible background button that closes it like No, and `Open` is a no-op (timer restart) when the panel is already open.
+- **2026-11-16 (3)**: Hall switching. `JOIN_LEVEL` request and ack logging (both the callback and the `JOIN_LEVEL_ACK` event). New `HallSwitcherManager`, with the hall code removed from `UIManager`. Init now parses `currentHall` / `halls` / `players` / `levels`, and opponents get their name, balance and bet from `players`. Waiting on the ack JSON for its DTO. The scene still needs wiring (manager refs, confirm popup, loading panel). Not compiled yet.
+- **2026-11-16 (2)**: For every fish with segments, `hitboxRadius` now equals the offset-0 circle's radius, so a fallback to a single circle hits the head.
+- **2026-11-16**: Every fish with segments now has an odd circle count and its first circle at offset 0, with no negative offsets (the user will move `FishData.pivot` to the fish nose). `king_squid` 3 (r155 at 0/100/199), `jackpot_dragon` 7 (r115 every ~159 px, 0..952, same span as before), `golden_shark` shifted to 0/166/355.
 - **2026-11-13 (8)**: Added 2 hit circles to `golden_shark` (r85 @0, r70 @90, r55 @165), for tuning.
 - **2026-11-13 (7)**: Added 2 hit circles to `king_squid` (r150 @0, r150 @150), for tuning.
 - **2026-11-13 (6)**: Torpedo/laser aim at the first hit circle (config order) whose center is inside the 1920×1080 playfield (`BaseFish.TryGetAimServerPoint`). The same point is the SHOOT `aimTarget` and the torpedo launch direction. A fish is lockable only while such a center exists. **Ask backend:** SHOOT `aimTarget` validation must test every segment, or tail-circle aims get rejected.
@@ -172,6 +198,8 @@ Work items:
 - **2026-11-13 (3)**: Added 2 hit circles to `golden_clownfish` (r55 @0, r40 @55), for tuning.
 - **2026-11-13 (2)**: Added 3 hit circles to `hammerhead_shark` (r75 @0, r60 @80, r45 @150), for tuning.
 - **2026-11-13**: Added 2 hit circles to `lanternfish` in `Config.json` (head r60 at offset 0, r45 at offset 60), for tuning. No client code change needed.
+- **2026-11-13**: `lanternfish` now has 3 hit circles (r55 at offsets 0, 55, 110).
+- **2026-11-13**: `golden_clownfish` now has 3 hit circles (r50 at offsets 0, 50, 100), head at the path point; `hitboxRadius` 50 to match the head.
 - **2026-11-13 (3)**: `Config.json` replaced with the backend's updated config (new path types, `curveRange` / `wShapeAmplitudeRange`, hitChance values, formation timing, seats at 480 / 1440, fire intervals 33 / 33 / 100). Kept the local `blowfish` `hitboxRadius` 40 (backend 45). Laser fix: `LazerGun.IsFishValidForBeam` used `GetComponent<Collider2D>()`, which returned the prefab's disabled `BoxCollider2D`, so no fish was valid and the beam never fired. Now checks `State == Alive`.
 - **2026-11-13 (2)**: Built the bullet sync guide: laser SHOOT-only + `LASER_STOP`, opponent laser from `shot_result` / `game:laser_stopped` (500 ms expiry), opponent bullet dead reckoning (`firedAt`, `bulletSpeed`) and removal by `bulletId`, torpedo flies to the death spot and ignores reused fish. Not yet compiled or tested live.
 - **2026-11-13**: Reviewed the backend's bullet sync and laser guide against the code. No code changes. Logged the work items (dead reckoning, removal by `bulletId`, laser SHOOT-only + `LASER_STOP`, opponent laser from `shot_result` / `laser_stopped`), the torpedo pool-reuse bug and questions 14–16.

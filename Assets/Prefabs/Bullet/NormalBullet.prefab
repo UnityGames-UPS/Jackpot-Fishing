@@ -163,8 +163,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1113cc1771873402ba480a61b1d8b2d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
-  lifeTime: 4
-  wallPushDistance: 0.1
+  serverSpeed: 1200
+  maxLifetime: 10
+  bulletImage: {fileID: 8238563344673719371}
+  bulletSprites:
+    baseSprite: {fileID: 21300000, guid: 11dc8f30a63ce40f6a26b50ad4ec939b, type: 3}
+    buffSprite: {fileID: 21300000, guid: 11dc8f30a63ce40f6a26b50ad4ec939b, type: 3}
+    buffedSprite: {fileID: 21300000, guid: 11dc8f30a63ce40f6a26b50ad4ec939b, type: 3}
   fishDamageColor: {r: 1, g: 0.29803923, b: 0.29803923, a: 1}
-  drawDebugRay: 0

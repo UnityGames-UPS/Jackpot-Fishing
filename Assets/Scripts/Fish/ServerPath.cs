@@ -13,7 +13,7 @@ internal sealed class ServerPath
   private readonly MotionKeyframe[] keyframes;
   private readonly float totalLength;
 
-  internal double SpawnTime { get; }
+  internal double SpawnTime { get; private set; }
   internal double Lifespan { get; }
 
   internal ServerPath(SpawnedFish dto)
@@ -40,10 +40,14 @@ internal sealed class ServerPath
 
   internal bool IsBeforeSpawn(double nowMs) => nowMs < SpawnTime;
 
+  // Room unfreeze: the fish resumes from where the freeze held it.
+  internal void ShiftSpawnTime(double ms) => SpawnTime += ms;
+
   // 0..1 along the path; < 0 before spawn and > 1 after the end (extrapolated, like the server).
+  // Held at the freeze start while the room is frozen (RoomFreeze).
   internal double ProgressAt(double nowMs)
   {
-    double elapsed = nowMs - SpawnTime;
+    double elapsed = RoomFreeze.FishTime(nowMs, SpawnTime) - SpawnTime;
 
     if (keyframes.Length > 1)
       return totalLength > 0 ? GetDistanceFromKeyframes(elapsed) / totalLength : 0;

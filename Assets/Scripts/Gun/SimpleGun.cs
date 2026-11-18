@@ -19,6 +19,12 @@ public class SimpleGun : BaseGun
   [SerializeField] protected float fireRate = 6f;
   [SerializeField] private int maxBulletsInFlight = 30;
 
+  [Header("Bet Tier Art")]
+  [SerializeField] private Image gunImage;
+  [SerializeField] private TierSprites gunSprites;
+
+  internal GunTier Tier { get; private set; }
+
   internal float FireInterval =>
     SocketIOManager.Instance != null
       ? SocketIOManager.Instance.FireIntervalFor(SocketIOManager.Instance.NormalWeaponId, 1f / fireRate)
@@ -29,13 +35,28 @@ public class SimpleGun : BaseGun
   private Vector3 initialLocalPos;
   private float nextAllowedFireTime;
 
+  void OnValidate()
+  {
+    if (gunImage == null)
+      gunImage = GetComponent<Image>();
+  }
+
   internal void Awake()
   {
+    if (gunImage == null)
+      gunImage = GetComponent<Image>();
     initialLocalPos = transform.localPosition;
     muzzleImage = muzzle.GetComponent<Image>();
 
     if (muzzleImage != null)
       muzzleImage.color = new Color(1, 1, 1, 0); // start hidden
+  }
+
+  // Gun art for the bet's tier (Base / Buff / Buffed). Bullets and hit markers pick theirs per shot.
+  internal void SetTier(GunTier tier)
+  {
+    Tier = tier;
+    gunSprites.ApplyTo(gunImage, tier);
   }
 
   internal override void Fire()
@@ -81,7 +102,7 @@ public class SimpleGun : BaseGun
 
   // Opponent's bullet_fired: visual only. No balance reservation, FIRE or SHOOT.
   // firedAt (server ms) fast-forwards the bullet to where it is now on the shooter's screen.
-  internal void PlayRemoteShot(string bulletId, string weaponType, float serverAngle, float? bulletSpeed, double? firedAt)
+  internal void PlayRemoteShot(string bulletId, string weaponType, float serverAngle, float? bulletSpeed, double? firedAt, int? betIndex)
   {
     var socket = SocketIOManager.Instance;
     if (socket == null || !Playfield.IsReady)
@@ -101,7 +122,8 @@ public class SimpleGun : BaseGun
     float elapsed = firedAt.HasValue && ServerClock.IsSynced
       ? Mathf.Max(0f, (float)((ServerClock.NowMs - firedAt.Value) / 1000.0))
       : 0f;
-    bullet.FireRemote(bulletId, Playfield.WorldToServer(muzzle.position), direction, socket.BouncesFor(weapon), speed, elapsed);
+    GunTier tier = betIndex.HasValue ? GunTiers.ForBet(betIndex.Value) : Tier;
+    bullet.FireRemote(bulletId, Playfield.WorldToServer(muzzle.position), direction, socket.BouncesFor(weapon), speed, elapsed, tier);
   }
 
   void PlayRecoil()

@@ -9,11 +9,16 @@ public class HitMarker : MonoBehaviour
   [SerializeField] private float fadeDelay = 0.05f;
   [SerializeField] private float fadeDuration = 0.15f;
 
+  [Header("Bet Tier Art")]
+  [SerializeField] private TierSprites markerSprites;
+
   private Tween tween;
   
-  internal void Play(Vector3 worldPos)
+  // tier: the bet tier of the bullet that hit, which picks the marker's colour.
+  internal void Play(Vector3 worldPos, GunTier tier = GunTier.Base)
   {
     tween?.Kill();
+    markerSprites.ApplyTo(image, tier);
 
     transform.position = worldPos;
     transform.localScale = Vector3.zero;

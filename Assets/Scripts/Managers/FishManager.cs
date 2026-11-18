@@ -8,7 +8,7 @@ internal class FishManager : MonoBehaviour
 {
   internal static FishManager Instance;
 
-  [Header("Editor Mock (M spawns, K kills)")]
+  [Header("Editor Mock (M spawns, K kills, F toggles a room freeze)")]
   [SerializeField] private bool enableMockSpawning = true;
   [SerializeField] private int mockFishIndex = 25;
   [Tooltip("Optional: Config.json. Mock fish then use its hitboxRadius/segments per type (for tuning hitboxes).")]
@@ -113,6 +113,9 @@ internal class FishManager : MonoBehaviour
 
     if (Input.GetKeyDown(KeyCode.K))
       MockKillRandomFish();
+
+    if (Input.GetKeyDown(KeyCode.F))
+      MockToggleFreeze();
   }
 #endif
 
@@ -141,6 +144,11 @@ internal class FishManager : MonoBehaviour
       GameLog.Warn(LogCategory.Fish, WithFishJson($"Fish {dto.id} ({dto.type}) has no usable path", dto));
       return null;
     }
+
+    // Not expected; such a fish ignores the freeze (RoomFreeze.FishTime) and still spawns.
+    if (RoomFreeze.IsFrozen && path.SpawnTime >= RoomFreeze.StartMs)
+      GameLog.Warn(LogCategory.Fish, WithFishJson(
+        $"Fish {dto.id} ({dto.type}) spawned during a room freeze (spawnTime {path.SpawnTime:F0} >= freeze start {RoomFreeze.StartMs:F0}); it won't be frozen", dto));
 
     // Already swam off (stale event or late join).
     if (path.ProgressAt(ServerClock.NowMs) >= 1.0)
@@ -235,6 +243,86 @@ internal class FishManager : MonoBehaviour
       immortal.TriggerWinAnimSpeedBoost();
     if (isCritical)
       UIManager.Instance?.PlayRainbowWinAnimation(fish, fish.data, payout);
+  }
+
+  // --------------------------------------------------------
+  // ROOM FREEZE
+  // --------------------------------------------------------
+
+  // An unfreeze this far before EndMs belongs to an earlier freeze of an extended (double) freeze.
+  private const double UnfreezeToleranceMs = 250;
+
+  // FREEZE ack, game:room_frozen or init's activeFreeze. Repeats of the same freeze are ignored.
+  internal void BeginRoomFreeze(MLFGActiveFreeze freeze, string source)
+  {
+    if (freeze == null || freeze.startTime <= 0 || RoomFreeze.HasSeen(freeze.startTime))
+      return;
+
+    double end = freeze.endTime > freeze.startTime ? freeze.endTime : freeze.startTime + freeze.durationMs;
+    string remaining = freeze.remainingMs.HasValue
+      ? $", server remainingMs {freeze.remainingMs:F0} vs ours {end - ServerClock.NowMs:F0}"
+      : "";
+
+    if (RoomFreeze.IsFrozen)
+    {
+      RoomFreeze.Extend(freeze.startTime, end, freeze.activatorUserId);
+      GameLog.Info(LogCategory.Fish, WithEventJson(
+        $"Double freeze ({source}) by {freeze.activatorUserId}: start {freeze.startTime:F0} end {end:F0}; held since {RoomFreeze.StartMs:F0}, " +
+        $"now until {RoomFreeze.EndMs:F0} ({RoomFreeze.DurationMs:F0} ms){remaining}"));
+    }
+    else
+    {
+      RoomFreeze.Begin(freeze.startTime, end, freeze.activatorUserId);
+      GameLog.Info(LogCategory.Fish, WithEventJson(
+        $"Room frozen ({source}) by {freeze.activatorUserId}: {RoomFreeze.StartMs:F0} -> {RoomFreeze.EndMs:F0} ({RoomFreeze.DurationMs:F0} ms), " +
+        $"now {ServerClock.NowMs:F0}, {activeFishes.Count} fish{remaining}"));
+    }
+
+    bool own = source == MockSource ||
+      (!string.IsNullOrEmpty(freeze.activatorUserId) && freeze.activatorUserId == SocketIOManager.Instance?.UserId);
+    UIManager.Instance?.OnRoomFreezeStarted(freeze.startTime, end, own);
+  }
+
+  // game:room_unfrozen (atMs = unfrozenAt), or the local fallback once EndMs has passed, whichever
+  // comes first. Fish move on by the time they were held: the whole span, or less on an early end.
+  internal void EndRoomFreeze(double atMs, string source)
+  {
+    if (!RoomFreeze.IsFrozen)
+      return;
+
+    if (atMs > 0 && atMs < RoomFreeze.EndMs - UnfreezeToleranceMs && source != MockSource)
+    {
+      GameLog.Info(LogCategory.Fish, WithEventJson(
+        $"Unfreeze ({source}) at {atMs:F0} before the extended end {RoomFreeze.EndMs:F0}; still frozen"));
+      return;
+    }
+
+    double start = RoomFreeze.StartMs;
+    double shift = atMs > 0 ? Math.Min(RoomFreeze.DurationMs, Math.Max(0, atMs - start)) : RoomFreeze.DurationMs;
+    int shifted = 0;
+    foreach (var fish in activeFishes)
+    {
+      // Fish that spawned during the freeze were never held, so they don't move on.
+      if (fish.Path != null && fish.Path.SpawnTime < start)
+      {
+        fish.Path.ShiftSpawnTime(shift);
+        shifted++;
+      }
+    }
+
+    RoomFreeze.Clear();
+    GameLog.Info(LogCategory.Fish, WithEventJson(
+      $"Room unfrozen ({source}): shifted {shifted}/{activeFishes.Count} fish by {shift:F0} ms, now {ServerClock.NowMs:F0}"));
+    UIManager.Instance?.OnRoomFreezeEnded();
+  }
+
+  // A re-init replaces the fish, so there is nothing to shift.
+  internal void ResetRoomFreeze()
+  {
+    if (!RoomFreeze.IsFrozen)
+      return;
+    RoomFreeze.Clear();
+    UIManager.Instance?.OnRoomFreezeEnded();
   }
 
   // Releases every fish immediately (re-init after a reconnect).
@@ -424,6 +512,22 @@ internal class FishManager : MonoBehaviour
     }
 
     return mockHitboxes.TryGetValue(type, out hitbox);
+  }
+
+  private const string MockSource = "mock";
+
+  // Counts as our own freeze, so the button timer runs too.
+  private void MockToggleFreeze()
+  {
+    if (RoomFreeze.IsFrozen)
+    {
+      EndRoomFreeze(ServerClock.NowMs, MockSource);
+      return;
+    }
+
+    double now = ServerClock.NowMs;
+    const double duration = 10000; // matches Config.json freeze.durationMs
+    BeginRoomFreeze(new MLFGActiveFreeze { startTime = now, durationMs = duration, endTime = now + duration, activatorUserId = MockSource }, MockSource);
   }
 
   private void MockKillRandomFish()

@@ -35,6 +35,10 @@ public class SocketIOManager : MonoBehaviour
   // Defaults apply until init sends a cost for that weapon.
   private static readonly float[] DefaultGunCosts = { 1f, 4f, 1f };
   internal List<float> GunCosts { get; } = new(DefaultGunCosts);
+  // gameData.capabilities.freeze.cost (config default 30 coins).
+  private const float DefaultFreezeCost = 30f;
+  internal float FreezeCost { get; private set; } = DefaultFreezeCost;
+  private bool freezePending;
 
   protected string gameNamespace = "playground-multiplayer";
   private string myAuth = null;
@@ -67,6 +71,7 @@ public class SocketIOManager : MonoBehaviour
   private Dictionary<string, MLFGWeapon> weapons;
   internal bool IsInitialized { get; private set; }
   private List<MLFGVec3> seats;
+  private Action<bool> pendingJoinLevel; // in-flight JOIN_LEVEL, settled by its ack
 
   // Fish events wait here (in order) until the clock is synced, so spawns and their
   // despawns/kills are never applied out of order or against an unsynced clock.
@@ -124,6 +129,11 @@ public class SocketIOManager : MonoBehaviour
       while (waitingForClock.Count > 0)
         waitingForClock.Dequeue()?.Invoke();
     }
+
+    // game:room_unfrozen is the real signal; ending locally at endTime keeps a late packet from
+    // holding fish past it. Same shift either way, and the later of the two is a no-op.
+    if (RoomFreeze.IsFrozen && ServerClock.NowMs >= RoomFreeze.EndMs)
+      FishManager.Instance?.EndRoomFreeze(ServerClock.NowMs, "local endTime");
   }
 
   private void OnDestroy()
@@ -200,6 +210,9 @@ public class SocketIOManager : MonoBehaviour
     Subscribe(MLFGEvents.PlayerJoined, OnPlayerJoined);
     Subscribe(MLFGEvents.PlayerLeft, OnPlayerLeft);
     Subscribe(MLFGEvents.LaserStopped, OnLaserStopped);
+    Subscribe(MLFGEvents.RoomFrozen, p => RunWhenClockReady(() => OnRoomFrozen(p)));
+    Subscribe(MLFGEvents.RoomUnfrozen, p => RunWhenClockReady(() => OnRoomUnfrozen(p)));
+    Subscribe(MLFGEvents.JoinLevelAck, OnJoinLevelAck);
 
     MainSocketManager.Open();
   }
@@ -443,9 +456,13 @@ public class SocketIOManager : MonoBehaviour
   private void OnInit(JObject payload)
   {
     var init = payload.ToObject<MLFGInitData>();
-    if (init == null)
-      return;
+    if (init != null)
+      ApplyInit(init, "Init", inboundJson);
+  }
 
+  // game:init, or a JOIN_LEVEL_ACK (which carries the same full snapshot of the new room).
+  private void ApplyInit(MLFGInitData init, string source, string json)
+  {
     if (!string.IsNullOrEmpty(init.roomId))
       RoomId = init.roomId;
     UserId = init.player?.userId;
@@ -453,6 +470,8 @@ public class SocketIOManager : MonoBehaviour
     seats = init.gameData?.seats;
     defaultMaxBounces = init.gameData?.maxBulletBounces ?? 3;
     ApplyWeapons(init.gameData);
+    float freezeCost = init.gameData?.capabilities?.freeze?.cost ?? 0f;
+    FreezeCost = freezeCost > 0f ? freezeCost : DefaultFreezeCost;
 
     bets = init.gameData?.bets != null && init.gameData.bets.Count > 0
       ? init.gameData.bets
@@ -460,13 +479,18 @@ public class SocketIOManager : MonoBehaviour
 
     UIManager.Instance.ResetBalance(init.player?.balance ?? 0);
     UIManager.Instance.HandeGameInit();
-    GunManager.Instance?.SetupSeats(seats, SeatIndex, init.roomSeats, UserId, init.player?.username);
+    GunManager.Instance?.SetupSeats(seats, SeatIndex, init.players, init.roomSeats, UserId, init.player?.username);
 
     // A re-init (reconnect) starts from the server's fish list, not ours.
     var activeFish = init.activeFish;
+    var activeFreeze = init.activeFreeze;
     RunWhenClockReady(() =>
     {
       FishManager.Instance.ClearAllFish();
+      // Before the fish spawn, so they come in frozen (their spawnTimes are assumed unshifted).
+      FishManager.Instance.ResetRoomFreeze();
+      if (activeFreeze != null)
+        FishManager.Instance.BeginRoomFreeze(activeFreeze, source);
       if (activeFish != null)
       {
         foreach (var fish in activeFish)
@@ -475,14 +499,15 @@ public class SocketIOManager : MonoBehaviour
     });
 
     GameLog.Info(LogCategory.Socket, WithJson(
-      $"Init: room {RoomId}, seat {SeatIndex}, user {UserId}, weapon '{NormalWeaponId}', " +
-      $"maxBounces {BouncesFor(NormalWeaponId)}, bulletSpeed {BulletSpeedFor(NormalWeaponId)?.ToString() ?? "default"}, " +
+      $"{source}: hall {init.currentHall}, room {RoomId}, seat {SeatIndex}, user {UserId}, players {init.players?.Count ?? 0}, weapon '{NormalWeaponId}', " +
+      $"freeze cost {FreezeCost} active {(activeFreeze != null ? "yes" : "no")}, maxBounces {BouncesFor(NormalWeaponId)}, bulletSpeed {BulletSpeedFor(NormalWeaponId)?.ToString() ?? "default"}, " +
       $"fire intervals (with margin) normal {FireIntervalFor(NormalWeaponId, 0f) * 1000f:F0} / torpedo {FireIntervalFor(MLFGWeaponIds.Torpedo, 0f) * 1000f:F0} / laser {FireIntervalFor(MLFGWeaponIds.Laser, 0f) * 1000f:F0} ms, balance {init.player?.balance}, activeFish {activeFish?.Count ?? 0}",
-      inboundJson));
+      json));
 
     IsInitialized = true;
     isLoaded = true;
     blocker.SetActive(false);
+    HallSwitcherManager.Instance?.OnInit(init.currentHall, init.halls, init.gameData?.levels);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnEnter");
@@ -635,6 +660,75 @@ public class SocketIOManager : MonoBehaviour
     GunManager.Instance?.StopRemoteLaser(stopped.shooterId);
   }
 
+  private void OnRoomFrozen(JObject payload)
+  {
+    var frozen = payload.ToObject<RoomFrozenPayload>();
+    MLFGActiveFreeze freeze = frozen?.startTime > 0 ? frozen : frozen?.freeze;
+    if (freeze == null || freeze.startTime <= 0)
+    {
+      GameLog.Warn(LogCategory.Socket, WithJson("game:room_frozen without startTime", inboundJson));
+      return;
+    }
+    FishManager.Instance?.BeginRoomFreeze(freeze, "room_frozen");
+  }
+
+  private void OnRoomUnfrozen(JObject payload)
+  {
+    var unfrozen = payload.ToObject<RoomUnfrozenPayload>();
+    FishManager.Instance?.EndRoomFreeze(unfrozen?.unfrozenAt ?? 0, "room_unfrozen");
+  }
+
+  // FREEZE: room-wide fish freeze for FreezeCost. onSettled(true) once the server accepts.
+  // The ack carries our new balance and activeFreeze; game:room_frozen repeats it for everyone.
+  // Allowed during an opponent's freeze (double freeze); UIManager blocks it during our own.
+  internal void SendFreeze(Action<bool> onSettled = null)
+  {
+    if (freezePending)
+    {
+      GameLog.Info(LogCategory.Socket, "FREEZE not sent: request pending");
+      onSettled?.Invoke(false);
+      return;
+    }
+
+    string requestId = "freeze_" + Guid.NewGuid().ToString("N");
+    freezePending = true;
+    bool sent = SendRequest(MLFGRequestTypes.Freeze, new FreezePayload { requestId = requestId }, ack =>
+    {
+      freezePending = false;
+      if (ack == null)
+      {
+        GameLog.Error(LogCategory.Socket, $"FREEZE {requestId} ack timed out");
+        onSettled?.Invoke(false);
+        return;
+      }
+
+      string json = ack.ToString(Formatting.None);
+      if (IsRejected(ack))
+      {
+        // Shape { success: false, message } per the backend; exact messages still to be captured.
+        string message = (string)(ack.SelectToken("payload.message") ?? ack["message"]);
+        GameLog.Warn(LogCategory.Socket, WithJson($"FREEZE {requestId} rejected: {message}", json));
+        UIManager.Instance.OnFreezeRejected(message);
+        onSettled?.Invoke(false);
+        return;
+      }
+
+      ApplyAckBalance(MLFGRequestTypes.Freeze, requestId, ack);
+      var freeze = (ack.SelectToken("payload.activeFreeze") ?? ack["activeFreeze"])?.ToObject<MLFGActiveFreeze>();
+      if (freeze != null)
+        RunWhenClockReady(() => FishManager.Instance?.BeginRoomFreeze(freeze, "FREEZE ack"));
+      else
+        GameLog.Warn(LogCategory.Socket, WithJson($"FREEZE {requestId} ack has no activeFreeze, waiting for game:room_frozen", json));
+      onSettled?.Invoke(true);
+    });
+
+    if (!sent)
+    {
+      freezePending = false;
+      onSettled?.Invoke(false);
+    }
+  }
+
   private void OnFormationAlert(JObject payload)
   {
     var alert = payload.ToObject<FormationAlertPayload>();
@@ -650,7 +744,7 @@ public class SocketIOManager : MonoBehaviour
       return;
 
     GameLog.Info(LogCategory.Socket, WithJson($"Player joined: {joined.username} ({joined.userId}) seat {joined.seatIndex}", inboundJson));
-    GunManager.Instance?.OccupySeat(joined.userId, joined.username, joined.seatIndex);
+    GunManager.Instance?.OccupySeat(joined.userId, joined.username, joined.seatIndex, joined.balance, joined.betIndex);
   }
 
   private void OnPlayerLeft(JObject payload)
@@ -766,6 +860,84 @@ public class SocketIOManager : MonoBehaviour
       targetFishId = targetFishId
     };
     SendRequest(MLFGRequestTypes.LaserStop, payload, _ => { });
+  }
+
+  // Hall switch. The server answers with JOIN_LEVEL_ACK (as the ack callback and/or its own
+  // event; unconfirmed which) and then pushes a fresh game:init. onSettled runs once: true on a
+  // successful ack, false if it can't be sent, times out or is refused.
+  internal void SendJoinLevel(string level, Action<bool> onSettled)
+  {
+    pendingJoinLevel = onSettled;
+    bool sent = SendRequest(MLFGRequestTypes.JoinLevel, new JoinLevelPayload { level = level }, ack =>
+    {
+      if (ack == null)
+      {
+        GameLog.Error(LogCategory.Socket, $"JOIN_LEVEL '{level}' ack timed out");
+        SettleJoinLevel(false);
+        return;
+      }
+
+      string json = ack.ToString(Formatting.None);
+      if (IsRejected(ack))
+      {
+        GameLog.Warn(LogCategory.Socket, WithJson($"JOIN_LEVEL '{level}' rejected", json));
+        SettleJoinLevel(false);
+        return;
+      }
+
+      HandleJoinLevelAck(ack["payload"] as JObject ?? ack, json, "callback");
+    });
+
+    if (!sent)
+      SettleJoinLevel(false);
+  }
+
+  // In case the server also (or only) sends it as its own event.
+  private void OnJoinLevelAck(JObject payload)
+  {
+    // Subscribe unwraps { payload }, so read success from the raw envelope.
+    JObject envelope = ToAck(new JValue(inboundJson));
+    if (envelope != null && IsRejected(envelope))
+    {
+      GameLog.Warn(LogCategory.Socket, WithJson("JOIN_LEVEL_ACK event: rejected", inboundJson));
+      SettleJoinLevel(false);
+      return;
+    }
+    HandleJoinLevelAck(payload, inboundJson, "event");
+  }
+
+  // The ack is a full init snapshot of the new room, so it's applied like game:init. A
+  // game:init that follows it re-applies the same state, which is harmless.
+  private void HandleJoinLevelAck(JObject payload, string json, string source)
+  {
+    if (pendingJoinLevel == null)
+    {
+      GameLog.Info(LogCategory.Socket, WithJson($"JOIN_LEVEL ack ({source}) with no switch pending, ignored", json));
+      return;
+    }
+
+    var ack = payload?.ToObject<JoinLevelAckPayload>();
+    if (ack == null)
+    {
+      GameLog.Warn(LogCategory.Socket, WithJson($"JOIN_LEVEL ack ({source}) unreadable", json));
+      SettleJoinLevel(false);
+      return;
+    }
+
+    GameLog.Info(LogCategory.Socket, $"JOIN_LEVEL ack ({source}): {ack.oldRoomId} -> {ack.roomId}, level {ack.level}, mode {ack.mode}");
+    if (ack.gameData != null)
+      ApplyInit(ack, $"JOIN_LEVEL ack ({source})", json);
+    else
+      GameLog.Warn(LogCategory.Socket, "JOIN_LEVEL ack has no gameData, waiting for game:init");
+
+    SettleJoinLevel(true);
+  }
+
+  private void SettleJoinLevel(bool ok)
+  {
+    var callback = pendingJoinLevel;
+    pendingJoinLevel = null;
+    callback?.Invoke(ok);
   }
 
   private static bool IsRejected(JObject ack) =>

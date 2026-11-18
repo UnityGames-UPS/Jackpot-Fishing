@@ -86,6 +86,19 @@ internal class ImageAnimation : MonoBehaviour
     }
   }
 
+  // Plays from frame 0 right away, even mid-play (StartAnimation ignores calls while playing).
+  internal void RestartAnimation()
+  {
+    if (textureArray == null || textureArray.Count == 0)
+      return;
+
+    CancelInvoke("AnimationProcess");
+    indexOfTexture = 0;
+    delayBetweenAnimation = idealFrameRate * (float)textureArray.Count / AnimationSpeed;
+    currentAnimationState = ImageState.PLAYING;
+    AnimationProcess(); // shows frame 0 now and schedules the next frame
+  }
+
   public void PauseAnimation()
   {
     if (currentAnimationState == ImageState.PLAYING)

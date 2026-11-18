@@ -33,6 +33,27 @@ public class SeatRig : MonoBehaviour
   // the rig was laid out with in the scene, measured once before the first placement.
   private float? edgeInset;
 
+  private BaseGun visibleGun;
+  private int betIndex = -1;
+  private SimpleGun cachedSimpleGun;
+  private bool simpleGunCached;
+
+  // The rig's normal gun, which carries the bet-tier art.
+  internal SimpleGun NormalGun
+  {
+    get
+    {
+      if (!simpleGunCached)
+      {
+        cachedSimpleGun = defaultGun as SimpleGun ?? GunOf<SimpleGun>();
+        simpleGunCached = true;
+      }
+      return cachedSimpleGun;
+    }
+  }
+
+  internal bool ShowingSimpleGun => visibleGun != null && visibleGun == NormalGun;
+
   internal void PlaceAt(int seatIndex, Vector2 serverSeat)
   {
     SeatIndex = seatIndex;
@@ -72,6 +93,13 @@ public class SeatRig : MonoBehaviour
     gameObject.SetActive(false);
   }
 
+  // Back to the pool: not a seat in this room, so joins and shot origins can't match it.
+  internal void Retire()
+  {
+    Clear();
+    SeatIndex = -1;
+  }
+
   private void Show(string username, bool local)
   {
     gameObject.SetActive(true);
@@ -84,8 +112,8 @@ public class SeatRig : MonoBehaviour
     {
       // No opponent info until their first shot: balance 0, the hall's lowest bet.
       if (balanceText) balanceText.text = 0.0.ToString("N2");
-      var bets = SocketIOManager.Instance?.bets;
-      SetBet(bets != null && bets.Count > 0 ? bets[0] : 0f);
+      betIndex = -1;
+      SetBetIndex(0, false);
       // Opponents' bet buttons do nothing (they may still hold UIManager's default listeners).
       if (plusBetButton) plusBetButton.onClick.RemoveAllListeners();
       if (minusBetButton) minusBetButton.onClick.RemoveAllListeners();
@@ -95,6 +123,7 @@ public class SeatRig : MonoBehaviour
 
   private void ShowOnly(BaseGun visible)
   {
+    visibleGun = visible;
     if (guns == null)
       return;
     foreach (var gun in guns)
@@ -119,11 +148,31 @@ public class SeatRig : MonoBehaviour
       balanceText.text = balance.ToString("N2");
   }
 
-  // Opponent bet from the betIndex of their shots (ours comes from UIManager).
-  internal void SetBet(float bet)
+  // Opponent bet from the betIndex of their joins and shots (ours comes from UIManager).
+  // A real change swaps the normal gun's tier art, with the switch transition while it is out.
+  internal void SetBetIndex(int index, bool animate = true)
   {
-    if (betText && !IsLocal)
-      betText.text = bet.ToString("N2");
+    var bets = SocketIOManager.Instance?.bets;
+    if (IsLocal || bets == null || index < 0 || index >= bets.Count)
+      return;
+
+    if (betText)
+      betText.text = bets[index].ToString("N2");
+    if (index == betIndex)
+      return;
+
+    betIndex = index;
+    NormalGun?.SetTier(GunTiers.ForBet(index));
+    if (animate)
+      PlayBetChangeTransition();
+  }
+
+  // Opponent bet changes only animate the normal gun, never the torpedo or laser.
+  // (The local rig's guns are switched by GunManager, so it checks currentGun instead.)
+  private void PlayBetChangeTransition()
+  {
+    if (ShowingSimpleGun && gunSwitchAnimation)
+      gunSwitchAnimation.RestartAnimation();
   }
 
   // Opponent shots are visual only. The rig switches instantly (no switch animation) to the gun
@@ -146,7 +195,7 @@ public class SeatRig : MonoBehaviour
       default:
         ShowOnly(defaultGun);
         if (defaultGun is SimpleGun simpleGun)
-          simpleGun.PlayRemoteShot(fired.bulletId, fired.weaponType, fired.angle, fired.bulletSpeed, fired.firedAt);
+          simpleGun.PlayRemoteShot(fired.bulletId, fired.weaponType, fired.angle, fired.bulletSpeed, fired.firedAt, fired.betIndex);
         break;
     }
   }

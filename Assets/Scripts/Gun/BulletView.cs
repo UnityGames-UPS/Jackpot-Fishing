@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Normal bullet, simulated in server space exactly like the backend's reference client:
 // constant speed, bounces off the 1920x1080 edges (each axis hit counts as one bounce),
@@ -16,6 +17,10 @@ public class BulletView : MonoBehaviour
 
   [SerializeField] private float serverSpeed = 1200f; // server px per second (matches the reference client)
   [SerializeField] private float maxLifetime = 10f; // safety net; bounces normally end a miss first
+
+  [Header("Bet Tier Art")]
+  [SerializeField] private Image bulletImage;
+  [SerializeField] private TierSprites bulletSprites;
 
   [Header("On Fish Hit")]
   [SerializeField] private Color fishDamageColor;
@@ -37,9 +42,18 @@ public class BulletView : MonoBehaviour
   private float age;
   private bool active;
   private bool remote;
+  private GunTier tier; // bet tier this bullet was fired at; picks the bullet and hit-marker art
+
+  void OnValidate()
+  {
+    if (bulletImage == null)
+      bulletImage = GetComponent<Image>();
+  }
 
   void Awake()
   {
+    if (bulletImage == null)
+      bulletImage = GetComponent<Image>();
     // Hits are tested in server space, not by physics.
     if (TryGetComponent<Collider2D>(out var col))
       col.enabled = false;
@@ -53,15 +67,17 @@ public class BulletView : MonoBehaviour
     origin = serverOrigin;
     lastBouncePoint = serverOrigin;
     betIndex = firedBetIndex;
+    SetTier(GunTiers.ForBet(firedBetIndex));
     Launch(id, serverStart, serverDirection, maxBulletBounces, speed);
     InFlight++;
   }
 
   // elapsedSec: time since the server's firedAt. The bullet starts where it is by now on the
   // shooter's screen, bouncing off the walls on the way (no hit tests: shot_result ends it).
-  internal void FireRemote(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed, float elapsedSec)
+  internal void FireRemote(string id, Vector2 serverStart, Vector2 serverDirection, int maxBulletBounces, float? speed, float elapsedSec, GunTier firedTier)
   {
     remote = true;
+    SetTier(firedTier);
     origin = serverStart;
     Launch(id, serverStart, serverDirection, maxBulletBounces, speed);
     RemoteInFlight++;
@@ -94,8 +110,15 @@ public class BulletView : MonoBehaviour
       return;
 
     if (hit && serverAimTarget.HasValue)
-      HitMarkerPool.Instance.GetFromPool().Play(Playfield.ServerToWorld(serverAimTarget.Value));
+      HitMarkerPool.Instance.GetFromPool().Play(Playfield.ServerToWorld(serverAimTarget.Value), bullet.tier);
     bullet.Finish();
+  }
+
+  // Pooled bullets are shared by every rig, so the art is set on each fire.
+  private void SetTier(GunTier firedTier)
+  {
+    tier = firedTier;
+    bulletSprites.ApplyTo(bulletImage, firedTier);
   }
 
   // speed: the weapon's server px/s, or null for the serialized default.
@@ -213,7 +236,7 @@ public class BulletView : MonoBehaviour
     }
 
     Vector3 world = Playfield.ServerToWorld(position);
-    HitMarkerPool.Instance.GetFromPool().Play(world);
+    HitMarkerPool.Instance.GetFromPool().Play(world, tier);
     fish.StartCoroutine(fish.DamageAnimation(fishDamageColor));
     Finish();
   }
@@ -286,7 +309,7 @@ public class BulletView : MonoBehaviour
     if (!active)
       return;
 
-    HitMarkerPool.Instance.GetFromPool().Play(transform.position);
+    HitMarkerPool.Instance.GetFromPool().Play(transform.position, tier);
     StartCoroutine(fish.DamageAnimation(fishDamageColor));
     Finish();
   }
